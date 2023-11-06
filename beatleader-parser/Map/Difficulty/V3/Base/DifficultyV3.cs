@@ -110,7 +110,7 @@ namespace Parser.Map.Difficulty.V3.Base
             }
             foreach (var ev in v2._events)
             {
-                Basicbeatmapevent basic = new Basicbeatmapevent
+                Basicbeatmapevent basic = new()
                 {
                     b = ev._time,
                     et = ev._type,
