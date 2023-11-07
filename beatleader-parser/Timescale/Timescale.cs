@@ -7,7 +7,7 @@ using Parser.Map.Difficulty.V3.Grid;
 
 namespace beatleader_parser.Timescale
 {
-    internal class Timescale
+    public class Timescale
     {
         // Based on https://github.com/KivalEvan/BeatSaber-MapCheck/blob/main/src/ts/beatmap/shared/bpm.ts
         public Timescale BPM { get; set; }
