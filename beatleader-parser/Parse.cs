@@ -192,7 +192,7 @@ namespace beatleader_parser
             }
         }
 
-        public BeatmapV3? TryLoadPath(string folderPath, string characteristic = "", string difficulty = "")
+        public BeatmapV3? TryLoadPath(string folderPath)
         {
             var infoContent = File.Exists($"{folderPath}/Info.dat") ? File.ReadAllText($"{folderPath}/Info.dat") : File.ReadAllText($"{folderPath}/info.dat");
             var info = JsonConvert.DeserializeObject<Info>(infoContent);
@@ -205,23 +205,15 @@ namespace beatleader_parser
 
             List<(string path, string difficulty, string characteristic)> difficultyFiles = new();
 
-            if(characteristic == "" || difficulty == "")
+            foreach (var characteristics in info._difficultyBeatmapSets)
             {
-                foreach (var characteristics in info._difficultyBeatmapSets)
-                {
-                    string characteristicName = characteristics._beatmapCharacteristicName;
+                string characteristicName = characteristics._beatmapCharacteristicName;
 
-                    foreach (var difficultyBeatmap in characteristics._difficultyBeatmaps)
-                    {
-                        string difficultyName = difficultyBeatmap._difficulty;
-                        difficultyFiles.Add(new($"{difficultyBeatmap._beatmapFilename}", difficultyName, characteristicName));
-                    }
+                foreach (var difficultyBeatmap in characteristics._difficultyBeatmaps)
+                {
+                    string difficultyName = difficultyBeatmap._difficulty;
+                    difficultyFiles.Add(new($"{difficultyBeatmap._beatmapFilename}", difficultyName, characteristicName));
                 }
-            }
-            else
-            {
-                var fileName = info._difficultyBeatmapSets.FirstOrDefault(x => x._beatmapCharacteristicName == characteristic)._difficultyBeatmaps.FirstOrDefault(x => x._difficulty == difficulty)._beatmapFilename;
-                difficultyFiles.Add(new(fileName, difficulty, characteristic));
             }
 
             foreach (var diff in difficultyFiles)
@@ -241,6 +233,68 @@ namespace beatleader_parser
                     if (result != null)
                     {
                         result.Difficulties.Add(new(diff.difficulty, diff.characteristic, diffv3));
+                    }
+                }
+            }
+
+            var audioFilePath = Directory.GetFiles(folderPath, "*", SearchOption.TopDirectoryOnly).Where(f => f.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".egg", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+            if (audioFilePath != null)
+            {
+                using var stream = File.OpenRead(audioFilePath);
+                using var vorbis = new NVorbis.VorbisReader(stream);
+                result.SongLength = (double)vorbis.TotalSamples / vorbis.SampleRate;
+            }
+
+            return result;
+        }
+
+        public SingleDiffBeatmapV3? TryLoadPath(string folderPath, string characteristic, string difficulty)
+        {
+            var infoContent = File.Exists($"{folderPath}/Info.dat") ? File.ReadAllText($"{folderPath}/Info.dat") : File.ReadAllText($"{folderPath}/info.dat");
+            var info = JsonConvert.DeserializeObject<Info>(infoContent);
+            if (info == null) return null;
+
+            SingleDiffBeatmapV3 result = new()
+            {
+                Info = info
+            };
+
+            result.Info._difficultyBeatmapSets.RemoveAll(x => x._beatmapCharacteristicName != characteristic);
+            result.Info._difficultyBeatmapSets.FirstOrDefault()._difficultyBeatmaps.RemoveAll(x => x._difficulty != difficulty);
+
+            List<(string path, string difficulty, string characteristic)> difficultyFiles = new();
+
+            foreach (var characteristics in info._difficultyBeatmapSets)
+            {
+                string characteristicName = characteristics._beatmapCharacteristicName;
+
+                foreach (var difficultyBeatmap in characteristics._difficultyBeatmaps)
+                {
+                    string difficultyName = difficultyBeatmap._difficulty;
+                    difficultyFiles.Add(new($"{difficultyBeatmap._beatmapFilename}", difficultyName, characteristicName));
+                }
+            }
+
+            foreach (var diff in difficultyFiles)
+            {
+                if (diff.characteristic == characteristic && diff.difficulty == difficulty)
+                {
+                    if (File.ReadAllText($"{folderPath}/{diff.path}").Contains("_version\":\"2"))
+                    {
+                        DifficultyV2 v2 = JsonConvert.DeserializeObject<DifficultyV2>(File.ReadAllText($"{folderPath}/{diff.path}"));
+                        if (v2 != null)
+                        {
+                            result.Difficulty = (new(diff.difficulty, diff.characteristic, DifficultyV3.V2toV3(v2, info._beatsPerMinute)));
+                        }
+                    }
+                    else
+                    {
+                        DifficultyV3 diffv3 = JsonConvert.DeserializeObject<DifficultyV3>(File.ReadAllText($"{folderPath}/{diff.path}"));
+                        DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
+                        if (result != null)
+                        {
+                            result.Difficulty = (new(diff.difficulty, diff.characteristic, diffv3));
+                        }
                     }
                 }
             }

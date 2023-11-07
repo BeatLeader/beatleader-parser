@@ -13,12 +13,22 @@ namespace Parser.Map
         public double SongLength { get; set; }
     }
 
+    public class SingleDiffBeatmapV3
+    {
+        internal SingleDiffBeatmapV3() { }
+
+        public Info Info { get; set; }
+        public DifficultySet Difficulty { get; set; }
+
+        public double SongLength { get; set; }
+    }
+
     public class DifficultySet
     {
         public string Difficulty { get; set; }
         public string Characteristic { get; set; }
         public DifficultyV3 Data { get; set; }
-
+        
         internal DifficultySet(string difficulty, string characteristic, DifficultyV3 data)
         {
             Difficulty = difficulty;
