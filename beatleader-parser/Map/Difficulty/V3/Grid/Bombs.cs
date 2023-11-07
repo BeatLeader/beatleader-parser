@@ -2,7 +2,7 @@
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
-    public class Bombnote : BeatmapGridObject
+    public class Bombs : BeatmapGridObject
     {
 
     }

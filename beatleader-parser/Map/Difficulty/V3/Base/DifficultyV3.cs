@@ -16,18 +16,18 @@ namespace Parser.Map.Difficulty.V3.Base
         [JsonProperty(PropertyName = "rotationEvents")]
         public List<RotationEvent> Rotations { get; set; } = new();
         [JsonProperty(PropertyName = "colorNotes")]
-        public List<Colornote> Notes { get; set; } = new();
+        public List<Notes> Notes { get; set; } = new();
         [JsonProperty(PropertyName = "bombNotes")]
-        public List<Bombnote> Bombs { get; set; } = new();
+        public List<Bombs> Bombs { get; set; } = new();
         [JsonProperty(PropertyName = "obstacles")]
-        public List<Obstacle> Walls { get; set; } = new();
+        public List<Walls> Walls { get; set; } = new();
         [JsonProperty(PropertyName = "sliders")]
-        public List<Slider> Arcs { get; set; } = new();
+        public List<Arcs> Arcs { get; set; } = new();
         [JsonProperty(PropertyName = "burstSliders")]
-        public List<Burstslider> Chains { get; set; } = new();
+        public List<Chains> Chains { get; set; } = new();
         public object[] waypoints { get; set; }
         [JsonProperty(PropertyName = "basicBeatmapEvents")]
-        public List<Basicbeatmapevent> Lights { get; set; } = new();
+        public List<Lights> Lights { get; set; } = new();
         public List<Colorboostbeatmapevent> colorBoostBeatmapEvents { get; set; } = new();
         public List<Lightcoloreventboxgroup> lightColorEventBoxGroups { get; set; } = new();
         public List<Lightrotationeventboxgroup> lightRotationEventBoxGroups { get; set; } = new();
@@ -56,7 +56,7 @@ namespace Parser.Map.Difficulty.V3.Base
             {
                 if (note._type == 0 || note._type == 1)
                 {
-                    Colornote colornote = new()
+                    Notes colornote = new()
                     {
                         CutDirection = note._cutDirection,
                         Color = note._type,
@@ -69,7 +69,7 @@ namespace Parser.Map.Difficulty.V3.Base
                 }
                 else if (note._type == 3)
                 {
-                    Bombnote bombnote = new()
+                    Bombs bombnote = new()
                     {
                         Beats = note._time,
                         x = note._lineIndex,
@@ -80,7 +80,7 @@ namespace Parser.Map.Difficulty.V3.Base
             }
             foreach (var obstacle in v2._obstacles)
             {
-                Obstacle obs = new()
+                Walls obs = new()
                 {
                     Beats = obstacle._time,
                     x = obstacle._lineIndex,
@@ -101,7 +101,7 @@ namespace Parser.Map.Difficulty.V3.Base
             }
             foreach (var arc in v2._sliders)
             {
-                Slider slider = new()
+                Arcs slider = new()
                 {
                     Color = arc.colorType,
                     CutDirection = arc._headCutDirection,
@@ -119,7 +119,7 @@ namespace Parser.Map.Difficulty.V3.Base
             }
             foreach (var ev in v2._events)
             {
-                Basicbeatmapevent basic = new()
+                Lights basic = new()
                 {
                     Beats = ev._time,
                     Type = ev._type,

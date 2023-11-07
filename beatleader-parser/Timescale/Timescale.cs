@@ -229,7 +229,7 @@ namespace beatleader_parser.Timescale
             }
         }
 
-        public void ConvertAllBeatsToSeconds(List<Burstslider> burstsliders)
+        public void ConvertAllBeatsToSeconds(List<Chains> burstsliders)
         {
             foreach (var obj in burstsliders)
             {
@@ -238,7 +238,7 @@ namespace beatleader_parser.Timescale
             }
         }
 
-        public void ConvertAllBeatsToSeconds(List<Slider> sliders)
+        public void ConvertAllBeatsToSeconds(List<Arcs> sliders)
         {
             foreach (var obj in sliders)
             {
@@ -247,7 +247,7 @@ namespace beatleader_parser.Timescale
             }
         }
 
-        public void ConvertAllBeatsToSeconds(List<Obstacle> obstacles)
+        public void ConvertAllBeatsToSeconds(List<Walls> obstacles)
         {
             foreach (var obj in obstacles)
             {

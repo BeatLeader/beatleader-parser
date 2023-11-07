@@ -3,7 +3,7 @@ using Parser.Map.Difficulty.V3.Base;
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
-    public class Obstacle : BeatmapGridObject
+    public class Walls : BeatmapGridObject
     {
         [JsonProperty(PropertyName = "d")]
         public float DurationInBeats { get; set; }
