@@ -7,6 +7,8 @@ namespace Parser.Map.Difficulty.V3.Base
         [JsonProperty(PropertyName = "b")]
         public float Beats { get; set; }
         [JsonIgnore]
-        public float Seconds { get; set; }
+        public float Seconds { get; set; } = 0f;
+        [JsonIgnore]
+        public float BpmTime { get; set; } = 0f;
     }
 }

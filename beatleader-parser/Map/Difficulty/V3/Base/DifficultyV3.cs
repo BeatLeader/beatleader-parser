@@ -11,23 +11,25 @@ namespace Parser.Map.Difficulty.V3.Base
 {
     public class DifficultyV3
     {
-        public string version { get; set; } = "3.3.0";
-        public List<Bpmevent> bpmEvents { get; set; } = new();
+        [JsonProperty(PropertyName = "version")]
+        public string Version { get; set; } = "3.3.0";
+        public List<BpmEvent> bpmEvents { get; set; } = new();
         [JsonProperty(PropertyName = "rotationEvents")]
         public List<RotationEvent> Rotations { get; set; } = new();
         [JsonProperty(PropertyName = "colorNotes")]
-        public List<Notes> Notes { get; set; } = new();
+        public List<Note> Notes { get; set; } = new();
         [JsonProperty(PropertyName = "bombNotes")]
-        public List<Bombs> Bombs { get; set; } = new();
+        public List<Bomb> Bombs { get; set; } = new();
         [JsonProperty(PropertyName = "obstacles")]
-        public List<Walls> Walls { get; set; } = new();
+        public List<Wall> Walls { get; set; } = new();
         [JsonProperty(PropertyName = "sliders")]
-        public List<Arcs> Arcs { get; set; } = new();
+        public List<Arc> Arcs { get; set; } = new();
         [JsonProperty(PropertyName = "burstSliders")]
-        public List<Chains> Chains { get; set; } = new();
-        public object[] waypoints { get; set; }
+        public List<Chain> Chains { get; set; } = new();
+        [JsonProperty(PropertyName = "waypoints")]
+        public object[] Waypoints { get; set; }
         [JsonProperty(PropertyName = "basicBeatmapEvents")]
-        public List<Lights> Lights { get; set; } = new();
+        public List<Light> Lights { get; set; } = new();
         public List<Colorboostbeatmapevent> colorBoostBeatmapEvents { get; set; } = new();
         public List<Lightcoloreventboxgroup> lightColorEventBoxGroups { get; set; } = new();
         public List<Lightrotationeventboxgroup> lightRotationEventBoxGroups { get; set; } = new();
@@ -42,7 +44,7 @@ namespace Parser.Map.Difficulty.V3.Base
         {
             DifficultyV3 difficultyV3 = new()
             {
-                version = "3.0.0",
+                Version = "3.0.0",
                 Notes = new(),
                 Bombs = new(),
                 Chains = new(),
@@ -56,7 +58,7 @@ namespace Parser.Map.Difficulty.V3.Base
             {
                 if (note._type == 0 || note._type == 1)
                 {
-                    Notes colornote = new()
+                    Note colornote = new()
                     {
                         CutDirection = note._cutDirection,
                         Color = note._type,
@@ -69,7 +71,7 @@ namespace Parser.Map.Difficulty.V3.Base
                 }
                 else if (note._type == 3)
                 {
-                    Bombs bombnote = new()
+                    Bomb bombnote = new()
                     {
                         Beats = note._time,
                         x = note._lineIndex,
@@ -80,7 +82,7 @@ namespace Parser.Map.Difficulty.V3.Base
             }
             foreach (var obstacle in v2._obstacles)
             {
-                Walls obs = new()
+                Wall obs = new()
                 {
                     Beats = obstacle._time,
                     x = obstacle._lineIndex,
@@ -101,7 +103,7 @@ namespace Parser.Map.Difficulty.V3.Base
             }
             foreach (var arc in v2._sliders)
             {
-                Arcs slider = new()
+                Arc slider = new()
                 {
                     Color = arc.colorType,
                     CutDirection = arc._headCutDirection,
@@ -119,7 +121,7 @@ namespace Parser.Map.Difficulty.V3.Base
             }
             foreach (var ev in v2._events)
             {
-                Lights basic = new()
+                Light basic = new()
                 {
                     Beats = ev._time,
                     Type = ev._type,

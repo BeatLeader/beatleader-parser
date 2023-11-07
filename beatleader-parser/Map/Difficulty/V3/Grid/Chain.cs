@@ -3,7 +3,7 @@ using Parser.Map.Difficulty.V3.Base;
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
-    public class Chains : BeatmapGridObject
+    public class Chain : BeatmapGridObject
     {
         [JsonProperty(PropertyName = "c")]
         public int Color { get; set; }
@@ -13,6 +13,8 @@ namespace Parser.Map.Difficulty.V3.Grid
         public float TailInBeats { get; set; }
         [JsonIgnore]
         public float TailInSeconds { get; set; } = 0f;
+        [JsonIgnore]
+        public float TailBpmTime { get; set; } = 0f;
         public int tx { get; set; }
         public int ty { get; set; }
         [JsonProperty(PropertyName = "sc")]
