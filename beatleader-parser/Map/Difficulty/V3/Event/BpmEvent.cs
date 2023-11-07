@@ -1,9 +1,11 @@
-﻿using Parser.Map.Difficulty.V3.Base;
+﻿using Newtonsoft.Json;
+using Parser.Map.Difficulty.V3.Base;
 
 namespace Parser.Map.Difficulty.V3.Event
 {
     public class Bpmevent : BeatmapObject
     {
-        public float m { get; set; }
+        [JsonProperty(PropertyName = "m")]
+        public float Bpm { get; set; }
     }
 }

@@ -1,15 +1,23 @@
-﻿using Parser.Map.Difficulty.V3.Base;
+﻿using Newtonsoft.Json;
+using Parser.Map.Difficulty.V3.Base;
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
     public class Burstslider : BeatmapGridObject
     {
-        public int c { get; set; }
-        public int d { get; set; }
-        public float tb { get; set; }
+        [JsonProperty(PropertyName = "c")]
+        public int Color { get; set; }
+        [JsonProperty(PropertyName = "d")]
+        public int Direction { get; set; }
+        [JsonProperty(PropertyName = "tb")]
+        public float TailInBeats { get; set; }
+        [JsonIgnore]
+        public float TailInSeconds { get; set; } = 0f;
         public int tx { get; set; }
         public int ty { get; set; }
-        public int sc { get; set; }
-        public float s { get; set; }
+        [JsonProperty(PropertyName = "sc")]
+        public int Segment { get; set; }
+        [JsonProperty(PropertyName = "s")]
+        public float Squish { get; set; }
     }
 }

@@ -1,17 +1,20 @@
-﻿using Parser.Map.Difficulty.V3.Base;
+﻿using Newtonsoft.Json;
+using Parser.Map.Difficulty.V3.Base;
 using System.Collections.Generic;
 
 namespace Parser.Map.Difficulty.V3.Event.V3
 {
     public class Lightcoloreventboxgroup : BeatmapObject
     {
-        public int g { get; set; }
-        public List<E> e { get; set; }
+        [JsonProperty(PropertyName = "g")]
+        public int Group { get; set; }
+        [JsonProperty(PropertyName = "e")]
+        public List<E> EventBoxGroup { get; set; }
     }
 
     public class E
     {
-        public F f { get; set; }
+        public F Filter { get; set; }
         public float w { get; set; }
         public int d { get; set; }
         public float r { get; set; }

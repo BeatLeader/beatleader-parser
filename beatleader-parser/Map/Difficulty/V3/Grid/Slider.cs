@@ -1,17 +1,34 @@
-﻿using Parser.Map.Difficulty.V3.Base;
+﻿using Newtonsoft.Json;
+using Parser.Map.Difficulty.V3.Base;
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
     public class Slider : BeatmapGridObject
     {
-        public int c { get; set; }
-        public int d { get; set; }
-        public float mu { get; set; }
-        public float tb { get; set; }
+        [JsonProperty(PropertyName = "c")]
+        public int Color { get; set; }
+        [JsonProperty(PropertyName = "d")]
+        public int CutDirection { get; set; }
+        [JsonProperty(PropertyName = "mu")]
+        public float Multiplier { get; set; }
+        [JsonProperty(PropertyName = "tb")]
+        public float TailInBeats { get; set; }
+        [JsonIgnore]
+        public float TailInSeconds { get; set; } = 0f;
         public int tx { get; set; }
         public int ty { get; set; }
-        public int tc { get; set; }
-        public float tmu { get; set; }
-        public int m { get; set; }
+        [JsonProperty(PropertyName = "tc")]
+        public int TailDirection { get; set; }
+        [JsonProperty(PropertyName = "tmu")]
+        public float TailMultiplier { get; set; }
+        [JsonProperty(PropertyName = "m")]
+        public int AnchorMode { get; set; }
+
+        public enum MidAnchorMode
+        {
+            Straight = 0,
+            Clockwise = 1,
+            CounterClockwise = 2
+        }
     }
 }

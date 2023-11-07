@@ -31,7 +31,7 @@ namespace Parser.Json
             }
         }
 
-        internal static DifficultyV3 DeserializeV2DiffFromStream(Stream stream)
+        internal static DifficultyV3 DeserializeV2DiffFromStream(Stream stream, float bpm)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace Parser.Json
                 using var sr = new StreamReader(stream);
                 using var jsonTextReader = new JsonTextReader(sr);
                 var diff = serializer.Deserialize<DifficultyV2>(jsonTextReader);
-                return DifficultyV3.V2toV3(diff);
+                return DifficultyV3.V2toV3(diff, bpm);
             }
             catch
             {

@@ -1,21 +1,25 @@
-﻿using Parser.Map.Difficulty.V3.Base;
+﻿using Newtonsoft.Json;
+using Parser.Map.Difficulty.V3.Base;
 
 namespace Parser.Map.Difficulty.V3.Event
 {
     public class Basicbeatmapevent : BeatmapObject
     {
-        public int et { get; set; }
-        public int i { get; set; }
+        [JsonProperty(PropertyName = "et")]
+        public int Type { get; set; }
+        [JsonProperty(PropertyName = "i")]
+        public int Value { get; set; }
+        [JsonProperty(PropertyName = "f")]
         public float f { get; set; }
         public Customdata customData { get; set; }
 
-        public bool IsBlue => i == 1 || i == 2 || i == 3 || i == 4;
-        public bool IsRed => i == 5 || i == 6 || i == 7 || i == 8;
-        public bool IsWhite => i == 9 || i == 10 || i == 11 || i == 12;
-        public bool IsOff => i == 0;
-        public bool IsOn => i == 1 || i == 5 || i == 9;
-        public bool IsFlash => i == 2 || i == 6 || i == 10;
-        public bool IsFade => i == 3 || i == 7 || i == 11;
-        public bool IsTransition => i == 4 || i == 8 || i == 12;
+        public bool isBlue => Value == 1 || Value == 2 || Value == 3 || Value == 4;
+        public bool isRed => Value == 5 || Value == 6 || Value == 7 || Value == 8;
+        public bool isWhite => Value == 9 || Value == 10 || Value == 11 || Value == 12;
+        public bool isOff => Value == 0;
+        public bool isOn => Value == 1 || Value == 5 || Value == 9;
+        public bool isFlash => Value == 2 || Value == 6 || Value == 10;
+        public bool isFade => Value == 3 || Value == 7 || Value == 11;
+        public bool isTransition => Value == 4 || Value == 8 || Value == 12;
     }
 }

@@ -1,4 +1,6 @@
-﻿using Parser.Map.Difficulty.V2.Base;
+﻿using beatleader_parser.Timescale;
+using Newtonsoft.Json;
+using Parser.Map.Difficulty.V2.Base;
 using Parser.Map.Difficulty.V3.Custom;
 using Parser.Map.Difficulty.V3.Event;
 using Parser.Map.Difficulty.V3.Event.V3;
@@ -11,14 +13,21 @@ namespace Parser.Map.Difficulty.V3.Base
     {
         public string version { get; set; } = "3.3.0";
         public List<Bpmevent> bpmEvents { get; set; } = new();
-        public List<RotationEvent> rotationEvents { get; set; } = new();
-        public List<Colornote> colorNotes { get; set; } = new();
-        public List<Bombnote> bombNotes { get; set; } = new();
-        public List<Obstacle> obstacles { get; set; } = new();
-        public List<Slider> sliders { get; set; } = new();
-        public List<Burstslider> burstSliders { get; set; } = new();
+        [JsonProperty(PropertyName = "rotationEvents")]
+        public List<RotationEvent> Rotations { get; set; } = new();
+        [JsonProperty(PropertyName = "colorNotes")]
+        public List<Colornote> Notes { get; set; } = new();
+        [JsonProperty(PropertyName = "bombNotes")]
+        public List<Bombnote> Bombs { get; set; } = new();
+        [JsonProperty(PropertyName = "obstacles")]
+        public List<Obstacle> Walls { get; set; } = new();
+        [JsonProperty(PropertyName = "sliders")]
+        public List<Slider> Arcs { get; set; } = new();
+        [JsonProperty(PropertyName = "burstSliders")]
+        public List<Burstslider> Chains { get; set; } = new();
         public object[] waypoints { get; set; }
-        public List<Basicbeatmapevent> basicBeatmapEvents { get; set; } = new();
+        [JsonProperty(PropertyName = "basicBeatmapEvents")]
+        public List<Basicbeatmapevent> Lights { get; set; } = new();
         public List<Colorboostbeatmapevent> colorBoostBeatmapEvents { get; set; } = new();
         public List<Lightcoloreventboxgroup> lightColorEventBoxGroups { get; set; } = new();
         public List<Lightrotationeventboxgroup> lightRotationEventBoxGroups { get; set; } = new();
@@ -29,17 +38,17 @@ namespace Parser.Map.Difficulty.V3.Base
         public object[] vfxEventBoxGroups { get; set; }
         public _Fxeventscollection _fxEventsCollection { get; set; }
 
-        public static DifficultyV3 V2toV3(DifficultyV2 v2)
+        public static DifficultyV3 V2toV3(DifficultyV2 v2, float bpm)
         {
             DifficultyV3 difficultyV3 = new()
             {
                 version = "3.0.0",
-                colorNotes = new(),
-                bombNotes = new(),
-                burstSliders = new(),
-                sliders = new(),
-                obstacles = new(),
-                basicBeatmapEvents = new(),
+                Notes = new(),
+                Bombs = new(),
+                Chains = new(),
+                Arcs = new(),
+                Walls = new(),
+                Lights = new(),
                 lightColorEventBoxGroups = new(),
                 bpmEvents = new(),
             };
@@ -49,77 +58,102 @@ namespace Parser.Map.Difficulty.V3.Base
                 {
                     Colornote colornote = new()
                     {
-                        d = note._cutDirection,
-                        c = note._type,
-                        b = note._time,
+                        CutDirection = note._cutDirection,
+                        Color = note._type,
+                        Beats = note._time,
                         x = note._lineIndex,
                         y = note._lineLayer,
-                        a = 0
+                        AngleOffset = 0
                     };
-                    difficultyV3.colorNotes.Add(colornote);
+                    difficultyV3.Notes.Add(colornote);
                 }
                 else if (note._type == 3)
                 {
                     Bombnote bombnote = new()
                     {
-                        b = note._time,
+                        Beats = note._time,
                         x = note._lineIndex,
                         y = note._lineLayer,
                     };
-                    difficultyV3.bombNotes.Add(bombnote);
+                    difficultyV3.Bombs.Add(bombnote);
                 }
             }
             foreach (var obstacle in v2._obstacles)
             {
                 Obstacle obs = new()
                 {
-                    b = obstacle._time,
+                    Beats = obstacle._time,
                     x = obstacle._lineIndex,
-                    w = obstacle._width,
-                    d = obstacle._duration
+                    Width = obstacle._width,
+                    DurationInBeats = obstacle._duration
                 };
                 if (obstacle._type == 0)
                 {
                     obs.y = 0;
-                    obs.h = 5;
+                    obs.Height = 5;
                 }
                 else if (obstacle._type == 1)
                 {
                     obs.y = 2;
-                    obs.h = 3;
+                    obs.Height = 3;
                 }
-                difficultyV3.obstacles.Add(obs);
+                difficultyV3.Walls.Add(obs);
             }
             foreach (var arc in v2._sliders)
             {
                 Slider slider = new()
                 {
-                    c = arc.colorType,
-                    d = arc._headCutDirection,
-                    b = arc._headTime,
-                    tb = arc._tailTime,
+                    Color = arc.colorType,
+                    CutDirection = arc._headCutDirection,
+                    Beats = arc._headTime,
+                    TailInBeats = arc._tailTime,
                     x = arc._headLineIndex,
                     tx = arc._tailLineIndex,
                     y = arc._headLineLayer,
                     ty = arc._tailLineLayer,
-                    m = arc._sliderMidAnchorMode,
-                    mu = arc._headControlPointLengthMultiplier,
-                    tmu = arc._tailControlPointLengthMultiplier
+                    AnchorMode = arc._sliderMidAnchorMode,
+                    Multiplier = arc._headControlPointLengthMultiplier,
+                    TailMultiplier = arc._tailControlPointLengthMultiplier
                 };
-                difficultyV3.sliders.Add(slider);
+                difficultyV3.Arcs.Add(slider);
             }
             foreach (var ev in v2._events)
             {
                 Basicbeatmapevent basic = new()
                 {
-                    b = ev._time,
-                    et = ev._type,
-                    i = ev._value,
+                    Beats = ev._time,
+                    Type = ev._type,
+                    Value = ev._value,
                     f = ev._floatValue
                 };
-                difficultyV3.basicBeatmapEvents.Add(basic);
+                difficultyV3.Lights.Add(basic);
             }
+
+            ConvertTime(difficultyV3, bpm);
+
             return difficultyV3;
+        }
+
+        public static void ConvertTime(DifficultyV3 diff, float bpm)
+        {
+            List<BeatmapObject> obj = new();
+            obj.AddRange(diff.Notes);
+            obj.AddRange(diff.Bombs);
+            obj.AddRange(diff.Lights);
+            obj.AddRange(diff.bpmEvents);
+            obj.AddRange(diff.Walls);
+            obj.AddRange(diff.Arcs);
+            obj.AddRange(diff.Chains);
+            obj.AddRange(diff.Rotations);
+            obj.AddRange(diff.colorBoostBeatmapEvents);
+            obj.AddRange(diff.lightColorEventBoxGroups);
+            obj.AddRange(diff.lightRotationEventBoxGroups);
+            obj.AddRange(diff.lightTranslationEventBoxGroups);
+            var timescale = Timescale.Create(bpm, diff.bpmEvents, 0);
+            timescale.ConvertAllBeatsToSeconds(obj);
+            timescale.ConvertAllBeatsToSeconds(diff.Chains);
+            timescale.ConvertAllBeatsToSeconds(diff.Arcs);
+            timescale.ConvertAllBeatsToSeconds(diff.Walls);
         }
     }
 }
