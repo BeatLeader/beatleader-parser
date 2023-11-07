@@ -3,7 +3,7 @@ using Parser.Map.Difficulty.V3.Base;
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
-    public class Colornote : BeatmapGridObject
+    public class Note : BeatmapGridObject
     {
         [JsonProperty(PropertyName = "a")]
         public int AngleOffset { get; set; }

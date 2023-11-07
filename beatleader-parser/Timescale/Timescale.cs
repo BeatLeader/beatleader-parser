@@ -25,7 +25,7 @@ namespace beatleader_parser.Timescale
             _bpmChange = GetBpmChangeTime(bpmChange);
         }
 
-        public static Timescale Create(float bpm, List<Bpmevent> bpmChange, float offset)
+        public static Timescale Create(float bpm, List<BpmEvent> bpmChange, float offset)
         {
             List<IBPMChange> change = new();
             foreach (var bpmEvent in bpmChange)
@@ -224,34 +224,33 @@ namespace beatleader_parser.Timescale
         {
             foreach (var obj in objects)
             {
-                BPM.SetCurrentBPM(obj.Beats);
                 obj.Seconds = BPM.ToRealTime(obj.Beats);
+                obj.BpmTime = BPM.ToBeatTime(obj.Seconds);
             }
         }
 
-        public void ConvertAllBeatsToSeconds(List<Burstslider> burstsliders)
+        public void ConvertAllBeatsToSeconds(List<Chain> chains)
         {
-            foreach (var obj in burstsliders)
+            foreach (var obj in chains)
             {
-                BPM.SetCurrentBPM(obj.Beats);
-                obj.Seconds = BPM.ToRealTime(obj.Beats);
+                obj.TailInSeconds = BPM.ToRealTime(obj.TailInBeats);
+                obj.TailBpmTime = BPM.ToBeatTime(obj.TailInSeconds);
             }
         }
 
-        public void ConvertAllBeatsToSeconds(List<Slider> sliders)
+        public void ConvertAllBeatsToSeconds(List<Arc> arcs)
         {
-            foreach (var obj in sliders)
+            foreach (var obj in arcs)
             {
-                BPM.SetCurrentBPM(obj.Beats);
-                obj.Seconds = BPM.ToRealTime(obj.Beats);
+                obj.TailInSeconds = BPM.ToRealTime(obj.TailInBeats);
+                obj.TailBpmTime = BPM.ToBeatTime(obj.TailInSeconds);
             }
         }
 
-        public void ConvertAllBeatsToSeconds(List<Obstacle> obstacles)
+        public void ConvertAllBeatsToSeconds(List<Wall> walls)
         {
-            foreach (var obj in obstacles)
+            foreach (var obj in walls)
             {
-                BPM.SetCurrentBPM(obj.Beats);
                 obj.DurationInSeconds = BPM.ToRealTime(obj.DurationInBeats);
             }
         }
@@ -262,7 +261,7 @@ namespace beatleader_parser.Timescale
             public float scale { get; set; }
         }
 
-        public class IBPMChange(Bpmevent ev)
+        public class IBPMChange(BpmEvent ev)
         {
             public float b { get; set; } = ev.Beats;
             public float m { get; set; } = ev.Bpm;
