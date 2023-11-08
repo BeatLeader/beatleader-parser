@@ -46,7 +46,7 @@ namespace beatleader_parser
                         using (StreamReader reader = new(diffFile.Open()))
                         {
                             string content = reader.ReadToEnd();
-                            if (content.Contains("_version\":\"2"))
+                            if (content.Contains("_cutDirection") && !content.Contains("colorBoostBeatmapEvents"))
                             {
                                 var diff = Helper.DeserializeV2DiffFromStream(diffFile.Open(), info._beatsPerMinute);
                                 if (diff == null || diff.Notes == null) continue;
@@ -96,7 +96,7 @@ namespace beatleader_parser
                     {
                         string difficultyName = difficultyBeatmap._difficulty;
                         string json = jsonStrings.Where(x => x.filename == $"{difficultyName + characteristicName}.dat").FirstOrDefault().json;
-                        if (json.Contains("_version\":\"2"))
+                        if (json.Contains("_cutDirection") && !json.Contains("colorBoostBeatmapEvents"))
                         {
                             DifficultyV2 v2 = JsonConvert.DeserializeObject<DifficultyV2>(json);
                             if (v2 != null)
@@ -157,22 +157,20 @@ namespace beatleader_parser
                     {
                         var diffFile = archive.Entries.FirstOrDefault(e => e.Name == beatmap._beatmapFilename);
                         if (diffFile == null) continue;
-                        using (StreamReader reader = new StreamReader(diffFile.Open()))
+                        using StreamReader reader = new(diffFile.Open());
+                        string content = reader.ReadToEnd();
+                        if (content.Contains("_cutDirection") && !content.Contains("colorBoostBeatmapEvents"))
                         {
-                            string content = reader.ReadToEnd();
-                            if (content.Contains("_version\":\"2"))
-                            {
-                                var diff = Helper.DeserializeV2DiffFromStream(diffFile.Open(), info._beatsPerMinute);
-                                if (diff == null || diff.Notes == null) continue;
-                                v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff));
-                            }
-                            else
-                            {
-                                var diff = Helper.DeserializeV3DiffFromStream(diffFile.Open());
-                                if (diff == null || diff.Notes == null) continue;
-                                DifficultyV3.ConvertTime(diff, info._beatsPerMinute);
-                                v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff));
-                            }
+                            var diff = Helper.DeserializeV2DiffFromStream(diffFile.Open(), info._beatsPerMinute);
+                            if (diff == null || diff.Notes == null) continue;
+                            v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff));
+                        }
+                        else
+                        {
+                            var diff = Helper.DeserializeV3DiffFromStream(diffFile.Open());
+                            if (diff == null || diff.Notes == null) continue;
+                            DifficultyV3.ConvertTime(diff, info._beatsPerMinute);
+                            v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff));
                         }
                     }
                 }
@@ -218,9 +216,10 @@ namespace beatleader_parser
 
             foreach (var diff in difficultyFiles)
             {
-                if (File.ReadAllText($"{folderPath}/{diff.path}").Contains("_version\":\"2"))
+                var text = File.ReadAllText($"{folderPath}/{diff.path}");
+                if (text.Contains("_cutDirection") && !text.Contains("colorBoostBeatmapEvents"))
                 {
-                    DifficultyV2 v2 = JsonConvert.DeserializeObject<DifficultyV2>(File.ReadAllText($"{folderPath}/{diff.path}"));
+                    DifficultyV2? v2 = JsonConvert.DeserializeObject<DifficultyV2>(File.ReadAllText($"{folderPath}/{diff.path}"));
                     if (v2 != null)
                     {
                         result.Difficulties.Add(new(diff.difficulty, diff.characteristic, DifficultyV3.V2toV3(v2, info._beatsPerMinute)));
@@ -279,9 +278,10 @@ namespace beatleader_parser
             {
                 if (diff.characteristic == characteristic && diff.difficulty == difficulty)
                 {
-                    if (File.ReadAllText($"{folderPath}/{diff.path}").Contains("_version\":\"2"))
+                    var text = File.ReadAllText($"{folderPath}/{diff.path}");
+                    if (text.Contains("_cutDirection") && !text.Contains("colorBoostBeatmapEvents"))
                     {
-                        DifficultyV2 v2 = JsonConvert.DeserializeObject<DifficultyV2>(File.ReadAllText($"{folderPath}/{diff.path}"));
+                        DifficultyV2? v2 = JsonConvert.DeserializeObject<DifficultyV2>(File.ReadAllText($"{folderPath}/{diff.path}"));
                         if (v2 != null)
                         {
                             result.Difficulty = (new(diff.difficulty, diff.characteristic, DifficultyV3.V2toV3(v2, info._beatsPerMinute)));
