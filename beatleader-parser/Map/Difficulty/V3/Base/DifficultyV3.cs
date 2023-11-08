@@ -52,6 +52,7 @@ namespace Parser.Map.Difficulty.V3.Base
                 Walls = new(),
                 Lights = new(),
                 lightColorEventBoxGroups = new(),
+                Rotations = new(),
                 bpmEvents = new(),
             };
             foreach (var note in v2._notes)
@@ -121,14 +122,36 @@ namespace Parser.Map.Difficulty.V3.Base
             }
             foreach (var ev in v2._events)
             {
-                Light basic = new()
+                if(ev._type == 14 || ev._type == 15)
                 {
-                    Beats = ev._time,
-                    Type = ev._type,
-                    Value = ev._value,
-                    f = ev._floatValue
-                };
-                difficultyV3.Lights.Add(basic);
+                    RotationEvent rotation = new()
+                    {
+                        Beats = ev._time,
+                        Rotation = ev._value,
+                        Event = 1 // No idea if it's supposed to be 0 or 1
+                    };
+                    difficultyV3.Rotations.Add(rotation);
+                }
+                if(ev._type == 100)
+                {
+                    BpmEvent bpmEvent = new()
+                    {
+                        Beats = ev._time,
+                        Bpm = ev._floatValue
+                    };
+                    difficultyV3.bpmEvents.Add(bpmEvent);
+                }
+                else
+                {
+                    Light basic = new()
+                    {
+                        Beats = ev._time,
+                        Type = ev._type,
+                        Value = ev._value,
+                        f = ev._floatValue
+                    };
+                    difficultyV3.Lights.Add(basic);
+                }
             }
 
             ConvertTime(difficultyV3, bpm);
