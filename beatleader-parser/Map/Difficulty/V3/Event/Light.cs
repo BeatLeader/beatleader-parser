@@ -11,7 +11,7 @@ namespace Parser.Map.Difficulty.V3.Event
         public int Value { get; set; }
         [JsonProperty(PropertyName = "f")]
         public float f { get; set; }
-        public Customdata customData { get; set; }
+        public Customdata? customData { get; set; }
 
         public bool isBlue => Value == 1 || Value == 2 || Value == 3 || Value == 4;
         public bool isRed => Value == 5 || Value == 6 || Value == 7 || Value == 8;

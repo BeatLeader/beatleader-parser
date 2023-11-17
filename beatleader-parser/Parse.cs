@@ -189,7 +189,7 @@ namespace beatleader_parser
                 return null;
             }
         }
-
+        #nullable enable
         public BeatmapV3? TryLoadPath(string folderPath)
         {
             var infoContent = File.Exists($"{folderPath}/Info.dat") ? File.ReadAllText($"{folderPath}/Info.dat") : File.ReadAllText($"{folderPath}/info.dat");
