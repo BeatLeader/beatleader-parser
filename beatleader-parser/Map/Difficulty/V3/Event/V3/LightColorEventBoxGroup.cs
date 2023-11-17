@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Parser.Map.Difficulty.V3.Base;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Parser.Map.Difficulty.V3.Event.V3
 {
@@ -10,6 +11,19 @@ namespace Parser.Map.Difficulty.V3.Event.V3
         public int Group { get; set; }
         [JsonProperty(PropertyName = "e")]
         public List<E> EventBoxGroup { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            Lightcoloreventboxgroup otherEvent = (Lightcoloreventboxgroup)obj;
+            return Equals(Beats, otherEvent.Beats) &&
+                   Equals(Group, otherEvent.Group) &&
+                   Equals(EventBoxGroup, otherEvent.EventBoxGroup);
+        }
     }
 
     public class E
@@ -22,6 +36,24 @@ namespace Parser.Map.Difficulty.V3.Event.V3
         public int b { get; set; }
         public int i { get; set; }
         public List<E1> e { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            E otherEvent = (E)obj;
+            return Equals(Filter, otherEvent.Filter) &&
+                   Equals(w, otherEvent.w) &&
+                   Equals(d, otherEvent.d) &&
+                   Equals(r, otherEvent.r) &&
+                   Equals(t, otherEvent.t) &&
+                   Equals(b, otherEvent.b) &&
+                   Equals(i, otherEvent.i) &&
+                   Equals(e, otherEvent.e);
+        }
     }
 
     public class F
@@ -35,6 +67,25 @@ namespace Parser.Map.Difficulty.V3.Event.V3
         public int s { get; set; }
         public float l { get; set; }
         public int d { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            F otherEvent = (F)obj;
+            return Equals(f, otherEvent.f) &&
+                   Equals(p, otherEvent.p) &&
+                   Equals(t, otherEvent.t) &&
+                   Equals(r, otherEvent.r) &&
+                   Equals(c, otherEvent.c) &&
+                   Equals(n, otherEvent.n) &&
+                   Equals(s, otherEvent.s) &&
+                   Equals(l, otherEvent.l) &&
+                   Equals(d, otherEvent.d);
+        }
     }
 
     public class E1
@@ -44,5 +95,20 @@ namespace Parser.Map.Difficulty.V3.Event.V3
         public float s { get; set; }
         public int i { get; set; }
         public int f { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            E1 otherEvent = (E1)obj;
+            return Equals(b, otherEvent.b) &&
+                   Equals(c, otherEvent.c) &&
+                   Equals(s, otherEvent.s) &&
+                   Equals(i, otherEvent.i) &&
+                   Equals(f, otherEvent.f);
+        }
     }
 }

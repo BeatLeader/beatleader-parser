@@ -32,5 +32,26 @@ namespace Parser.Map.Difficulty.V3.Grid
             Clockwise = 1,
             CounterClockwise = 2
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            Arc otherChain = (Arc)obj;
+            return Equals(Beats, otherChain.Beats) &&
+                   Equals(Color, otherChain.Color) &&
+                   Equals(x, otherChain.x) &&
+                   Equals(y, otherChain.y) &&
+                   Equals(CutDirection, otherChain.CutDirection) &&
+                   Equals(TailInBeats, otherChain.TailInBeats) &&
+                   Equals(tx, otherChain.tx) &&
+                   Equals(ty, otherChain.ty) &&
+                   Equals(TailDirection, otherChain.TailDirection) &&
+                   Equals(TailMultiplier, otherChain.TailMultiplier) &&
+                   Equals(AnchorMode, otherChain.AnchorMode);
+        }
     }
 }

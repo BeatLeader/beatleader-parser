@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Parser.Map.Difficulty.V3.Base;
+using System;
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
@@ -29,6 +30,22 @@ namespace Parser.Map.Difficulty.V3.Grid
             DownLeft = 6,
             DownRight = 7,
             Any = 8
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            Note otherNote = (Note)obj;
+            return Equals(Beats, otherNote.Beats) &&
+                   Equals(Color, otherNote.Color) &&
+                   Equals(x, otherNote.x) &&
+                   Equals(y, otherNote.y) &&
+                   Equals(AngleOffset, otherNote.AngleOffset) &&
+                   Equals(CutDirection, otherNote.CutDirection);
         }
     }
 }

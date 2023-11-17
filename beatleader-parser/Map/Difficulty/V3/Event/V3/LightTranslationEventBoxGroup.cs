@@ -10,6 +10,19 @@ namespace Parser.Map.Difficulty.V3.Event.V3
         public int Group { get; set; }
         [JsonProperty(PropertyName = "e")]
         public List<E3> EventBoxGroup { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            Lighttranslationeventboxgroup otherEvent = (Lighttranslationeventboxgroup)obj;
+            return Equals(Beats, otherEvent.Beats) &&
+                   Equals(Group, otherEvent.Group) &&
+                   Equals(EventBoxGroup, otherEvent.EventBoxGroup);
+        }
     }
 
     public class E3
@@ -24,6 +37,27 @@ namespace Parser.Map.Difficulty.V3.Event.V3
         public int r { get; set; }
         public int i { get; set; }
         public List<L1> l { get; set; }
+
+        
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            E3 otherEvent = (E3)obj;
+            return Equals(f, otherEvent.f) &&
+                   Equals(w, otherEvent.w) &&
+                   Equals(d, otherEvent.d) &&
+                   Equals(s, otherEvent.s) &&
+                   Equals(t, otherEvent.t) &&
+                   Equals(b, otherEvent.b) &&
+                   Equals(a, otherEvent.a) &&
+                   Equals(r, otherEvent.r) &&
+                   Equals(i, otherEvent.i) &&
+                   Equals(l, otherEvent.l);
+        }
     }
 
     public class L1
@@ -32,5 +66,20 @@ namespace Parser.Map.Difficulty.V3.Event.V3
         public int p { get; set; }
         public int e { get; set; }
         public float t { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            L1 otherEvent = (L1)obj;
+            return Equals(b, otherEvent.b) &&
+                   Equals(p, otherEvent.p) &&
+                   Equals(e, otherEvent.e) &&
+                   Equals(e, otherEvent.e) &&
+                   Equals(t, otherEvent.t);
+        }
     }
 }

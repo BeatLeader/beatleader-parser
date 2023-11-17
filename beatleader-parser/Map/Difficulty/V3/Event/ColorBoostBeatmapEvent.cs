@@ -7,5 +7,17 @@ namespace Parser.Map.Difficulty.V3.Event
     {
         [JsonProperty(PropertyName = "o")]
         public bool On { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            Colorboostbeatmapevent otherEvent = (Colorboostbeatmapevent)obj;
+            return Equals(Beats, otherEvent.Beats) &&
+                   Equals(On, otherEvent.On);
+        }
     }
 }

@@ -261,13 +261,19 @@ namespace beatleader_parser.Timescale
             public float scale { get; set; }
         }
 
-        public class IBPMChange(BpmEvent ev)
+        public class IBPMChange
         {
-            public float b { get; set; } = ev.Beats;
-            public float m { get; set; } = ev.Bpm;
+            public IBPMChange(BpmEvent ev)
+            {
+                b = ev.Beats;
+                m = ev.Bpm;
+                newTime = ev.Beats;
+            }
+            public float b { get; set; }
+            public float m { get; set; }
             public float p { get; set; } = 0;
             public float o { get; set; } = 0;
-            public float newTime { get; set; } = ev.Beats;
+            public float newTime { get; set; }
         }
     }
 }

@@ -21,5 +21,21 @@ namespace Parser.Map.Difficulty.V3.Event
         public bool isFlash => Value == 2 || Value == 6 || Value == 10;
         public bool isFade => Value == 3 || Value == 7 || Value == 11;
         public bool isTransition => Value == 4 || Value == 8 || Value == 12;
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            Light otherEvent = (Light)obj;
+            return Equals(Beats, otherEvent.Beats) &&
+                   Equals(Type, otherEvent.Type) &&
+                   Equals(Value, otherEvent.Value) &&
+                   Equals(f, otherEvent.f) &&
+                   Equals(customData, otherEvent.customData);
+        }
+
     }
 }
