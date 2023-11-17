@@ -4,12 +4,10 @@ using System;
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
-    public class Note : BeatmapGridObject
+    public class Note : BeatmapColorGridObject
     {
         [JsonProperty(PropertyName = "a")]
         public int AngleOffset { get; set; }
-        [JsonProperty(PropertyName = "c")]
-        public int Color { get; set; }
         [JsonProperty(PropertyName = "d")]
         public int CutDirection { get; set; }
 

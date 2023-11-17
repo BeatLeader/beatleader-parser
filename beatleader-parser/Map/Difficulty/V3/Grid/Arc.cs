@@ -3,10 +3,8 @@ using Parser.Map.Difficulty.V3.Base;
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
-    public class Arc : BeatmapGridObject
+    public class Arc : BeatmapColorGridObject
     {
-        [JsonProperty(PropertyName = "c")]
-        public int Color { get; set; }
         [JsonProperty(PropertyName = "d")]
         public int CutDirection { get; set; }
         [JsonProperty(PropertyName = "mu")]
