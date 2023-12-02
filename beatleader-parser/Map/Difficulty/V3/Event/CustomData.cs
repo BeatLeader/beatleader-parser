@@ -1,4 +1,6 @@
-﻿namespace Parser.Map.Difficulty.V3.Event
+﻿using System.Collections.Generic;
+
+namespace Parser.Map.Difficulty.V3.Event
 {
     public class Customdata
     {
@@ -15,22 +17,33 @@
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
+            return obj is Customdata customdata &&
+                   EqualityComparer<float[]>.Default.Equals(color, customdata.color) &&
+                   rotation == customdata.rotation &&
+                   prop == customdata.prop &&
+                   speed == customdata.speed &&
+                   step == customdata.step &&
+                   EqualityComparer<int[]>.Default.Equals(lightID, customdata.lightID) &&
+                   direction == customdata.direction &&
+                   lockRotation == customdata.lockRotation &&
+                   lerpType == customdata.lerpType &&
+                   easing == customdata.easing;
+        }
 
-            Customdata otherCustomdata = (Customdata)obj;
-            return Equals(color, otherCustomdata.color) &&
-                   Equals(rotation, otherCustomdata.rotation) &&
-                   Equals(prop, otherCustomdata.prop) &&
-                   Equals(speed, otherCustomdata.speed) &&
-                   Equals(step, otherCustomdata.step) &&
-                   Equals(lightID, otherCustomdata.lightID) &&
-                   Equals(direction, otherCustomdata.direction) &&
-                   Equals(lockRotation, otherCustomdata.lockRotation) &&
-                   Equals(lerpType, otherCustomdata.lerpType) &&
-                   Equals(easing, otherCustomdata.easing);
-        }   
+        public override int GetHashCode()
+        {
+            int hashCode = -396724278;
+            hashCode = hashCode * -1521134295 + EqualityComparer<float[]>.Default.GetHashCode(color);
+            hashCode = hashCode * -1521134295 + rotation.GetHashCode();
+            hashCode = hashCode * -1521134295 + prop.GetHashCode();
+            hashCode = hashCode * -1521134295 + speed.GetHashCode();
+            hashCode = hashCode * -1521134295 + step.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<int[]>.Default.GetHashCode(lightID);
+            hashCode = hashCode * -1521134295 + direction.GetHashCode();
+            hashCode = hashCode * -1521134295 + lockRotation.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(lerpType);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(easing);
+            return hashCode;
+        }
     }
 }

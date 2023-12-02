@@ -25,18 +25,24 @@ namespace Parser.Map.Difficulty.V3.Event
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            Light otherEvent = (Light)obj;
-            return Equals(Beats, otherEvent.Beats) &&
-                   Equals(Type, otherEvent.Type) &&
-                   Equals(Value, otherEvent.Value) &&
-                   Equals(f, otherEvent.f) &&
-                   Equals(customData, otherEvent.customData);
+            return obj is Light light &&
+                   Beats == light.Beats &&
+                   Type == light.Type &&
+                   Value == light.Value &&
+                   f == light.f &&
+                   EqualityComparer<Customdata>.Default.Equals(customData, light.customData);
         }
 
+        public override int GetHashCode()
+        {
+            int hashCode = 1853604182;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + Beats.GetHashCode();
+            hashCode = hashCode * -1521134295 + Type.GetHashCode();
+            hashCode = hashCode * -1521134295 + Value.GetHashCode();
+            hashCode = hashCode * -1521134295 + f.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<Customdata>.Default.GetHashCode(customData);
+            return hashCode;
+        }
     }
 }

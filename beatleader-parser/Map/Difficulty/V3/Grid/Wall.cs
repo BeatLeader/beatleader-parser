@@ -16,18 +16,27 @@ namespace Parser.Map.Difficulty.V3.Grid
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
+            return obj is Wall wall &&
+                   base.Equals(obj) &&
+                   Beats == wall.Beats &&
+                   x == wall.x &&
+                   y == wall.y &&
+                   DurationInBeats == wall.DurationInBeats &&
+                   Width == wall.Width &&
+                   Height == wall.Height;
+        }
 
-            Wall otherWall = (Wall)obj;
-            return Equals(Beats, otherWall.Beats) &&
-                   Equals(DurationInBeats, otherWall.DurationInBeats) &&
-                   Equals(x, otherWall.x) &&
-                   Equals(y, otherWall.y) &&
-                   Equals(Width, otherWall.Width) &&
-                   Equals(Height, otherWall.Height);
+        public override int GetHashCode()
+        {
+            int hashCode = 1947689683;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + Beats.GetHashCode();
+            hashCode = hashCode * -1521134295 + x.GetHashCode();
+            hashCode = hashCode * -1521134295 + y.GetHashCode();
+            hashCode = hashCode * -1521134295 + DurationInBeats.GetHashCode();
+            hashCode = hashCode * -1521134295 + Width.GetHashCode();
+            hashCode = hashCode * -1521134295 + Height.GetHashCode();
+            return hashCode;
         }
     }
 }

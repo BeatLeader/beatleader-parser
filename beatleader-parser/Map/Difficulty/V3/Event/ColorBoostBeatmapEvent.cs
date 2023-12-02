@@ -10,14 +10,19 @@ namespace Parser.Map.Difficulty.V3.Event
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
+            return obj is Colorboostbeatmapevent colorboostbeatmapevent &&
+                   base.Equals(obj) &&
+                   Beats == colorboostbeatmapevent.Beats &&
+                   On == colorboostbeatmapevent.On;
+        }
 
-            Colorboostbeatmapevent otherEvent = (Colorboostbeatmapevent)obj;
-            return Equals(Beats, otherEvent.Beats) &&
-                   Equals(On, otherEvent.On);
+        public override int GetHashCode()
+        {
+            int hashCode = -1587591832;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + Beats.GetHashCode();
+            hashCode = hashCode * -1521134295 + On.GetHashCode();
+            return hashCode;
         }
     }
 }
