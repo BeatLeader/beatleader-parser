@@ -22,22 +22,35 @@ namespace Parser.Map.Difficulty.V3.Grid
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
+            return obj is Chain chain &&
+                   base.Equals(obj) &&
+                   Beats == chain.Beats &&
+                   x == chain.x &&
+                   y == chain.y &&
+                   Color == chain.Color &&
+                   Direction == chain.Direction &&
+                   TailInBeats == chain.TailInBeats &&
+                   tx == chain.tx &&
+                   ty == chain.ty &&
+                   Segment == chain.Segment &&
+                   Squish == chain.Squish;
+        }
 
-            Chain otherChain = (Chain)obj;
-            return Equals(Beats, otherChain.Beats) &&
-                   Equals(Color, otherChain.Color) &&
-                   Equals(x, otherChain.x) &&
-                   Equals(y, otherChain.y) &&
-                   Equals(Direction, otherChain.Direction) &&
-                   Equals(TailInBeats, otherChain.TailInBeats) &&
-                   Equals(tx, otherChain.tx) &&
-                   Equals(ty, otherChain.ty) &&
-                   Equals(Segment, otherChain.Segment) &&
-                   Equals(Squish, otherChain.Squish);
+        public override int GetHashCode()
+        {
+            int hashCode = 615981555;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + Beats.GetHashCode();
+            hashCode = hashCode * -1521134295 + x.GetHashCode();
+            hashCode = hashCode * -1521134295 + y.GetHashCode();
+            hashCode = hashCode * -1521134295 + Color.GetHashCode();
+            hashCode = hashCode * -1521134295 + Direction.GetHashCode();
+            hashCode = hashCode * -1521134295 + TailInBeats.GetHashCode();
+            hashCode = hashCode * -1521134295 + tx.GetHashCode();
+            hashCode = hashCode * -1521134295 + ty.GetHashCode();
+            hashCode = hashCode * -1521134295 + Segment.GetHashCode();
+            hashCode = hashCode * -1521134295 + Squish.GetHashCode();
+            return hashCode;
         }
     }
 }

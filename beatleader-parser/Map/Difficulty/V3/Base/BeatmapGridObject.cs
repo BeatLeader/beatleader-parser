@@ -7,15 +7,21 @@
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
+            return obj is BeatmapGridObject @object &&
+                   base.Equals(obj) &&
+                   Beats == @object.Beats &&
+                   x == @object.x &&
+                   y == @object.y;
+        }
 
-            BeatmapGridObject otherObject = (BeatmapGridObject)obj;
-            return Equals(Beats, otherObject.Beats) &&
-                   Equals(x, otherObject.x) &&
-                   Equals(y, otherObject.y);
+        public override int GetHashCode()
+        {
+            int hashCode = 72470987;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + Beats.GetHashCode();
+            hashCode = hashCode * -1521134295 + x.GetHashCode();
+            hashCode = hashCode * -1521134295 + y.GetHashCode();
+            return hashCode;
         }
     }
 }

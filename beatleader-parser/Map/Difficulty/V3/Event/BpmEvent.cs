@@ -10,14 +10,19 @@ namespace Parser.Map.Difficulty.V3.Event
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
+            return obj is BpmEvent @event &&
+                   base.Equals(obj) &&
+                   Beats == @event.Beats &&
+                   Bpm == @event.Bpm;
+        }
 
-            BpmEvent otherBpmEvent = (BpmEvent)obj;
-            return Equals(Beats, otherBpmEvent.Beats) &&
-                   Equals(Bpm, otherBpmEvent.Bpm);
+        public override int GetHashCode()
+        {
+            int hashCode = 56753886;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + Beats.GetHashCode();
+            hashCode = hashCode * -1521134295 + Bpm.GetHashCode();
+            return hashCode;
         }
     }
 }

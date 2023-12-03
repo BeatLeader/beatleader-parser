@@ -11,15 +11,8 @@ namespace Parser.Map.Difficulty.V3.Base
         [JsonIgnore]
         public float BpmTime { get; set; } = 0f;
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
+        public override bool Equals(object obj) => obj is BeatmapObject other && Beats == other.Beats;
 
-            BeatmapObject otherObject = (BeatmapObject)obj;
-            return Equals(Beats, otherObject.Beats);
-        }
+        public override int GetHashCode() => 650526578 + Beats.GetHashCode();
     }
 }

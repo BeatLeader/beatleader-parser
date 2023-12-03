@@ -11,6 +11,31 @@ namespace Parser.Map.Difficulty.V3.Grid
         [JsonProperty(PropertyName = "d")]
         public int CutDirection { get; set; }
 
+        public override bool Equals(object obj)
+        {
+            return obj is Note note &&
+                   base.Equals(obj) &&
+                   Beats == note.Beats &&
+                   x == note.x &&
+                   y == note.y &&
+                   Color == note.Color &&
+                   AngleOffset == note.AngleOffset &&
+                   CutDirection == note.CutDirection;
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = -2068007110;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + Beats.GetHashCode();
+            hashCode = hashCode * -1521134295 + x.GetHashCode();
+            hashCode = hashCode * -1521134295 + y.GetHashCode();
+            hashCode = hashCode * -1521134295 + Color.GetHashCode();
+            hashCode = hashCode * -1521134295 + AngleOffset.GetHashCode();
+            hashCode = hashCode * -1521134295 + CutDirection.GetHashCode();
+            return hashCode;
+        }
+
         public enum Type
         {
             Red = 0,
@@ -28,22 +53,6 @@ namespace Parser.Map.Difficulty.V3.Grid
             DownLeft = 6,
             DownRight = 7,
             Any = 8
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            Note otherNote = (Note)obj;
-            return Equals(Beats, otherNote.Beats) &&
-                   Equals(Color, otherNote.Color) &&
-                   Equals(x, otherNote.x) &&
-                   Equals(y, otherNote.y) &&
-                   Equals(AngleOffset, otherNote.AngleOffset) &&
-                   Equals(CutDirection, otherNote.CutDirection);
         }
     }
 }

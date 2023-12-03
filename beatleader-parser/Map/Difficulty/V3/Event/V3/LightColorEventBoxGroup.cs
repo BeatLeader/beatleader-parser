@@ -14,15 +14,21 @@ namespace Parser.Map.Difficulty.V3.Event.V3
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
+            return obj is Lightcoloreventboxgroup lightcoloreventboxgroup &&
+                   base.Equals(obj) &&
+                   Beats == lightcoloreventboxgroup.Beats &&
+                   Group == lightcoloreventboxgroup.Group &&
+                   EqualityComparer<List<E>>.Default.Equals(EventBoxGroup, lightcoloreventboxgroup.EventBoxGroup);
+        }
 
-            Lightcoloreventboxgroup otherEvent = (Lightcoloreventboxgroup)obj;
-            return Equals(Beats, otherEvent.Beats) &&
-                   Equals(Group, otherEvent.Group) &&
-                   Equals(EventBoxGroup, otherEvent.EventBoxGroup);
+        public override int GetHashCode()
+        {
+            int hashCode = 893042503;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + Beats.GetHashCode();
+            hashCode = hashCode * -1521134295 + Group.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<List<E>>.Default.GetHashCode(EventBoxGroup);
+            return hashCode;
         }
     }
 
