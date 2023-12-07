@@ -3,6 +3,6 @@
     public class Geometry
     {
         public string type { get; set; }
-        public Material material { get; set; }
+        public object material { get; set; }
     }
 }
