@@ -101,6 +101,8 @@ namespace Parser.Map.Difficulty.V3.Event.V3
         public float s { get; set; }
         public int i { get; set; }
         public int f { get; set; }
+        public float sb { get; set; }
+        public int sf { get; set; }
 
         public override bool Equals(object obj)
         {
