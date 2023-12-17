@@ -16,9 +16,9 @@ namespace Parser.Map.Difficulty.V3.Grid
         public int tx { get; set; }
         public int ty { get; set; }
         [JsonProperty(PropertyName = "sc")]
-        public int Segment { get; set; }
+        public int Segment { get; set; } = 8;
         [JsonProperty(PropertyName = "s")]
-        public float Squish { get; set; }
+        public float Squish { get; set; } = 1f;
 
         public override bool Equals(object obj)
         {
