@@ -9,7 +9,7 @@ namespace Parser.Map.Difficulty.V3.Event
         public float prop { get; set; }
         public float speed { get; set; }
         public float step { get; set; }
-        public int[] lightID { get; set; }
+        public int lightID { get; set; }
         public int direction { get; set; }
         public bool lockRotation { get; set; }
         public string lerpType { get; set; }
@@ -23,7 +23,7 @@ namespace Parser.Map.Difficulty.V3.Event
                    prop == customdata.prop &&
                    speed == customdata.speed &&
                    step == customdata.step &&
-                   EqualityComparer<int[]>.Default.Equals(lightID, customdata.lightID) &&
+                   lightID == customdata.lightID &&
                    direction == customdata.direction &&
                    lockRotation == customdata.lockRotation &&
                    lerpType == customdata.lerpType &&
@@ -38,7 +38,7 @@ namespace Parser.Map.Difficulty.V3.Event
             hashCode = hashCode * -1521134295 + prop.GetHashCode();
             hashCode = hashCode * -1521134295 + speed.GetHashCode();
             hashCode = hashCode * -1521134295 + step.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<int[]>.Default.GetHashCode(lightID);
+            hashCode = hashCode * -1521134295 + lightID;
             hashCode = hashCode * -1521134295 + direction.GetHashCode();
             hashCode = hashCode * -1521134295 + lockRotation.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(lerpType);
