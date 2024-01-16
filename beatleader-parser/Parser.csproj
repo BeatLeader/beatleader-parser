@@ -4,6 +4,16 @@
     <TargetFrameworks>netstandard2.0;net48</TargetFrameworks>
     <RootNamespace>beatleader_parser</RootNamespace>
 	<LangVersion>10.0</LangVersion>
+	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<Title>Beat Saber song parser library</Title>
+	<Authors>Loloppe, Light Ai</Authors>
+	<EnableNETAnalyzers>True</EnableNETAnalyzers>
+	<AnalysisLevel>latest-all</AnalysisLevel>
+	<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+	<AssemblyVersion>0.1.0</AssemblyVersion>
+	<PackageProjectUrl>https://github.com/BeatLeader/beatleader-parser</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/BeatLeader/beatleader-parser.git</RepositoryUrl>
+	<PackageId>$(AssemblyName)</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
