@@ -66,7 +66,10 @@ namespace beatleader_parser
                 if (audioFile == null) return null;
 
                 Ogg ogg = new();
-                v3.SongLength = ogg.AudioStreamToLength(audioFile.Open());
+                using (var ms = new MemoryStream(5)) {
+                    audioFile.Open().CopyTo(ms);
+                    v3.SongLength = ogg.AudioStreamToLength(ms);
+                }
                 map.Add(v3);
 
                 return map;
