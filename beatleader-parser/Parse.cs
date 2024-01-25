@@ -50,14 +50,14 @@ namespace beatleader_parser
                             {
                                 var diff = Helper.DeserializeV2DiffFromStream(diffFile.Open(), info._beatsPerMinute);
                                 if (diff == null || diff.Notes == null) continue;
-                                v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff));
+                                v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff, beatmap));
                             }
                             else
                             {
                                 var diff = Helper.DeserializeV3DiffFromStream(diffFile.Open());
                                 if (diff == null || diff.Notes == null) continue;
                                 DifficultyV3.ConvertTime(diff, info._beatsPerMinute);
-                                v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff));
+                                v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff, beatmap));
                             }
                         }
                     }
@@ -104,7 +104,7 @@ namespace beatleader_parser
                             DifficultyV2 v2 = JsonConvert.DeserializeObject<DifficultyV2>(json);
                             if (v2 != null)
                             {
-                                v3.Difficulties.Add(new(difficultyName, characteristicName, DifficultyV3.V2toV3(v2, info._beatsPerMinute)));
+                                v3.Difficulties.Add(new(difficultyName, characteristicName, DifficultyV3.V2toV3(v2, info._beatsPerMinute), difficultyBeatmap));
                             }
                         }
                         else
@@ -113,7 +113,7 @@ namespace beatleader_parser
                             DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
                             if (v3 != null)
                             {
-                                v3.Difficulties.Add(new(difficultyName, characteristicName, diffv3));
+                                v3.Difficulties.Add(new(difficultyName, characteristicName, diffv3, difficultyBeatmap));
                             }
                         }
                     }
@@ -166,14 +166,14 @@ namespace beatleader_parser
                         {
                             var diff = Helper.DeserializeV2DiffFromStream(diffFile.Open(), info._beatsPerMinute);
                             if (diff == null || diff.Notes == null) continue;
-                            v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff));
+                            v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff, beatmap));
                         }
                         else
                         {
                             var diff = Helper.DeserializeV3DiffFromStream(diffFile.Open());
                             if (diff == null || diff.Notes == null) continue;
                             DifficultyV3.ConvertTime(diff, info._beatsPerMinute);
-                            v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff));
+                            v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff, beatmap));
                         }
                     }
                 }
@@ -204,7 +204,7 @@ namespace beatleader_parser
                 Info = info
             };
 
-            List<(string path, string difficulty, string characteristic)> difficultyFiles = new();
+            List<(string path, string difficulty, string characteristic, _Difficultybeatmaps beatmap)> difficultyFiles = new();
 
             foreach (var characteristics in info._difficultyBeatmapSets)
             {
@@ -213,7 +213,7 @@ namespace beatleader_parser
                 foreach (var difficultyBeatmap in characteristics._difficultyBeatmaps)
                 {
                     string difficultyName = difficultyBeatmap._difficulty;
-                    difficultyFiles.Add(new($"{difficultyBeatmap._beatmapFilename}", difficultyName, characteristicName));
+                    difficultyFiles.Add(new($"{difficultyBeatmap._beatmapFilename}", difficultyName, characteristicName, difficultyBeatmap));
                 }
             }
 
@@ -225,7 +225,7 @@ namespace beatleader_parser
                     DifficultyV2? v2 = JsonConvert.DeserializeObject<DifficultyV2>(File.ReadAllText($"{folderPath}/{diff.path}"));
                     if (v2 != null)
                     {
-                        result.Difficulties.Add(new(diff.difficulty, diff.characteristic, DifficultyV3.V2toV3(v2, info._beatsPerMinute)));
+                        result.Difficulties.Add(new(diff.difficulty, diff.characteristic, DifficultyV3.V2toV3(v2, info._beatsPerMinute), diff.beatmap));
                     }
                 }
                 else
@@ -234,7 +234,7 @@ namespace beatleader_parser
                     DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
                     if (result != null)
                     {
-                        result.Difficulties.Add(new(diff.difficulty, diff.characteristic, diffv3));
+                        result.Difficulties.Add(new(diff.difficulty, diff.characteristic, diffv3, diff.beatmap));
                     }
                 }
             }
@@ -264,7 +264,7 @@ namespace beatleader_parser
             result.Info._difficultyBeatmapSets.RemoveAll(x => x._beatmapCharacteristicName != characteristic);
             result.Info._difficultyBeatmapSets.FirstOrDefault()._difficultyBeatmaps.RemoveAll(x => x._difficulty != difficulty);
 
-            List<(string path, string difficulty, string characteristic)> difficultyFiles = new();
+            List<(string path, string difficulty, string characteristic, _Difficultybeatmaps beatMap)> difficultyFiles = new();
 
             foreach (var characteristics in info._difficultyBeatmapSets)
             {
@@ -273,7 +273,7 @@ namespace beatleader_parser
                 foreach (var difficultyBeatmap in characteristics._difficultyBeatmaps)
                 {
                     string difficultyName = difficultyBeatmap._difficulty;
-                    difficultyFiles.Add(new($"{difficultyBeatmap._beatmapFilename}", difficultyName, characteristicName));
+                    difficultyFiles.Add(new($"{difficultyBeatmap._beatmapFilename}", difficultyName, characteristicName, difficultyBeatmap));
                 }
             }
 
@@ -287,7 +287,7 @@ namespace beatleader_parser
                         DifficultyV2? v2 = JsonConvert.DeserializeObject<DifficultyV2>(File.ReadAllText($"{folderPath}/{diff.path}"));
                         if (v2 != null)
                         {
-                            result.Difficulty = (new(diff.difficulty, diff.characteristic, DifficultyV3.V2toV3(v2, info._beatsPerMinute)));
+                            result.Difficulty = (new(diff.difficulty, diff.characteristic, DifficultyV3.V2toV3(v2, info._beatsPerMinute), diff.beatMap));
                         }
                     }
                     else
@@ -296,7 +296,7 @@ namespace beatleader_parser
                         DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
                         if (result != null)
                         {
-                            result.Difficulty = (new(diff.difficulty, diff.characteristic, diffv3));
+                            result.Difficulty = (new(diff.difficulty, diff.characteristic, diffv3, diff.beatMap));
                         }
                     }
                 }

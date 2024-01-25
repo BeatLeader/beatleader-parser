@@ -3,20 +3,10 @@ using Parser.Map.Difficulty.V3.Base;
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
-    public class Arc : BeatmapColorGridObject
+    public class Arc : BeatmapColorGridObjectWithTail
     {
-        [JsonProperty(PropertyName = "d")]
-        public int CutDirection { get; set; }
         [JsonProperty(PropertyName = "mu")]
         public float Multiplier { get; set; }
-        [JsonProperty(PropertyName = "tb")]
-        public float TailInBeats { get; set; }
-        [JsonIgnore]
-        public float TailInSeconds { get; set; } = 0f;
-        [JsonIgnore]
-        public float TailBpmTime { get; set; } = 0f;
-        public int tx { get; set; }
-        public int ty { get; set; }
         [JsonProperty(PropertyName = "tc")]
         public int TailDirection { get; set; }
         [JsonProperty(PropertyName = "tmu")]

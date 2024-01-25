@@ -28,12 +28,18 @@ namespace Parser.Map
         public string Difficulty { get; set; }
         public string Characteristic { get; set; }
         public DifficultyV3 Data { get; set; }
+        public _Difficultybeatmaps BeatMap { get; set; }
         
-        internal DifficultySet(string difficulty, string characteristic, DifficultyV3 data)
+        internal DifficultySet(
+            string difficulty, 
+            string characteristic, 
+            DifficultyV3 data,
+            _Difficultybeatmaps beatMap)
         {
             Difficulty = difficulty;
             Characteristic = characteristic;
             Data = data;
+            BeatMap = beatMap;
         }
     }
 }
