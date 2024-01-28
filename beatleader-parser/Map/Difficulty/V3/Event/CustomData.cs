@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace Parser.Map.Difficulty.V3.Event
 {
@@ -9,7 +12,9 @@ namespace Parser.Map.Difficulty.V3.Event
         public float prop { get; set; }
         public float speed { get; set; }
         public float step { get; set; }
-        public int lightID { get; set; }
+
+        [JsonConverter(typeof(LightIDConverter))]
+        public int[] lightID { get; set; }
         public int direction { get; set; }
         public bool lockRotation { get; set; }
         public string lerpType { get; set; }
@@ -23,7 +28,7 @@ namespace Parser.Map.Difficulty.V3.Event
                    prop == customdata.prop &&
                    speed == customdata.speed &&
                    step == customdata.step &&
-                   lightID == customdata.lightID &&
+                   EqualityComparer<int[]>.Default.Equals(lightID, customdata.lightID) &&
                    direction == customdata.direction &&
                    lockRotation == customdata.lockRotation &&
                    lerpType == customdata.lerpType &&
@@ -38,12 +43,43 @@ namespace Parser.Map.Difficulty.V3.Event
             hashCode = hashCode * -1521134295 + prop.GetHashCode();
             hashCode = hashCode * -1521134295 + speed.GetHashCode();
             hashCode = hashCode * -1521134295 + step.GetHashCode();
-            hashCode = hashCode * -1521134295 + lightID;
+            hashCode = hashCode * -1521134295 + EqualityComparer<int[]>.Default.GetHashCode(lightID);
             hashCode = hashCode * -1521134295 + direction.GetHashCode();
             hashCode = hashCode * -1521134295 + lockRotation.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(lerpType);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(easing);
             return hashCode;
+        }
+    }
+
+    public class LightIDConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(int[]);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            JToken token = JToken.Load(reader);
+            if (token.Type == JTokenType.Array)
+            {
+                return token.ToObject<int[]>();
+            }
+            return new int[] { token.ToObject<int>() };
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            int[] lightIDs = (int[])value;
+            if (lightIDs.Length == 1)
+            {
+                serializer.Serialize(writer, lightIDs[0]);
+            }
+            else
+            {
+                serializer.Serialize(writer, lightIDs);
+            }
         }
     }
 }
