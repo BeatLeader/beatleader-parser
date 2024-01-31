@@ -8,7 +8,7 @@ namespace Parser.Map.Difficulty.V3.Event
         [JsonProperty(PropertyName = "e")]
         public int Event { get; set; }
         [JsonProperty(PropertyName = "r")]
-        public int Rotation { get; set; }
+        public float Rotation { get; set; }
 
         public override bool Equals(object obj)
         {
