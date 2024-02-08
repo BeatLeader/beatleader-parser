@@ -3,6 +3,7 @@ using Parser.Map.Difficulty.V3.Base;
 using Parser.Map;
 using Newtonsoft.Json;
 using System.IO;
+using System;
 
 namespace Parser.Json
 {
@@ -25,7 +26,7 @@ namespace Parser.Json
                 using var jsonTextReader = new JsonTextReader(sr);
                 return serializer.Deserialize<DifficultyV3>(jsonTextReader);
             }
-            catch 
+            catch (Exception e)
             {
                 return null;
             }

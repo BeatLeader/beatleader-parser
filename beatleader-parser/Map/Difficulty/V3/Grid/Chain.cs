@@ -6,7 +6,7 @@ namespace Parser.Map.Difficulty.V3.Grid
     public class Chain : BeatmapColorGridObjectWithTail
     {
         [JsonProperty(PropertyName = "sc")]
-        public int Segment { get; set; } = 8;
+        public int SliceCount { get; set; } = 8;
         [JsonProperty(PropertyName = "s")]
         public float Squish { get; set; } = 1f;
 
@@ -22,7 +22,7 @@ namespace Parser.Map.Difficulty.V3.Grid
                    TailInBeats == chain.TailInBeats &&
                    tx == chain.tx &&
                    ty == chain.ty &&
-                   Segment == chain.Segment &&
+                   SliceCount == chain.SliceCount &&
                    Squish == chain.Squish;
         }
 
@@ -38,7 +38,7 @@ namespace Parser.Map.Difficulty.V3.Grid
             hashCode = hashCode * -1521134295 + TailInBeats.GetHashCode();
             hashCode = hashCode * -1521134295 + tx.GetHashCode();
             hashCode = hashCode * -1521134295 + ty.GetHashCode();
-            hashCode = hashCode * -1521134295 + Segment.GetHashCode();
+            hashCode = hashCode * -1521134295 + SliceCount.GetHashCode();
             hashCode = hashCode * -1521134295 + Squish.GetHashCode();
             return hashCode;
         }
