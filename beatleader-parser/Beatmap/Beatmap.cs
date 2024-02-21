@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using beatleader_parser.Beatmap.Events.V3;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -29,13 +30,15 @@ namespace beatleader_parser.Beatmap
         [JsonProperty(PropertyName = "colorBoostBeatmapEvents")]
         public List<ColorBoostEvent> ColorBoostBeatmapEvents { get; set; }
         [JsonProperty(PropertyName = "lightColorEventBoxGroups")]
-        public List<EventGroup> LightColorEventBoxGroups { get; set; }
+        public List<EventGroup<GroupColorLane>> LightColorEventBoxGroups { get; set; }
         [JsonProperty(PropertyName = "lightRotationEventBoxGroups")]
-        public List<EventGroup> LightRotationEventBoxGroups { get; set; }
+        public List<EventGroup<GroupMovementLane<GroupRotationEvent>>> LightRotationEventBoxGroups { get; set; }
         [JsonProperty(PropertyName = "lightTranslationEventBoxGroups")]
-        public List<EventGroup> LightTranslationEventBoxGroups { get; set; }
-        // TODO: vfxEventBoxGroups
-        // TODO: fxEventsCollection
+        public List<EventGroup<GroupMovementLane<GroupTranslationEvent>>> LightTranslationEventBoxGroups { get; set; }
+        [JsonProperty(PropertyName = "vfxEventBoxGroups")]
+        public List<FxEventGroup> VfxEventBoxGroups { get; set; }
+        [JsonProperty(PropertyName = "_fxEventsCollection")]
+        public FxEventsCollection FxEventsCollection { get; set; }
         [JsonProperty(PropertyName = "basicEventTypesWithKeywords")]
         public BasicEventTypesWithKeywords BasicEventTypesWithKeywords { get; set; }
         [JsonProperty(PropertyName = "useNormalEventsAsCompatibleEvents")]

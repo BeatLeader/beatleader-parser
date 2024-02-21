@@ -3,20 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace beatleader_parser.Beatmap.Events.V3
+namespace beatleader_parser.Beatmap
 {
-    public class GroupMovementLane<T> : GroupLaneDistribution where T : GroupMovementEvent
+    public class GroupFxEventLane : GroupLaneDistribution
     {
-        [JsonProperty(PropertyName = "a")]
-        public GroupAxis Axis { get; set; }
-        [JsonProperty(PropertyName = "r")]
-        public bool ReverseRotation { get; set; }
         [JsonProperty(PropertyName = "l")]
-        public List<T> Events { get; set; }
+        public List<int> VfxBaseDataList { get; set; }
 
         public override bool Equals(object obj)
         {
-            return obj is GroupMovementLane<T> lane &&
+            return obj is GroupFxEventLane lane &&
                    base.Equals(obj) &&
                    EqualityComparer<GroupFilter>.Default.Equals(GroupFilter, lane.GroupFilter) &&
                    BeatDistribution == lane.BeatDistribution &&
@@ -25,14 +21,12 @@ namespace beatleader_parser.Beatmap.Events.V3
                    DistributionType == lane.DistributionType &&
                    DistributionAffectsFirst == lane.DistributionAffectsFirst &&
                    DistributionEasing == lane.DistributionEasing &&
-                   Axis == lane.Axis &&
-                   ReverseRotation == lane.ReverseRotation &&
-                   EqualityComparer<List<T>>.Default.Equals(Events, lane.Events);
+                   EqualityComparer<List<int>>.Default.Equals(VfxBaseDataList, lane.VfxBaseDataList);
         }
 
         public override int GetHashCode()
         {
-            int hashCode = -1397631384;
+            int hashCode = 1419395543;
             hashCode = hashCode * -1521134295 + base.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<GroupFilter>.Default.GetHashCode(GroupFilter);
             hashCode = hashCode * -1521134295 + BeatDistribution.GetHashCode();
@@ -41,17 +35,8 @@ namespace beatleader_parser.Beatmap.Events.V3
             hashCode = hashCode * -1521134295 + DistributionType.GetHashCode();
             hashCode = hashCode * -1521134295 + DistributionAffectsFirst.GetHashCode();
             hashCode = hashCode * -1521134295 + DistributionEasing.GetHashCode();
-            hashCode = hashCode * -1521134295 + Axis.GetHashCode();
-            hashCode = hashCode * -1521134295 + ReverseRotation.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<List<T>>.Default.GetHashCode(Events);
+            hashCode = hashCode * -1521134295 + EqualityComparer<List<int>>.Default.GetHashCode(VfxBaseDataList);
             return hashCode;
         }
-    }
-
-    public enum GroupAxis
-    {
-        X = 0,
-        Y = 1,
-        Z = 2,
     }
 }

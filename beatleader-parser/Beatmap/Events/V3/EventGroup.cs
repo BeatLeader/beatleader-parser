@@ -5,29 +5,29 @@ using System.Text;
 
 namespace beatleader_parser.Beatmap
 {
-    public class EventGroup : EventObject
+    public class EventGroup<T> : EventObject where T : GroupLane
     {
         [JsonProperty(PropertyName = "g")]
-        public int Group { get; set; }
+        public int GroupId { get; set; }
         [JsonProperty(PropertyName = "e")]
-        public List<GroupLane> Lanes { get; set; }
+        public List<T> Lanes { get; set; }
 
         public override bool Equals(object obj)
         {
-            return obj is EventGroup group &&
+            return obj is EventGroup<T> group &&
                    base.Equals(obj) &&
                    Beat == group.Beat &&
-                   Group == group.Group &&
-                   EqualityComparer<List<GroupLane>>.Default.Equals(Lanes, group.Lanes);
+                   GroupId == group.GroupId &&
+                   EqualityComparer<List<T>>.Default.Equals(Lanes, group.Lanes);
         }
 
         public override int GetHashCode()
         {
-            int hashCode = -1775234517;
+            int hashCode = 2134647368;
             hashCode = hashCode * -1521134295 + base.GetHashCode();
             hashCode = hashCode * -1521134295 + Beat.GetHashCode();
-            hashCode = hashCode * -1521134295 + Group.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<List<GroupLane>>.Default.GetHashCode(Lanes);
+            hashCode = hashCode * -1521134295 + GroupId.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<List<T>>.Default.GetHashCode(Lanes);
             return hashCode;
         }
     }
