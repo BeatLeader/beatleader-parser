@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "beatleader-parser\Parser.csproj", "{405F76FB-ED8A-4181-AF8F-85BCC23F1694}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeatLeader-Parser", "beatleader-parser\BeatLeader-Parser.csproj", "{405F76FB-ED8A-4181-AF8F-85BCC23F1694}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "Tester\Tester.csproj", "{89869DCE-8354-4FB8-9449-BFAE5FD77407}"
+	ProjectSection(ProjectDependencies) = postProject
+		{405F76FB-ED8A-4181-AF8F-85BCC23F1694} = {405F76FB-ED8A-4181-AF8F-85BCC23F1694}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +20,10 @@ Global
 		{405F76FB-ED8A-4181-AF8F-85BCC23F1694}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{405F76FB-ED8A-4181-AF8F-85BCC23F1694}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{405F76FB-ED8A-4181-AF8F-85BCC23F1694}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89869DCE-8354-4FB8-9449-BFAE5FD77407}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89869DCE-8354-4FB8-9449-BFAE5FD77407}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89869DCE-8354-4FB8-9449-BFAE5FD77407}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89869DCE-8354-4FB8-9449-BFAE5FD77407}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

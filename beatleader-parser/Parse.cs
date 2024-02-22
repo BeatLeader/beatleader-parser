@@ -33,7 +33,7 @@ namespace beatleader_parser
                 var infoFile = archive.Entries.FirstOrDefault(e => IsInfoFile(e.Name));
                 if (infoFile == null) return null;
 
-                var info = Helper.DeserializeInfoFromStream(infoFile.Open());
+                var info = OldHelper.DeserializeInfoFromStream(infoFile.Open());
                 if (info == null) return null;
 
                 v3.Info = info;
@@ -48,13 +48,13 @@ namespace beatleader_parser
                             string content = reader.ReadToEnd();
                             if (content.Contains("_cutDirection") && !content.Contains("colorBoostBeatmapEvents"))
                             {
-                                var diff = Helper.DeserializeV2DiffFromStream(diffFile.Open(), info._beatsPerMinute);
+                                var diff = OldHelper.DeserializeV2DiffFromStream(diffFile.Open(), info._beatsPerMinute);
                                 if (diff == null || diff.Notes == null) continue;
                                 v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff));
                             }
                             else
                             {
-                                var diff = Helper.DeserializeV3DiffFromStream(diffFile.Open());
+                                var diff = OldHelper.DeserializeV3DiffFromStream(diffFile.Open());
                                 if (diff == null || diff.Notes == null) continue;
                                 DifficultyV3.ConvertTime(diff, info._beatsPerMinute);
                                 v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff));
@@ -150,7 +150,7 @@ namespace beatleader_parser
                 var infoFile = archive.Entries.FirstOrDefault(e => IsInfoFile(e.Name));
                 if (infoFile == null) return null;
 
-                var info = Helper.DeserializeInfoFromStream(infoFile.Open());
+                var info = OldHelper.DeserializeInfoFromStream(infoFile.Open());
                 if (info == null) return null;
                 v3.Info = info;
 
@@ -164,13 +164,13 @@ namespace beatleader_parser
                         string content = reader.ReadToEnd();
                         if (content.Contains("_cutDirection") && !content.Contains("colorBoostBeatmapEvents"))
                         {
-                            var diff = Helper.DeserializeV2DiffFromStream(diffFile.Open(), info._beatsPerMinute);
+                            var diff = OldHelper.DeserializeV2DiffFromStream(diffFile.Open(), info._beatsPerMinute);
                             if (diff == null || diff.Notes == null) continue;
                             v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff));
                         }
                         else
                         {
-                            var diff = Helper.DeserializeV3DiffFromStream(diffFile.Open());
+                            var diff = OldHelper.DeserializeV3DiffFromStream(diffFile.Open());
                             if (diff == null || diff.Notes == null) continue;
                             DifficultyV3.ConvertTime(diff, info._beatsPerMinute);
                             v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff));
