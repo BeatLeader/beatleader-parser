@@ -1,5 +1,5 @@
-﻿using beatleader_parser.Beatmap.Events.V3;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -45,7 +45,7 @@ namespace beatleader_parser.Beatmap
         [JsonProperty(PropertyName = "useNormalEventsAsCompatibleEvents")]
         public bool UseNormalEventsAsCompatibleEvents { get; set; }
         [JsonProperty(PropertyName = "customData")]
-        public ExpandoObject CustomData { get; set; }
+        public JObject CustomData { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -68,7 +68,7 @@ namespace beatleader_parser.Beatmap
                    EqualityComparer<FxEventsCollection>.Default.Equals(FxEventsCollection, beatmap.FxEventsCollection) &&
                    EqualityComparer<BasicEventTypesWithKeywords>.Default.Equals(BasicEventTypesWithKeywords, beatmap.BasicEventTypesWithKeywords) &&
                    UseNormalEventsAsCompatibleEvents == beatmap.UseNormalEventsAsCompatibleEvents &&
-                   EqualityComparer<ExpandoObject>.Default.Equals(CustomData, beatmap.CustomData);
+                   EqualityComparer<JObject>.Default.Equals(CustomData, beatmap.CustomData);
         }
 
         public override int GetHashCode()
@@ -92,7 +92,7 @@ namespace beatleader_parser.Beatmap
             hashCode = hashCode * -1521134295 + EqualityComparer<FxEventsCollection>.Default.GetHashCode(FxEventsCollection);
             hashCode = hashCode * -1521134295 + EqualityComparer<BasicEventTypesWithKeywords>.Default.GetHashCode(BasicEventTypesWithKeywords);
             hashCode = hashCode * -1521134295 + UseNormalEventsAsCompatibleEvents.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<ExpandoObject>.Default.GetHashCode(CustomData);
+            hashCode = hashCode * -1521134295 + EqualityComparer<JObject>.Default.GetHashCode(CustomData);
             return hashCode;
         }
     }

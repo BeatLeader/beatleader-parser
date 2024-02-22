@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -43,7 +44,7 @@ namespace beatleader_parser.Beatmap
         [JsonProperty(PropertyName = "_colorSchemes")]
         public List<string> ColorSchemes { get; set; }
         [JsonProperty(PropertyName = "_customData")]
-        public ExpandoObject CustomData { get; set; }
+        public JObject CustomData { get; set; }
         [JsonProperty(PropertyName = "_difficultyBeatmapSets")]
         public List<DifficultyBeatmapSet> DifficultyBeatmapSets { get; set; }
 
@@ -67,7 +68,7 @@ namespace beatleader_parser.Beatmap
                    SongTimeOffset == info.SongTimeOffset &&
                    EqualityComparer<List<string>>.Default.Equals(EnvironmentNames, info.EnvironmentNames) &&
                    EqualityComparer<List<string>>.Default.Equals(ColorSchemes, info.ColorSchemes) &&
-                   EqualityComparer<ExpandoObject>.Default.Equals(CustomData, info.CustomData) &&
+                   EqualityComparer<JObject>.Default.Equals(CustomData, info.CustomData) &&
                    EqualityComparer<List<DifficultyBeatmapSet>>.Default.Equals(DifficultyBeatmapSets, info.DifficultyBeatmapSets);
         }
 
@@ -91,7 +92,7 @@ namespace beatleader_parser.Beatmap
             hashCode = hashCode * -1521134295 + SongTimeOffset.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<List<string>>.Default.GetHashCode(EnvironmentNames);
             hashCode = hashCode * -1521134295 + EqualityComparer<List<string>>.Default.GetHashCode(ColorSchemes);
-            hashCode = hashCode * -1521134295 + EqualityComparer<ExpandoObject>.Default.GetHashCode(CustomData);
+            hashCode = hashCode * -1521134295 + EqualityComparer<JObject>.Default.GetHashCode(CustomData);
             hashCode = hashCode * -1521134295 + EqualityComparer<List<DifficultyBeatmapSet>>.Default.GetHashCode(DifficultyBeatmapSets);
             return hashCode;
         }

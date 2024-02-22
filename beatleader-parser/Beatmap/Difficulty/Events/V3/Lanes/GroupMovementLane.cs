@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace beatleader_parser.Beatmap.Events.V3
+namespace beatleader_parser.Beatmap
 {
     public class GroupMovementLane<T> : GroupLaneDistribution where T : GroupMovementEvent
     {
