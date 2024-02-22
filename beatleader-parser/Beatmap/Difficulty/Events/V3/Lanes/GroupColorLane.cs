@@ -16,6 +16,7 @@ namespace beatleader_parser.Beatmap
         [JsonProperty(PropertyName = "i")]
         public int DistributionEasing { get; set; }
 
+        [JsonProperty(PropertyName = "e")]
         public List<GroupColorEvent> Events { get; set; }
 
         public override bool Equals(object obj)
