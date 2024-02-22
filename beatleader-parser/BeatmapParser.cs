@@ -20,14 +20,14 @@ namespace beatleader_parser
             if (!Directory.Exists(path)) throw new DirectoryNotFoundException();
             string infoPath = path + "/info.dat";
 
-            BeatmapInfo beatmapInfo = LoadInfo(infoPath);
+            BeatmapInfo beatmapInfo = LoadInfoFromPath(infoPath);
 
             List<BeatmapDifficultyEntry> difficultyBeatmapSets = LoadDifficultiesFromPath(beatmapInfo, path);
 
             return new BeatmapData(beatmapInfo, difficultyBeatmapSets);
         }
 
-        public static BeatmapInfo LoadInfo(string path)
+        public static BeatmapInfo LoadInfoFromPath(string path)
         {
             if (!File.Exists(path)) throw new FileNotFoundException("info.dat not found in the map directory");
             using (FileStream stream = new FileStream(path, FileMode.Open))
