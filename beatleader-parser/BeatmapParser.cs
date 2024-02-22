@@ -15,7 +15,7 @@ namespace beatleader_parser
         /// </summary>
         /// <param name="path">The path pointing to the map directory</param>
         /// <returns><see cref="BeatmapData"/></returns>
-        public BeatmapData LoadPath(string path)
+        public static BeatmapData LoadPath(string path)
         {
             if (!Directory.Exists(path)) throw new DirectoryNotFoundException();
             string infoPath = path + "/info.dat";
@@ -25,12 +25,9 @@ namespace beatleader_parser
             List<BeatmapDifficultyEntry> difficultyBeatmapSets = LoadDifficultiesFromPath(beatmapInfo, path);
 
             return new BeatmapData(beatmapInfo, difficultyBeatmapSets);
-
-
-
         }
 
-        public BeatmapInfo LoadInfo(string path)
+        public static BeatmapInfo LoadInfo(string path)
         {
             if (!File.Exists(path)) throw new FileNotFoundException("info.dat not found in the map directory");
             using (FileStream stream = new FileStream(path, FileMode.Open))
@@ -40,7 +37,7 @@ namespace beatleader_parser
         }
 
 
-        public List<BeatmapDifficultyEntry> LoadDifficultiesFromPath(BeatmapInfo beatmapInfo, string directoryPath)
+        public static List<BeatmapDifficultyEntry> LoadDifficultiesFromPath(BeatmapInfo beatmapInfo, string directoryPath)
         {
             if (beatmapInfo == null) throw new ArgumentNullException(nameof(beatmapInfo));
             if (!Directory.Exists(directoryPath)) throw new DirectoryNotFoundException();
@@ -58,7 +55,7 @@ namespace beatleader_parser
             return difficultyEntries;
         }
 
-        private BeatmapDifficultyEntry ProcessDiffEntry(DifficultyBeatmap diff, string directoryPath)
+        private static BeatmapDifficultyEntry ProcessDiffEntry(DifficultyBeatmap diff, string directoryPath)
         {
             string path = directoryPath + "/" + diff.BeatmapFilename;
             if (!File.Exists(path)) throw new FileNotFoundException($"Difficulty at {path} not found.");

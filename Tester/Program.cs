@@ -4,8 +4,6 @@ using Newtonsoft.Json;
 
 Console.WriteLine("Hello, World!");
 
-var parser = new BeatmapParser();
-
-var result = parser.LoadPath("C:\\SteamLibrary\\steamapps\\common\\Beat Saber\\Beat Saber_Data\\CustomWIPLevels\\Break Stasis Extended Mix");
+var result = BeatmapParser.LoadPath("C:\\SteamLibrary\\steamapps\\common\\Beat Saber\\Beat Saber_Data\\CustomWIPLevels\\Break Stasis Extended Mix");
 
 Console.WriteLine(JsonConvert.SerializeObject(result));
