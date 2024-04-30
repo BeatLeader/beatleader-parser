@@ -1,5 +1,6 @@
 ﻿using Parser.Map;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 // Copied from: https://github.com/beatmaps-io/beatsaver-common-mp/blob/ccfc56bffd02dc2b08ce285eeb9be9de8646b2ba/src/commonMain/kotlin/io/beatmaps/common/beatsaber/maxScore.kt
@@ -115,7 +116,7 @@ namespace Parser.Utils
 
     public static class ScoringExtensions
     {
-        public static int MaxScore(this DifficultySet self)
+        public static List<(float, int)> MaxScoreGraph(this DifficultySet self)
         {
             var notes = self.Data.Notes.Where(note => note.Color == 0 || note.Color == 1);
             var sliders = self.Data.Arcs;
@@ -165,12 +166,21 @@ namespace Parser.Utils
                 .ThenBy(elem => elem.ScoreDef.MaxCutScore())
                 .ToList();
 
-            return items.Aggregate((new ScoreMultiplierCounter(), 0), (acc, elem) =>
-            {
-                var (smc, score) = acc;
-                var newSmc = smc.ProcessMultiplierEvent(MultiplierEventType.Positive);
-                return (newSmc, score + (elem.ScoreDef.MaxCutScore() * newSmc.Multiplier));
-            }).Item2;
+            var maxScores = new List<(float, int)>();
+            var smc = new ScoreMultiplierCounter();
+            var score = 0;
+            foreach (var item in items) {
+                smc = smc.ProcessMultiplierEvent(MultiplierEventType.Positive);
+                score += item.ScoreDef.MaxCutScore() * smc.Multiplier;
+
+                maxScores.Add((item.Time, score));
+            }
+
+            return maxScores;
+        }
+
+        public static int MaxScore(this DifficultySet self) {
+            return MaxScoreGraph(self).Last().Item2;
         }
     }
 }
