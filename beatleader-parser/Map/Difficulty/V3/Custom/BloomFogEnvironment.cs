@@ -3,8 +3,8 @@
     public class Bloomfogenvironment
     {
         public float attenuation { get; set; }
-        public int startY { get; set; }
-        public int height { get; set; }
+        public float startY { get; set; }
+        public float height { get; set; }
         public string track { get; set; }
     }
 }
