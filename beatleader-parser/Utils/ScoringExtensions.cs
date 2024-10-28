@@ -147,7 +147,7 @@ namespace Parser.Utils
                     type = NoteScoreDefinition.Normal;
                 }
 
-                return new MaxScoreCounterElement(type, note.BpmTime);
+                return new MaxScoreCounterElement(type, note.Seconds);
             }).ToList();
 
             var burstItems = burstSliders.SelectMany(bs =>
@@ -156,7 +156,7 @@ namespace Parser.Utils
                 return Enumerable.Range(1, sliceCount - 1).Select(i =>
                 {
                     float t = (float)i / (sliceCount - 1);
-                    var beat = bs.BpmTime + (bs.TailBpmTime - bs.BpmTime) * t;
+                    var beat = bs.Seconds + (bs.TailInSeconds - bs.Seconds) * t;
                     return new MaxScoreCounterElement(NoteScoreDefinition.BurstSliderElement, beat);
                 });
             }).ToList();
