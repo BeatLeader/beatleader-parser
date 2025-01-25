@@ -72,21 +72,5 @@ namespace Parser.Map
         public string _difficultyLabel { get; set; }
         public List<string> _requirements { get; set; }
         public List<string> _suggestions { get; set; }
-        public _Colorleft _colorLeft { get; set; }
-        public _Colorright _colorRight { get; set; }
-    }
-
-    public class _Colorleft
-    {
-        public float r { get; set; }
-        public float g { get; set; }
-        public float b { get; set; }
-    }
-
-    public class _Colorright
-    {
-        public float r { get; set; }
-        public float g { get; set; }
-        public float b { get; set; }
     }
 }
