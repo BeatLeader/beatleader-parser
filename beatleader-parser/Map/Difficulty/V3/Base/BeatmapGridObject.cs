@@ -4,6 +4,7 @@
     {
         public int x { get; set; }
         public int y { get; set; }
+        public float njs { get; set; }
 
         public override bool Equals(object obj)
         {

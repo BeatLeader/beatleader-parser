@@ -60,6 +60,7 @@ namespace beatleader_parser
 
                         var v3Diff = DifficultyV3.V4toV3(diff, audioData);
                         DifficultyV3.ConvertTime(v3Diff, v3.Info._beatsPerMinute);
+                        DifficultyV3.CalculateObjectNjs(v3Diff, beatmap.noteJumpMovementSpeed);
                         v3.Difficulties.Add(new(beatmap.difficulty, beatmap.characteristic, v3Diff, beatmap.ToV2()));
                     }
                 } else {
@@ -77,13 +78,14 @@ namespace beatleader_parser
                                 {
                                     var diff = Helper.DeserializeFromStream<DifficultyV2>(diffFile.Open());
                                     if (diff == null || diff._notes == null) continue;
-                                    v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, DifficultyV3.V2toV3(diff, info._beatsPerMinute), beatmap));
+                                    v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, DifficultyV3.V2toV3(diff, info._beatsPerMinute, beatmap._noteJumpMovementSpeed), beatmap));
                                 }
                                 else
                                 {
                                     var diff = Helper.DeserializeFromStream<DifficultyV3>(diffFile.Open());
                                     if (diff == null || diff.Notes == null) continue;
                                     DifficultyV3.ConvertTime(diff, info._beatsPerMinute);
+                                    DifficultyV3.CalculateObjectNjs(diff, beatmap._noteJumpMovementSpeed);
                                     v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff, beatmap));
                                 }
                             }
@@ -142,6 +144,7 @@ namespace beatleader_parser
 
                         var v3Diff = DifficultyV3.V4toV3(diff, audioData);
                         DifficultyV3.ConvertTime(v3Diff, v3.Info._beatsPerMinute);
+                        DifficultyV3.CalculateObjectNjs(v3Diff, beatmap.noteJumpMovementSpeed);
                         v3.Difficulties.Add(new(beatmap.difficulty, beatmap.characteristic, v3Diff, beatmap.ToV2()));
                     }
                 } else {
@@ -159,13 +162,14 @@ namespace beatleader_parser
                                 DifficultyV2 v2 = JsonConvert.DeserializeObject<DifficultyV2>(json);
                                 if (v2 != null)
                                 {
-                                    v3.Difficulties.Add(new(difficultyName, characteristicName, DifficultyV3.V2toV3(v2, info._beatsPerMinute), difficultyBeatmap));
+                                    v3.Difficulties.Add(new(difficultyName, characteristicName, DifficultyV3.V2toV3(v2, info._beatsPerMinute, difficultyBeatmap._noteJumpMovementSpeed), difficultyBeatmap));
                                 }
                             }
                             else
                             {
                                 DifficultyV3 diffv3 = JsonConvert.DeserializeObject<DifficultyV3>(json);
                                 DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
+                                DifficultyV3.CalculateObjectNjs(diffv3, difficultyBeatmap._noteJumpMovementSpeed);
                                 if (v3 != null)
                                 {
                                     v3.Difficulties.Add(new(difficultyName, characteristicName, diffv3, difficultyBeatmap));
@@ -231,6 +235,7 @@ namespace beatleader_parser
 
                         var v3Diff = DifficultyV3.V4toV3(diff, audioData);
                         DifficultyV3.ConvertTime(v3Diff, v3.Info._beatsPerMinute);
+                        DifficultyV3.CalculateObjectNjs(v3Diff, beatmap.noteJumpMovementSpeed);
                         v3.Difficulties.Add(new(beatmap.difficulty, beatmap.characteristic, v3Diff, beatmap.ToV2()));
                     }
                 } else {
@@ -248,13 +253,14 @@ namespace beatleader_parser
                             {
                                 var diff = Helper.DeserializeFromStream<DifficultyV2>(diffFile.Open());
                                 if (diff == null || diff._notes == null) continue;
-                                v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, DifficultyV3.V2toV3(diff, info._beatsPerMinute), beatmap));
+                                v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, DifficultyV3.V2toV3(diff, info._beatsPerMinute, beatmap._noteJumpMovementSpeed), beatmap));
                             }
                             else
                             {
                                 var diff = Helper.DeserializeFromStream<DifficultyV3>(diffFile.Open());
                                 if (diff == null || diff.Notes == null) continue;
                                 DifficultyV3.ConvertTime(diff, info._beatsPerMinute);
+                                DifficultyV3.CalculateObjectNjs(diff, beatmap._noteJumpMovementSpeed);
                                 v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, diff, beatmap));
                             }
                         }
@@ -320,13 +326,14 @@ namespace beatleader_parser
                     DifficultyV2? v2 = JsonConvert.DeserializeObject<DifficultyV2>(File.ReadAllText($"{folderPath}/{diff.path}"));
                     if (v2 != null)
                     {
-                        v3.Difficulties.Add(new(diff.difficulty, diff.characteristic, DifficultyV3.V2toV3(v2, info._beatsPerMinute), diff.beatmap));
+                        v3.Difficulties.Add(new(diff.difficulty, diff.characteristic, DifficultyV3.V2toV3(v2, info._beatsPerMinute, diff.beatmap._noteJumpMovementSpeed), diff.beatmap));
                     }
                 }
                 else if (text.Contains("colorNotesData"))
                 {
                     DifficultyV3 diffv3 = DifficultyV3.V4toV3(JsonConvert.DeserializeObject<DifficultyV4>(File.ReadAllText($"{folderPath}/{diff.path}")), audioData);
                     DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
+                    DifficultyV3.CalculateObjectNjs(diffv3, diff.beatmap._noteJumpMovementSpeed);
                     if (v3 != null)
                     {
                         v3.Difficulties.Add(new(diff.difficulty, diff.characteristic, diffv3, diff.beatmap));
@@ -336,6 +343,7 @@ namespace beatleader_parser
                 {
                     DifficultyV3 diffv3 = JsonConvert.DeserializeObject<DifficultyV3>(File.ReadAllText($"{folderPath}/{diff.path}"));
                     DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
+                    DifficultyV3.CalculateObjectNjs(diffv3, diff.beatmap._noteJumpMovementSpeed);
                     if (v3 != null)
                     {
                         v3.Difficulties.Add(new(diff.difficulty, diff.characteristic, diffv3, diff.beatmap));
@@ -403,13 +411,14 @@ namespace beatleader_parser
                         DifficultyV2? v2 = JsonConvert.DeserializeObject<DifficultyV2>(File.ReadAllText($"{folderPath}/{diff.path}"));
                         if (v2 != null)
                         {
-                            result.Difficulty = (new(diff.difficulty, diff.characteristic, DifficultyV3.V2toV3(v2, info._beatsPerMinute), diff.beatMap));
+                            result.Difficulty = (new(diff.difficulty, diff.characteristic, DifficultyV3.V2toV3(v2, info._beatsPerMinute, diff.beatMap._noteJumpMovementSpeed), diff.beatMap));
                         }
                     }
                     else if (text.Contains("colorNotesData"))
                     {
                         DifficultyV3 diffv3 = DifficultyV3.V4toV3(JsonConvert.DeserializeObject<DifficultyV4>(File.ReadAllText($"{folderPath}/{diff.path}")), audioData);
                         DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
+                        DifficultyV3.CalculateObjectNjs(diffv3, diff.beatMap._noteJumpMovementSpeed);
                         if (result != null)
                         {
                             result.Difficulty = (new(diff.difficulty, diff.characteristic, diffv3, diff.beatMap));
@@ -419,6 +428,7 @@ namespace beatleader_parser
                     {
                         DifficultyV3 diffv3 = JsonConvert.DeserializeObject<DifficultyV3>(File.ReadAllText($"{folderPath}/{diff.path}"));
                         DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
+                        DifficultyV3.CalculateObjectNjs(diffv3, diff.beatMap._noteJumpMovementSpeed);
                         if (result != null)
                         {
                             result.Difficulty = (new(diff.difficulty, diff.characteristic, diffv3, diff.beatMap));
