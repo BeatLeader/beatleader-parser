@@ -8,6 +8,8 @@ namespace Parser.Map.Difficulty.V3.Base
         public int CutDirection { get; set; }
         [JsonProperty(PropertyName = "tb")]
         public float TailInBeats { get; set; }
+        [JsonProperty(PropertyName = "tc")]
+        public int TailCutDirection { get; set; }
         [JsonIgnore]
         public float TailInSeconds { get; set; } = 0f;
         [JsonIgnore]

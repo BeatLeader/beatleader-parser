@@ -1,6 +1,7 @@
 ﻿using Parser.Map;
 using Parser.Map.Difficulty.V3.Base;
 using Parser.Map.Difficulty.V3.Grid;
+using System;
 
 namespace Parser.Utils
 {
@@ -8,7 +9,7 @@ namespace Parser.Utils
     {
 		public const int NumberOfLines = 4;
 
-		public static Note.Direction MirrorDirection(Note.Direction direction) {
+		public static Note.Direction horizontal_cut_transform(Note.Direction direction) {
 			switch (direction) {
 				case Note.Direction.UpLeft:
 					return Note.Direction.UpRight;
@@ -49,17 +50,30 @@ namespace Parser.Utils
 
 			self.Color = color;
 			self.x = flippedX;
+
+			// Handle custom data position
+			//if (self.CustomData?.Position != null) {
+			//	self.CustomData.Position[0] = NumberOfLines - self.CustomData.Position[0] - 5;
+			//}
 		}
 
 		public static void Mirror(this Note self) {
 			Mirror((BeatmapColorGridObject)self);
 
-			self.CutDirection = (int)MirrorDirection((Note.Direction)self.CutDirection);
+			self.CutDirection = (int)horizontal_cut_transform((Note.Direction)self.CutDirection);
 			self.AngleOffset = -self.AngleOffset;
+
+			// Handle custom cut direction
+			//if (self.CustomData?.CutDirection != null) {
+			//	self.CustomData.CutDirection = -self.CustomData.CutDirection;
+			//}
 		}
 
 		public static void Mirror(this BeatmapColorGridObjectWithTail self) {
 			Mirror((BeatmapColorGridObject)self);
+
+            self.CutDirection = (int)horizontal_cut_transform((Note.Direction)self.CutDirection);
+            self.TailCutDirection = (int)horizontal_cut_transform((Note.Direction)self.TailCutDirection);
 
 			int flippedTX;
 			if (self.tx <= -1000 || self.tx >= 1000) {
@@ -72,6 +86,11 @@ namespace Parser.Utils
 			}
 
 			self.tx = flippedTX;
+
+			// Handle custom data tail position
+			//if (self.CustomData?.TailPosition != null) {
+			//	self.CustomData.TailPosition[0] = NumberOfLines - self.CustomData.TailPosition[0] - 5;
+			//}
 		}
 
 		public static void Mirror(this Wall self) {
@@ -85,13 +104,32 @@ namespace Parser.Utils
 			} else {
 				self.x = NumberOfLines - self.Width - self.x;
 			}
+
+			// Handle custom data position and width
+			//if (self.CustomData?.Position != null) {
+			//	self.CustomData.Position[0] = NumberOfLines - self.CustomData.Position[0] - 5;
+
+			//	if (self.Width > 1) {
+			//		self.Width *= -1;
+			//		self.CustomData.Position[0] += 1;
+			//	}
+			//}
 		}
 
 		public static void Mirror(this DifficultySet self) {
 
 			foreach (var note in self.Data.Notes)
 			{
-				note.Mirror();
+				if (note.Color != 0 && note.Color != 1) {
+					note.x = NumberOfLines - 1 - note.x;
+				} else {
+					note.Mirror();
+				}
+			}
+
+            foreach (var note in self.Data.Bombs)
+			{
+				note.x = NumberOfLines - 1 - note.x;
 			}
 
 			foreach (var chain in self.Data.Chains)
@@ -111,7 +149,6 @@ namespace Parser.Utils
 		}
 
         public static void Mirror(this BeatmapV3 self) {
-
 			foreach (var diff in self.Difficulties)
 			{
 				diff.Mirror();
