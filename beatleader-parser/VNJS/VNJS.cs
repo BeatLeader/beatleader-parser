@@ -13,12 +13,11 @@ namespace beatleader_parser.VNJS
         public VNJS(float baseNjs, List<NjsEvent> njsEvents)
         {
             this.baseNjs = baseNjs;
-            this.njsEvents = njsEvents;
+            this.njsEvents = njsEvents.OrderBy(x => x.Seconds).ToList();
         }
 
         public float NjsAtSeconds(float seconds)
         {
-            // requires the list be sorted by time (I sure hope it is)
             NjsEvent lastEvent = njsEvents.LastOrDefault(x => x.Seconds <= seconds);
             NjsEvent nextEvent = njsEvents.FirstOrDefault(x => x.Seconds > seconds);
 
