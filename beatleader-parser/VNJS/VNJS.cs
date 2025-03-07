@@ -25,8 +25,8 @@ namespace beatleader_parser.VNJS
             if (lastEvent is null) return baseNjs;
             if (nextEvent is null || nextEvent.Easing == -1) return baseNjs + lastEvent.Delta;
 
-            // TODO: implement all the easings (holy shit there are so many)
             var t = (seconds - lastEvent.Seconds) / (nextEvent.Seconds - lastEvent.Seconds);
+            t = (float)BeatSaberEasings.Ease(t, (BeatSaberEasingType)nextEvent.Easing);
             var njsOffset = lastEvent.Delta + t * (nextEvent.Delta - lastEvent.Delta);
             return baseNjs + njsOffset;
         }
