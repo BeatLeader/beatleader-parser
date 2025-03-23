@@ -222,7 +222,7 @@ namespace Parser.Map.Difficulty.V3.Base
                     NjsEvent evt = new()
                     {
                         Beats = njsEvent.Beat,
-                        Delta = eventData.UsePrevious != 0 && previousEvent != null ? previousEvent.Delta : eventData.Delta,
+                        Delta = eventData.UsePrevious == 1 && previousEvent != null ? previousEvent.Delta : eventData.Delta,
                         Easing = eventData.Easing
                     };
                     difficultyV3.njsEvents.Add(evt);
