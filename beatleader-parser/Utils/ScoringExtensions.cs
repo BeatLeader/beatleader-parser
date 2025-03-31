@@ -153,7 +153,7 @@ namespace Parser.Utils
             var burstItems = burstSliders.SelectMany(bs =>
             {
                 var sliceCount = bs.SliceCount;
-                return Enumerable.Range(1, sliceCount - 1).Select(i =>
+                return sliceCount == 0 ? new List<MaxScoreCounterElement>() : Enumerable.Range(1, sliceCount - 1).Select(i =>
                 {
                     float t = (float)i / (sliceCount - 1);
                     var beat = bs.Seconds + (bs.TailInSeconds - bs.Seconds) * t;
@@ -180,7 +180,8 @@ namespace Parser.Utils
         }
 
         public static int MaxScore(this DifficultySet self) {
-            return MaxScoreGraph(self).Last().Item2;
+            var graph = MaxScoreGraph(self);
+            return graph.Count > 0 ? graph.Last().Item2 : 0;
         }
     }
 }
