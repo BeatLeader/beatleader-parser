@@ -60,6 +60,7 @@ namespace Parser.Map
         public string _difficulty { get; set; }
         public int _difficultyRank { get; set; }
         public string _beatmapFilename { get; set; }
+        public string _lightshowDataFilename { get; set; }
         public float _noteJumpMovementSpeed { get; set; }
         public float _noteJumpStartBeatOffset { get; set; }
         public int _beatmapColorSchemeIdx { get; set; }

@@ -119,6 +119,7 @@ namespace Parser.Map.V4 {
                 _difficulty = difficulty,
                 _difficultyRank = GetDifficultyRank(difficulty),
                 _beatmapFilename = beatmapDataFilename,
+                _lightshowDataFilename = lightshowDataFilename,
                 _noteJumpMovementSpeed = noteJumpMovementSpeed,
                 _noteJumpStartBeatOffset = noteJumpStartBeatOffset,
                 _beatmapColorSchemeIdx = beatmapColorSchemeIdx,

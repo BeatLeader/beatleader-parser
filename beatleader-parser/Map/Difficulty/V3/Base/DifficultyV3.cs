@@ -43,7 +43,7 @@ namespace Parser.Map.Difficulty.V3.Base
         public object[] vfxEventBoxGroups { get; set; }
         public _Fxeventscollection _fxEventsCollection { get; set; }
 
-        public static DifficultyV3 V4toV3(DifficultyV4 v4, AudioData? audioData)
+        public static DifficultyV3 V4toV3(DifficultyV4 v4, AudioData? audioData, Lighting? lighting)
         {
             DifficultyV3 difficultyV3 = new()
             {
@@ -226,6 +226,187 @@ namespace Parser.Map.Difficulty.V3.Base
                     };
                     difficultyV3.njsEvents.Add(evt);
                     previousEvent = evt;
+                }
+            }
+
+            // Convert lighting box groups
+            if (lighting?.eventBoxGroups != null)
+            {
+                foreach (var boxGroup in lighting.eventBoxGroups)
+                {
+                    switch (boxGroup.Type)
+                    {
+                        case 1: // Light Color
+                            var colorGroup = new Lightcoloreventboxgroup
+                            {
+                                Beats = boxGroup.Beat,
+                                Group = boxGroup.Group,
+                                EventBoxGroup = new()
+                            };
+
+                            foreach (var box in boxGroup.Events)
+                            {
+                                var filter = box.FilterIndex < lighting.indexFilters.Count ? lighting.indexFilters[box.FilterIndex] : new();
+                                var eventBox = box.EventBoxIndex < lighting.lightColorEventBoxes.Count ? lighting.lightColorEventBoxes[box.EventBoxIndex] : new();
+
+                                var e = new E
+                                {
+                                    Filter = new F
+                                    {
+                                        f = filter.Type,
+                                        p = filter.Parameter0,
+                                        t = filter.Parameter1,
+                                        r = filter.Reverse,
+                                        c = filter.Chunks,
+                                        n = filter.RandomBehavior,
+                                        s = filter.RandomSeed,
+                                        l = filter.LimitPercent,
+                                        d = filter.LimitBehavior
+                                    },
+                                    w = eventBox.BeatDistributionValue,
+                                    d = eventBox.BeatDistributionType,
+                                    r = eventBox.BrightnessDistributionValue,
+                                    t = eventBox.BrightnessDistributionType,
+                                    b = eventBox.BrightnessDistributionAffectsFirst,
+                                    i = eventBox.BrightnessDistributionEasing,
+                                    e = new()
+                                };
+
+                                foreach (var evt in box.Events)
+                                {
+                                    var colorEvent = evt.Index < lighting.lightColorEvents.Count ? lighting.lightColorEvents[evt.Index] : new();
+                                    e.e.Add(new E1
+                                    {
+                                        b = evt.Beat,
+                                        c = colorEvent.Color,
+                                        s = colorEvent.Brightness,
+                                        i = colorEvent.TransitionType,
+                                        f = colorEvent.StrobeFrequency,
+                                        sb = colorEvent.StrobeBrightness,
+                                        sf = colorEvent.StrobeFade
+                                    });
+                                }
+
+                                colorGroup.EventBoxGroup.Add(e);
+                            }
+
+                            difficultyV3.lightColorEventBoxGroups.Add(colorGroup);
+                            break;
+
+                        case 2: // Light Rotation
+                            var rotationGroup = new Lightrotationeventboxgroup
+                            {
+                                Beats = boxGroup.Beat,
+                                Group = boxGroup.Group,
+                                EventBoxGroup = new()
+                            };
+
+                            foreach (var box in boxGroup.Events)
+                            {
+                                var filter = box.FilterIndex < lighting.indexFilters.Count ? lighting.indexFilters[box.FilterIndex] : new();
+                                var eventBox = box.EventBoxIndex < lighting.lightRotationEventBoxes.Count ? lighting.lightRotationEventBoxes[box.EventBoxIndex] : new();
+
+                                var e = new E2
+                                {
+                                    f = new F
+                                    {
+                                        f = filter.Type,
+                                        p = filter.Parameter0,
+                                        t = filter.Parameter1,
+                                        r = filter.Reverse,
+                                        c = filter.Chunks,
+                                        n = filter.RandomBehavior,
+                                        s = filter.RandomSeed,
+                                        l = filter.LimitPercent,
+                                        d = filter.LimitBehavior
+                                    },
+                                    w = eventBox.BeatDistributionValue,
+                                    d = eventBox.BeatDistributionType,
+                                    s = eventBox.RotationDistributionValue,
+                                    t = eventBox.RotationDistributionType,
+                                    b = eventBox.RotationDistributionAffectsFirst,
+                                    i = eventBox.RotationDistributionEasing,
+                                    a = eventBox.Axis,
+                                    r = eventBox.InvertAxis,
+                                    l = new()
+                                };
+
+                                foreach (var evt in box.Events)
+                                {
+                                    var rotationEvent = evt.Index < lighting.lightRotationEvents.Count ? lighting.lightRotationEvents[evt.Index] : new();
+                                    e.l.Add(new L
+                                    {
+                                        b = evt.Beat,
+                                        r = rotationEvent.Magnitude,
+                                        o = rotationEvent.Direction,
+                                        e = rotationEvent.Easing,
+                                        l = rotationEvent.LoopCount,
+                                        p = rotationEvent.TransitionType
+                                    });
+                                }
+
+                                rotationGroup.EventBoxGroup.Add(e);
+                            }
+
+                            difficultyV3.lightRotationEventBoxGroups.Add(rotationGroup);
+                            break;
+
+                        case 3: // Light Translation
+                            var translationGroup = new Lighttranslationeventboxgroup
+                            {
+                                Beats = boxGroup.Beat,
+                                Group = boxGroup.Group,
+                                EventBoxGroup = new()
+                            };
+
+                            foreach (var box in boxGroup.Events)
+                            {
+                                var filter = box.FilterIndex < lighting.indexFilters.Count ? lighting.indexFilters[box.FilterIndex] : new();
+                                var eventBox = box.EventBoxIndex < lighting.lightTranslationEventBoxes.Count ? lighting.lightTranslationEventBoxes[box.EventBoxIndex] : new();
+
+                                var e = new E3
+                                {
+                                    f = new F
+                                    {
+                                        f = filter.Type,
+                                        p = filter.Parameter0,
+                                        t = filter.Parameter1,
+                                        r = filter.Reverse,
+                                        c = filter.Chunks,
+                                        n = filter.RandomBehavior,
+                                        s = filter.RandomSeed,
+                                        l = filter.LimitPercent,
+                                        d = filter.LimitBehavior
+                                    },
+                                    w = eventBox.BeatDistributionValue,
+                                    d = eventBox.BeatDistributionType,
+                                    s = eventBox.GapDistributionValue,
+                                    t = eventBox.GapDistributionType,
+                                    b = eventBox.GapDistributionAffectsFirst,
+                                    i = eventBox.GapDistributionEasing,
+                                    a = eventBox.Axis,
+                                    r = eventBox.InvertAxis,
+                                    l = new()
+                                };
+
+                                foreach (var evt in box.Events)
+                                {
+                                    var translationEvent = evt.Index < lighting.lightTranslationEvents.Count ? lighting.lightTranslationEvents[evt.Index] : new();
+                                    e.l.Add(new L1
+                                    {
+                                        b = evt.Beat,
+                                        p = translationEvent.TransitionType,
+                                        e = translationEvent.Easing,
+                                        t = translationEvent.Magnitude
+                                    });
+                                }
+
+                                translationGroup.EventBoxGroup.Add(e);
+                            }
+
+                            difficultyV3.lightTranslationEventBoxGroups.Add(translationGroup);
+                            break;
+                    }
                 }
             }
 

@@ -42,6 +42,26 @@ namespace Parser.Map.Difficulty.V4.Base
         public object[] Waypoints { get; set; }
     }
 
+    public class Lighting {
+        // V4 Lighting Box Groups
+        [JsonProperty(PropertyName = "eventBoxGroups")]
+        public List<EventBoxGroup> eventBoxGroups { get; set; } = new();
+        [JsonProperty(PropertyName = "indexFilters")]
+        public List<IndexFilter> indexFilters { get; set; } = new();
+        [JsonProperty(PropertyName = "lightColorEventBoxes")]
+        public List<LightColorEventBox> lightColorEventBoxes { get; set; } = new();
+        [JsonProperty(PropertyName = "lightRotationEventBoxes")]
+        public List<LightRotationEventBox> lightRotationEventBoxes { get; set; } = new();
+        [JsonProperty(PropertyName = "lightTranslationEventBoxes")]
+        public List<LightTranslationEventBox> lightTranslationEventBoxes { get; set; } = new();
+        [JsonProperty(PropertyName = "lightColorEvents")]
+        public List<LightColorEvent> lightColorEvents { get; set; } = new();
+        [JsonProperty(PropertyName = "lightRotationEvents")]
+        public List<LightRotationEvent> lightRotationEvents { get; set; } = new();
+        [JsonProperty(PropertyName = "lightTranslationEvents")]
+        public List<LightTranslationEvent> lightTranslationEvents { get; set; } = new();
+    }
+
     public class BaseNote
     {
         [JsonProperty("b")]
@@ -167,5 +187,148 @@ namespace Parser.Map.Difficulty.V4.Base
         public int UsePrevious { get; set; }
         [JsonProperty(PropertyName = "e")]
         public int Easing { get; set; }
+    }
+
+    // V4 Event Box Group Classes
+    public class EventBoxGroup
+    {
+        [JsonProperty("b")]
+        public float Beat { get; set; }
+        [JsonProperty("g")]
+        public int Group { get; set; }
+        [JsonProperty("t")]
+        public int Type { get; set; }
+        [JsonProperty("e")]
+        public List<EventBox> Events { get; set; } = new();
+    }
+
+    public class EventBox
+    {
+        [JsonProperty("f")]
+        public int FilterIndex { get; set; }
+        [JsonProperty("e")]
+        public int EventBoxIndex { get; set; }
+        [JsonProperty("l")]
+        public List<BaseEvent> Events { get; set; } = new();
+    }
+
+    public class IndexFilter
+    {
+        [JsonProperty("c")]
+        public int Chunks { get; set; }
+        [JsonProperty("f")]
+        public int Type { get; set; }
+        [JsonProperty("p")]
+        public int Parameter0 { get; set; }
+        [JsonProperty("t")]
+        public int Parameter1 { get; set; }
+        [JsonProperty("r")]
+        public int Reverse { get; set; }
+        [JsonProperty("n")]
+        public int RandomBehavior { get; set; }
+        [JsonProperty("s")]
+        public int RandomSeed { get; set; }
+        [JsonProperty("l")]
+        public float LimitPercent { get; set; }
+        [JsonProperty("d")]
+        public int LimitBehavior { get; set; }
+    }
+
+    public class LightColorEventBox
+    {
+        [JsonProperty("w")]
+        public float BeatDistributionValue { get; set; }
+        [JsonProperty("d")]
+        public int BeatDistributionType { get; set; }
+        [JsonProperty("s")]
+        public float BrightnessDistributionValue { get; set; }
+        [JsonProperty("t")]
+        public int BrightnessDistributionType { get; set; }
+        [JsonProperty("b")]
+        public int BrightnessDistributionAffectsFirst { get; set; }
+        [JsonProperty("e")]
+        public int BrightnessDistributionEasing { get; set; }
+    }
+
+    public class LightRotationEventBox
+    {
+        [JsonProperty("w")]
+        public float BeatDistributionValue { get; set; }
+        [JsonProperty("d")]
+        public int BeatDistributionType { get; set; }
+        [JsonProperty("s")]
+        public float RotationDistributionValue { get; set; }
+        [JsonProperty("t")]
+        public int RotationDistributionType { get; set; }
+        [JsonProperty("b")]
+        public int RotationDistributionAffectsFirst { get; set; }
+        [JsonProperty("e")]
+        public int RotationDistributionEasing { get; set; }
+        [JsonProperty("a")]
+        public int Axis { get; set; }
+        [JsonProperty("f")]
+        public int InvertAxis { get; set; }
+    }
+
+    public class LightTranslationEventBox
+    {
+        [JsonProperty("w")]
+        public float BeatDistributionValue { get; set; }
+        [JsonProperty("d")]
+        public int BeatDistributionType { get; set; }
+        [JsonProperty("s")]
+        public float GapDistributionValue { get; set; }
+        [JsonProperty("t")]
+        public int GapDistributionType { get; set; }
+        [JsonProperty("b")]
+        public int GapDistributionAffectsFirst { get; set; }
+        [JsonProperty("e")]
+        public int GapDistributionEasing { get; set; }
+        [JsonProperty("a")]
+        public int Axis { get; set; }
+        [JsonProperty("f")]
+        public int InvertAxis { get; set; }
+    }
+
+    public class LightColorEvent
+    {
+        [JsonProperty("p")]
+        public int TransitionType { get; set; }
+        [JsonProperty("e")]
+        public int Easing { get; set; }
+        [JsonProperty("c")]
+        public int Color { get; set; }
+        [JsonProperty("b")]
+        public float Brightness { get; set; }
+        [JsonProperty("f")]
+        public int StrobeFrequency { get; set; }
+        [JsonProperty("sb")]
+        public float StrobeBrightness { get; set; }
+        [JsonProperty("sf")]
+        public int StrobeFade { get; set; }
+    }
+
+    public class LightRotationEvent
+    {
+        [JsonProperty("p")]
+        public int TransitionType { get; set; }
+        [JsonProperty("e")]
+        public int Easing { get; set; }
+        [JsonProperty("r")]
+        public float Magnitude { get; set; }
+        [JsonProperty("d")]
+        public int Direction { get; set; }
+        [JsonProperty("l")]
+        public int LoopCount { get; set; }
+    }
+
+    public class LightTranslationEvent
+    {
+        [JsonProperty("p")]
+        public int TransitionType { get; set; }
+        [JsonProperty("e")]
+        public int Easing { get; set; }
+        [JsonProperty("t")]
+        public float Magnitude { get; set; }
     }
 }
