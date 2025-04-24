@@ -65,9 +65,9 @@ namespace beatleader_parser.VNJS
         {
             switch (easing)
             {
+                default:
                 case BeatSaberEasingType.None:
                     return t >= 1f ? 1f : 0f;
-                default:
                 case BeatSaberEasingType.Linear:
                     return t;
 
@@ -78,6 +78,8 @@ namespace beatleader_parser.VNJS
                 case BeatSaberEasingType.InOutQuad:
                     return Easings.Quad.InOut(t);
 
+                // commented out because they are currently unsupported in game
+                /*
                 case BeatSaberEasingType.InSine:
                     return Easings.Sine.In(t);
                 case BeatSaberEasingType.OutSine:
@@ -112,6 +114,7 @@ namespace beatleader_parser.VNJS
                     return Easings.Expo.Out(t);
                 case BeatSaberEasingType.InOutExpo:
                     return Easings.Expo.InOut(t);
+                */
 
                 case BeatSaberEasingType.InCirc:
                     return Easings.Circ.In(t);
