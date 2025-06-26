@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Parser.Map
 {
@@ -21,6 +22,7 @@ namespace Parser.Map
         public string _allDirectionsEnvironmentName { get; set; }
         public object[] _environmentNames { get; set; }
         public object[] _colorSchemes { get; set; }
+        [JsonIgnore]
         public _Customdata _customData { get; set; }
         public List<_Difficultybeatmapsets> _difficultyBeatmapSets { get; set; }
     }

@@ -5,8 +5,6 @@ namespace Parser.Map
 {
     public class BeatmapV3
     {
-        internal BeatmapV3() { }
-
         public Info Info { get; set; }
         public List<DifficultySet> Difficulties { get; set; } = new();
 
@@ -30,7 +28,7 @@ namespace Parser.Map
         public DifficultyV3 Data { get; set; }
         public _Difficultybeatmaps BeatMap { get; set; }
         
-        internal DifficultySet(
+        public DifficultySet(
             string difficulty, 
             string characteristic, 
             DifficultyV3 data,

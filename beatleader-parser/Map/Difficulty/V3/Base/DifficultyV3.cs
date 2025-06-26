@@ -37,10 +37,12 @@ namespace Parser.Map.Difficulty.V3.Base
         public List<Lightcoloreventboxgroup> lightColorEventBoxGroups { get; set; } = new();
         public List<Lightrotationeventboxgroup> lightRotationEventBoxGroups { get; set; } = new();
         public List<Lighttranslationeventboxgroup> lightTranslationEventBoxGroups { get; set; } = new();
-        public Basiceventtypeswithkeywords basicEventTypesWithKeywords { get; set; } = new();
+        public BasicEventTypesWithKeywords basicEventTypesWithKeywords { get; set; } = new (new List<BasicEventTypesWithKeywords.BasicEventTypesForKeyword> { });
         public bool useNormalEventsAsCompatibleEvents { get; set; }
+        [JsonIgnore]
         public Custom.Customdata customData { get; set; }
         public object[] vfxEventBoxGroups { get; set; }
+        [JsonIgnore]
         public _Fxeventscollection _fxEventsCollection { get; set; }
 
         public static DifficultyV3 V4toV3(DifficultyV4 v4, AudioData? audioData, Lighting? lighting)
