@@ -8,7 +8,7 @@ namespace Parser.Map.Difficulty.V4.Base
     public class DifficultyV4
     {
         [JsonProperty(PropertyName = "version")]
-        public string Version { get; set; } = "4.0.0";
+        public string Version { get; set; } = "4.1.0";
 
         [JsonProperty(PropertyName = "colorNotes")]
         public List<BaseNote> colorNotes { get; set; } = new();

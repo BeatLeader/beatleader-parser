@@ -1,4 +1,5 @@
 ﻿using beatleader_parser.Timescale;
+using beatleader_parser.VNJS;
 using Newtonsoft.Json;
 using Parser.Audio.V4;
 using Parser.Map.Difficulty.V2.Base;
@@ -223,7 +224,7 @@ namespace Parser.Map.Difficulty.V3.Base
                     NjsEvent evt = new()
                     {
                         Beats = njsEvent.Beat,
-                        Delta = eventData.UsePrevious != 0 && previousEvent != null ? previousEvent.Delta : eventData.Delta,
+                        Delta = eventData.UsePrevious == 1 && previousEvent != null ? previousEvent.Delta : eventData.Delta,
                         Easing = eventData.Easing
                     };
                     difficultyV3.njsEvents.Add(evt);
@@ -415,7 +416,7 @@ namespace Parser.Map.Difficulty.V3.Base
             return difficultyV3;
         }
 
-        public static DifficultyV3 V2toV3(DifficultyV2 v2, float bpm)
+        public static DifficultyV3 V2toV3(DifficultyV2 v2, float bpm, float njs)
         {
             DifficultyV3 difficultyV3 = new()
             {
@@ -530,6 +531,7 @@ namespace Parser.Map.Difficulty.V3.Base
             }
 
             ConvertTime(difficultyV3, bpm);
+            CalculateObjectNjs(difficultyV3, njs);
 
             return difficultyV3;
         }
@@ -541,6 +543,7 @@ namespace Parser.Map.Difficulty.V3.Base
             obj.AddRange(diff.Bombs);
             obj.AddRange(diff.Lights);
             obj.AddRange(diff.bpmEvents);
+            obj.AddRange(diff.njsEvents);
             obj.AddRange(diff.Walls);
             obj.AddRange(diff.Arcs);
             obj.AddRange(diff.Chains);
@@ -554,6 +557,18 @@ namespace Parser.Map.Difficulty.V3.Base
             timescale.ConvertAllBeatsToSeconds(diff.Chains);
             timescale.ConvertAllBeatsToSeconds(diff.Arcs);
             timescale.ConvertAllBeatsToSeconds(diff.Walls);
+        }
+
+        public static void CalculateObjectNjs(DifficultyV3 diff, float baseNjs)
+        {
+            List<BeatmapGridObject> obj = new();
+            obj.AddRange(diff.Notes);
+            obj.AddRange(diff.Bombs);
+            obj.AddRange(diff.Walls);
+            obj.AddRange(diff.Arcs);
+            obj.AddRange(diff.Chains);
+            var vnjs = new VNJS(baseNjs, diff.njsEvents);
+            vnjs.CalculateAllObjectNjs(obj);
         }
     }
 }
