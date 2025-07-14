@@ -1,10 +1,13 @@
 ﻿using beatleader_parser.Timescale;
+using beatleader_parser.VNJS;
 using Newtonsoft.Json;
+using Parser.Audio.V4;
 using Parser.Map.Difficulty.V2.Base;
 using Parser.Map.Difficulty.V3.Custom;
 using Parser.Map.Difficulty.V3.Event;
 using Parser.Map.Difficulty.V3.Event.V3;
 using Parser.Map.Difficulty.V3.Grid;
+using Parser.Map.Difficulty.V4.Base;
 using System.Collections.Generic;
 
 namespace Parser.Map.Difficulty.V3.Base
@@ -14,6 +17,7 @@ namespace Parser.Map.Difficulty.V3.Base
         [JsonProperty(PropertyName = "version")]
         public string Version { get; set; } = "3.3.0";
         public List<BpmEvent> bpmEvents { get; set; } = new();
+        public List<NjsEvent> njsEvents { get; set; } = new();
         [JsonProperty(PropertyName = "rotationEvents")]
         public List<RotationEvent> Rotations { get; set; } = new();
         [JsonProperty(PropertyName = "colorNotes")]
@@ -34,13 +38,385 @@ namespace Parser.Map.Difficulty.V3.Base
         public List<Lightcoloreventboxgroup> lightColorEventBoxGroups { get; set; } = new();
         public List<Lightrotationeventboxgroup> lightRotationEventBoxGroups { get; set; } = new();
         public List<Lighttranslationeventboxgroup> lightTranslationEventBoxGroups { get; set; } = new();
-        public Basiceventtypeswithkeywords basicEventTypesWithKeywords { get; set; } = new();
+        public BasicEventTypesWithKeywords basicEventTypesWithKeywords { get; set; } = new (new List<BasicEventTypesWithKeywords.BasicEventTypesForKeyword> { });
         public bool useNormalEventsAsCompatibleEvents { get; set; }
+        [JsonIgnore]
         public Custom.Customdata customData { get; set; }
         public object[] vfxEventBoxGroups { get; set; }
+        [JsonIgnore]
         public _Fxeventscollection _fxEventsCollection { get; set; }
 
-        public static DifficultyV3 V2toV3(DifficultyV2 v2, float bpm)
+        public static DifficultyV3 V4toV3(DifficultyV4 v4, AudioData? audioData, Lighting? lighting)
+        {
+            DifficultyV3 difficultyV3 = new()
+            {
+                Version = "3.0.0",
+                Notes = new(),
+                Bombs = new(),
+                Chains = new(),
+                Arcs = new(),
+                Walls = new(),
+                Lights = new(),
+                lightColorEventBoxGroups = new(),
+                Rotations = new(),
+                bpmEvents = new(),
+            };
+
+            // Convert notes
+            var colorNotesData = v4.colorNotesData ?? new();
+            if (v4.colorNotes != null)
+            {
+                foreach (var note in v4.colorNotes)
+                {
+                    var noteData = note.Index < colorNotesData.Count ? colorNotesData[note.Index] : new();
+                    Note colorNote = new()
+                    {
+                        Beats = note.Beat,
+                        x = noteData.X,
+                        y = noteData.Y,
+                        Color = noteData.Color,
+                        CutDirection = noteData.Direction,
+                        AngleOffset = noteData.AngleOffset
+                    };
+                    difficultyV3.Notes.Add(colorNote);
+                }
+            }
+
+            // Convert bombs
+            var bombNotesData = v4.bombNotesData ?? new();
+            if (v4.bombNotes != null)
+            {
+                foreach (var bomb in v4.bombNotes)
+                {
+                    var bombData = bomb.Index < bombNotesData.Count ? bombNotesData[bomb.Index] : new();
+                    Bomb bombNote = new()
+                    {
+                        Beats = bomb.Beat,
+                        x = bombData.X,
+                        y = bombData.Y
+                    };
+                    difficultyV3.Bombs.Add(bombNote);
+                }
+            }
+
+            // Convert walls
+            var obstaclesData = v4.obstaclesData ?? new();
+            if (v4.obstacles != null)
+            {
+                foreach (var wall in v4.obstacles)
+                {
+                    var wallData = wall.Index < obstaclesData.Count ? obstaclesData[wall.Index] : new();
+                    Wall obstacleNote = new()
+                    {
+                        Beats = wall.Beat,
+                        x = wallData.X,
+                        y = wallData.Y,
+                        DurationInBeats = wallData.Duration,
+                        Width = wallData.Width,
+                        Height = wallData.Height
+                    };
+                    difficultyV3.Walls.Add(obstacleNote);
+                }
+            }
+
+            // Convert arcs
+            var arcsData = v4.arcsData ?? new();
+            if (v4.arcs != null)
+            {
+                foreach (var arc in v4.arcs)
+                {
+                    var arcData = arc.ArcIndex < arcsData.Count ? arcsData[arc.ArcIndex] : new();
+                    var headNoteData = arc.HeadIndex < colorNotesData.Count ? colorNotesData[arc.HeadIndex] : new();
+                    var tailNoteData = arc.TailIndex < colorNotesData.Count ? colorNotesData[arc.TailIndex] : new();
+
+                    Arc slider = new()
+                    {
+                        Beats = arc.HeadBeat,
+                        x = headNoteData.X,
+                        y = headNoteData.Y,
+                        Color = headNoteData.Color,
+                        CutDirection = headNoteData.Direction,
+                        TailInBeats = arc.TailBeat,
+                        tx = tailNoteData.X,
+                        ty = tailNoteData.Y,
+                        Multiplier = arcData.HeadControlPointLengthMultiplier,
+                        TailMultiplier = arcData.TailControlPointLengthMultiplier,
+                        TailDirection = tailNoteData.Direction,
+                        AnchorMode = arcData.MidAnchorMode
+                    };
+                    difficultyV3.Arcs.Add(slider);
+                }
+            }
+
+            // Convert chains
+            var chainsData = v4.chainsData ?? new();
+            if (v4.chains != null)
+            {
+                foreach (var chain in v4.chains)
+                {
+                    var chainData = chain.ChainIndex < chainsData.Count ? chainsData[chain.ChainIndex] : new();
+                    var headNoteData = chain.Index < colorNotesData.Count ? colorNotesData[chain.Index] : new();
+
+                    Chain burstSlider = new()
+                    {
+                        Beats = chain.HeadBeat,
+                        x = headNoteData.X,
+                        y = headNoteData.Y,
+                        Color = headNoteData.Color,
+                        CutDirection = headNoteData.Direction,
+                        TailInBeats = chain.TailBeat,
+                        tx = chainData.TailX,
+                        ty = chainData.TailY,
+                        SliceCount = chainData.SliceCount,
+                        Squish = chainData.SquishFactor
+                    };
+                    difficultyV3.Chains.Add(burstSlider);
+                }
+            }
+
+            // Convert rotations
+            //var spawnRotationsData = v4.spawnRotationsData ?? new();
+            //if (v4.spawnRotations != null)
+            //{
+            //    foreach (var rotation in v4.spawnRotations)
+            //    {
+            //        var rotationData = rotation.Index < spawnRotationsData.Count ? spawnRotationsData[rotation.Index] : new();
+            //        var value = (Math.Abs(rotationData.Rotation) - 60) / -15;
+                    
+            //        RotationEvent evt = new()
+            //        {
+            //            Beats = rotation.Beat,
+            //            ExecutionTime = rotationData.Type == 1 ? 15 : 14,
+            //            Value = value < 4 ? value : value - 1,
+            //            Inverted = rotationData.Rotation > 0
+            //        };
+            //        difficultyV3.Rotations.Add(evt);
+            //    }
+            //}
+
+            // Convert BPM events from audio data
+            if (audioData?.bpmData != null)
+            {
+                foreach (var bpmData in audioData.bpmData)
+                {
+                    float bpmChangeStartTime = bpmData.startSampleIndex / audioData.songFrequency;
+                    float numSamples = bpmData.endSampleIndex - bpmData.startSampleIndex;
+                    float bpm = ((bpmData.endBeat - bpmData.startBeat) / (numSamples / audioData.songFrequency)) * 60.0f;
+
+                    BpmEvent evt = new()
+                    {
+                        Beats = bpmData.startBeat,
+                        Bpm = bpm,
+                        BpmChangeStartTime = bpmChangeStartTime
+                    };
+                    difficultyV3.bpmEvents.Add(evt);
+                }
+            }
+
+            // Convert NJS events
+            var njsEventsData = v4.njsEventData ?? new();
+            if (v4.njsEvents != null)
+            {
+                NjsEvent? previousEvent = null;
+                foreach (var njsEvent in v4.njsEvents)
+                {
+                    var eventData = njsEvent.Index < njsEventsData.Count ? njsEventsData[njsEvent.Index] : new();
+                    NjsEvent evt = new()
+                    {
+                        Beats = njsEvent.Beat,
+                        Delta = eventData.UsePrevious == 1 && previousEvent != null ? previousEvent.Delta : eventData.Delta,
+                        Easing = eventData.Easing
+                    };
+                    difficultyV3.njsEvents.Add(evt);
+                    previousEvent = evt;
+                }
+            }
+
+            // Convert lighting box groups
+            if (lighting?.eventBoxGroups != null)
+            {
+                foreach (var boxGroup in lighting.eventBoxGroups)
+                {
+                    switch (boxGroup.Type)
+                    {
+                        case 1: // Light Color
+                            var colorGroup = new Lightcoloreventboxgroup
+                            {
+                                Beats = boxGroup.Beat,
+                                Group = boxGroup.Group,
+                                EventBoxGroup = new()
+                            };
+
+                            foreach (var box in boxGroup.Events)
+                            {
+                                var filter = box.FilterIndex < lighting.indexFilters.Count ? lighting.indexFilters[box.FilterIndex] : new();
+                                var eventBox = box.EventBoxIndex < lighting.lightColorEventBoxes.Count ? lighting.lightColorEventBoxes[box.EventBoxIndex] : new();
+
+                                var e = new E
+                                {
+                                    Filter = new F
+                                    {
+                                        f = filter.Type,
+                                        p = filter.Parameter0,
+                                        t = filter.Parameter1,
+                                        r = filter.Reverse,
+                                        c = filter.Chunks,
+                                        n = filter.RandomBehavior,
+                                        s = filter.RandomSeed,
+                                        l = filter.LimitPercent,
+                                        d = filter.LimitBehavior
+                                    },
+                                    w = eventBox.BeatDistributionValue,
+                                    d = eventBox.BeatDistributionType,
+                                    r = eventBox.BrightnessDistributionValue,
+                                    t = eventBox.BrightnessDistributionType,
+                                    b = eventBox.BrightnessDistributionAffectsFirst,
+                                    i = eventBox.BrightnessDistributionEasing,
+                                    e = new()
+                                };
+
+                                foreach (var evt in box.Events)
+                                {
+                                    var colorEvent = evt.Index < lighting.lightColorEvents.Count ? lighting.lightColorEvents[evt.Index] : new();
+                                    e.e.Add(new E1
+                                    {
+                                        b = evt.Beat,
+                                        c = colorEvent.Color,
+                                        s = colorEvent.Brightness,
+                                        i = colorEvent.TransitionType,
+                                        f = colorEvent.StrobeFrequency,
+                                        sb = colorEvent.StrobeBrightness,
+                                        sf = colorEvent.StrobeFade
+                                    });
+                                }
+
+                                colorGroup.EventBoxGroup.Add(e);
+                            }
+
+                            difficultyV3.lightColorEventBoxGroups.Add(colorGroup);
+                            break;
+
+                        case 2: // Light Rotation
+                            var rotationGroup = new Lightrotationeventboxgroup
+                            {
+                                Beats = boxGroup.Beat,
+                                Group = boxGroup.Group,
+                                EventBoxGroup = new()
+                            };
+
+                            foreach (var box in boxGroup.Events)
+                            {
+                                var filter = box.FilterIndex < lighting.indexFilters.Count ? lighting.indexFilters[box.FilterIndex] : new();
+                                var eventBox = box.EventBoxIndex < lighting.lightRotationEventBoxes.Count ? lighting.lightRotationEventBoxes[box.EventBoxIndex] : new();
+
+                                var e = new E2
+                                {
+                                    f = new F
+                                    {
+                                        f = filter.Type,
+                                        p = filter.Parameter0,
+                                        t = filter.Parameter1,
+                                        r = filter.Reverse,
+                                        c = filter.Chunks,
+                                        n = filter.RandomBehavior,
+                                        s = filter.RandomSeed,
+                                        l = filter.LimitPercent,
+                                        d = filter.LimitBehavior
+                                    },
+                                    w = eventBox.BeatDistributionValue,
+                                    d = eventBox.BeatDistributionType,
+                                    s = eventBox.RotationDistributionValue,
+                                    t = eventBox.RotationDistributionType,
+                                    b = eventBox.RotationDistributionAffectsFirst,
+                                    i = eventBox.RotationDistributionEasing,
+                                    a = eventBox.Axis,
+                                    r = eventBox.InvertAxis,
+                                    l = new()
+                                };
+
+                                foreach (var evt in box.Events)
+                                {
+                                    var rotationEvent = evt.Index < lighting.lightRotationEvents.Count ? lighting.lightRotationEvents[evt.Index] : new();
+                                    e.l.Add(new L
+                                    {
+                                        b = evt.Beat,
+                                        r = rotationEvent.Magnitude,
+                                        o = rotationEvent.Direction,
+                                        e = rotationEvent.Easing,
+                                        l = rotationEvent.LoopCount,
+                                        p = rotationEvent.TransitionType
+                                    });
+                                }
+
+                                rotationGroup.EventBoxGroup.Add(e);
+                            }
+
+                            difficultyV3.lightRotationEventBoxGroups.Add(rotationGroup);
+                            break;
+
+                        case 3: // Light Translation
+                            var translationGroup = new Lighttranslationeventboxgroup
+                            {
+                                Beats = boxGroup.Beat,
+                                Group = boxGroup.Group,
+                                EventBoxGroup = new()
+                            };
+
+                            foreach (var box in boxGroup.Events)
+                            {
+                                var filter = box.FilterIndex < lighting.indexFilters.Count ? lighting.indexFilters[box.FilterIndex] : new();
+                                var eventBox = box.EventBoxIndex < lighting.lightTranslationEventBoxes.Count ? lighting.lightTranslationEventBoxes[box.EventBoxIndex] : new();
+
+                                var e = new E3
+                                {
+                                    f = new F
+                                    {
+                                        f = filter.Type,
+                                        p = filter.Parameter0,
+                                        t = filter.Parameter1,
+                                        r = filter.Reverse,
+                                        c = filter.Chunks,
+                                        n = filter.RandomBehavior,
+                                        s = filter.RandomSeed,
+                                        l = filter.LimitPercent,
+                                        d = filter.LimitBehavior
+                                    },
+                                    w = eventBox.BeatDistributionValue,
+                                    d = eventBox.BeatDistributionType,
+                                    s = eventBox.GapDistributionValue,
+                                    t = eventBox.GapDistributionType,
+                                    b = eventBox.GapDistributionAffectsFirst,
+                                    i = eventBox.GapDistributionEasing,
+                                    a = eventBox.Axis,
+                                    r = eventBox.InvertAxis,
+                                    l = new()
+                                };
+
+                                foreach (var evt in box.Events)
+                                {
+                                    var translationEvent = evt.Index < lighting.lightTranslationEvents.Count ? lighting.lightTranslationEvents[evt.Index] : new();
+                                    e.l.Add(new L1
+                                    {
+                                        b = evt.Beat,
+                                        p = translationEvent.TransitionType,
+                                        e = translationEvent.Easing,
+                                        t = translationEvent.Magnitude
+                                    });
+                                }
+
+                                translationGroup.EventBoxGroup.Add(e);
+                            }
+
+                            difficultyV3.lightTranslationEventBoxGroups.Add(translationGroup);
+                            break;
+                    }
+                }
+            }
+
+            return difficultyV3;
+        }
+
+        public static DifficultyV3 V2toV3(DifficultyV2 v2, float bpm, float njs)
         {
             DifficultyV3 difficultyV3 = new()
             {
@@ -155,6 +531,7 @@ namespace Parser.Map.Difficulty.V3.Base
             }
 
             ConvertTime(difficultyV3, bpm);
+            CalculateObjectNjs(difficultyV3, njs);
 
             return difficultyV3;
         }
@@ -166,6 +543,7 @@ namespace Parser.Map.Difficulty.V3.Base
             obj.AddRange(diff.Bombs);
             obj.AddRange(diff.Lights);
             obj.AddRange(diff.bpmEvents);
+            obj.AddRange(diff.njsEvents);
             obj.AddRange(diff.Walls);
             obj.AddRange(diff.Arcs);
             obj.AddRange(diff.Chains);
@@ -179,6 +557,18 @@ namespace Parser.Map.Difficulty.V3.Base
             timescale.ConvertAllBeatsToSeconds(diff.Chains);
             timescale.ConvertAllBeatsToSeconds(diff.Arcs);
             timescale.ConvertAllBeatsToSeconds(diff.Walls);
+        }
+
+        public static void CalculateObjectNjs(DifficultyV3 diff, float baseNjs)
+        {
+            List<BeatmapGridObject> obj = new();
+            obj.AddRange(diff.Notes);
+            obj.AddRange(diff.Bombs);
+            obj.AddRange(diff.Walls);
+            obj.AddRange(diff.Arcs);
+            obj.AddRange(diff.Chains);
+            var vnjs = new VNJS(baseNjs, diff.njsEvents);
+            vnjs.CalculateAllObjectNjs(obj);
         }
     }
 }

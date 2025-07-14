@@ -12,15 +12,22 @@ namespace Parser.Map.Difficulty.V3.Event
         public int Value { get; set; }
         [JsonProperty(PropertyName = "f")]
         public float f { get; set; }
-        public Customdata customData { get; set; }
 
+        [JsonIgnore]
         public bool isBlue => Value == 1 || Value == 2 || Value == 3 || Value == 4;
+        [JsonIgnore]
         public bool isRed => Value == 5 || Value == 6 || Value == 7 || Value == 8;
+        [JsonIgnore]
         public bool isWhite => Value == 9 || Value == 10 || Value == 11 || Value == 12;
+        [JsonIgnore]
         public bool isOff => Value == 0;
+        [JsonIgnore]
         public bool isOn => Value == 1 || Value == 5 || Value == 9;
+        [JsonIgnore]
         public bool isFlash => Value == 2 || Value == 6 || Value == 10;
+        [JsonIgnore]
         public bool isFade => Value == 3 || Value == 7 || Value == 11;
+        [JsonIgnore]
         public bool isTransition => Value == 4 || Value == 8 || Value == 12;
 
         public override bool Equals(object obj)
@@ -29,8 +36,7 @@ namespace Parser.Map.Difficulty.V3.Event
                    Beats == light.Beats &&
                    Type == light.Type &&
                    Value == light.Value &&
-                   f == light.f &&
-                   EqualityComparer<Customdata>.Default.Equals(customData, light.customData);
+                   f == light.f;
         }
 
         public override int GetHashCode()
@@ -41,7 +47,6 @@ namespace Parser.Map.Difficulty.V3.Event
             hashCode = hashCode * -1521134295 + Type.GetHashCode();
             hashCode = hashCode * -1521134295 + Value.GetHashCode();
             hashCode = hashCode * -1521134295 + f.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<Customdata>.Default.GetHashCode(customData);
             return hashCode;
         }
     }

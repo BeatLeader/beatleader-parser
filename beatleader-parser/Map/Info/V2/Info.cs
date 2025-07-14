@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Parser.Map
 {
@@ -21,6 +22,7 @@ namespace Parser.Map
         public string _allDirectionsEnvironmentName { get; set; }
         public object[] _environmentNames { get; set; }
         public object[] _colorSchemes { get; set; }
+        [JsonIgnore]
         public _Customdata _customData { get; set; }
         public List<_Difficultybeatmapsets> _difficultyBeatmapSets { get; set; }
     }
@@ -60,6 +62,7 @@ namespace Parser.Map
         public string _difficulty { get; set; }
         public int _difficultyRank { get; set; }
         public string _beatmapFilename { get; set; }
+        public string _lightshowDataFilename { get; set; }
         public float _noteJumpMovementSpeed { get; set; }
         public float _noteJumpStartBeatOffset { get; set; }
         public int _beatmapColorSchemeIdx { get; set; }
@@ -72,21 +75,5 @@ namespace Parser.Map
         public string _difficultyLabel { get; set; }
         public List<string> _requirements { get; set; }
         public List<string> _suggestions { get; set; }
-        public _Colorleft _colorLeft { get; set; }
-        public _Colorright _colorRight { get; set; }
-    }
-
-    public class _Colorleft
-    {
-        public float r { get; set; }
-        public float g { get; set; }
-        public float b { get; set; }
-    }
-
-    public class _Colorright
-    {
-        public float r { get; set; }
-        public float g { get; set; }
-        public float b { get; set; }
     }
 }
