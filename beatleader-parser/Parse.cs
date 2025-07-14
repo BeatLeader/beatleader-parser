@@ -285,7 +285,7 @@ namespace beatleader_parser
                     }
                 }
 
-                var audioFile = archive.Entries.FirstOrDefault(e => e.Name.ToLower().EndsWith(".ogg") || e.Name.ToLower().EndsWith(".egg"));
+                var audioFile = archive.Entries.FirstOrDefault(e => e.Name.ToLower().EndsWith(".ogg") || e.Name.ToLower().EndsWith(".egg") || e.Name.ToLower().EndsWith(".wav"));
                 if (audioFile == null) return null;
 
                 Ogg ogg = new();
