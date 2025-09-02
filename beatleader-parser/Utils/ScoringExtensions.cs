@@ -13,43 +13,53 @@ namespace Parser.Utils
         Neutral,
         Negative
     }
-    public enum NoteScoreDefinition
+
+    public enum ScoringType
     {
-        NoScore,
-        Normal,
-        SliderHead,
-        SliderTail,
-        BurstSliderHead,
-        BurstSliderElement
+        Ignore = -1,
+        NoScore = 0,
+        Normal = 1,
+        ArcHead = 2,
+        ArcTail = 3,
+        ChainHead = 4,
+        ChainLink = 5,
+        ArcHeadArcTail = 6,
+        ChainHeadArcTail = 7,
+        ChainLinkArcHead = 8,
+        ChainHeadArcHead = 9,
+        ChainHeadArcHeadArcTail = 10
     }
 
-    public static class NoteScoreDefinitionExtensions
+    public class NoteScoreDefinition
     {
-        public static int MaxCutScore(this NoteScoreDefinition definition)
+        public readonly int maxCenterDistanceCutScore;
+        public readonly int minBeforeCutScore;
+        public readonly int maxBeforeCutScore;
+        public readonly int minAfterCutScore;
+        public readonly int maxAfterCutScore;
+        public readonly int fixedCutScore;
+
+        public int maxCutScore => this.maxCenterDistanceCutScore + this.maxBeforeCutScore + this.maxAfterCutScore + this.fixedCutScore;
+
+        public int executionOrder => this.maxCutScore;
+
+        public NoteScoreDefinition(
+            int maxCenterDistanceCutScore,
+            int minBeforeCutScore,
+            int maxBeforeCutScore,
+            int minAfterCutScore,
+            int maxAfterCutScore,
+            int fixedCutScore)
         {
-            switch (definition)
-            {
-                case NoteScoreDefinition.NoScore:
-                    return 0;
-                case NoteScoreDefinition.Normal:
-                case NoteScoreDefinition.SliderHead:
-                case NoteScoreDefinition.SliderTail:
-                    return NoteScoreDefaults.MaxCenterDistanceCutScore + NoteScoreDefaults.MaxBeforeCutScore + NoteScoreDefaults.MaxAfterCutScore;
-                case NoteScoreDefinition.BurstSliderHead:
-                    return NoteScoreDefaults.MaxCenterDistanceCutScore + NoteScoreDefaults.MaxBeforeCutScore;
-                case NoteScoreDefinition.BurstSliderElement:
-                    return 20;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(definition), "Unknown NoteScoreDefinition");
-            }
+            this.maxCenterDistanceCutScore = maxCenterDistanceCutScore;
+            this.minBeforeCutScore = minBeforeCutScore;
+            this.maxBeforeCutScore = maxBeforeCutScore;
+            this.minAfterCutScore = minAfterCutScore;
+            this.maxAfterCutScore = maxAfterCutScore;
+            this.fixedCutScore = fixedCutScore;
         }
     }
-    public static class NoteScoreDefaults
-    {
-        public const int MaxBeforeCutScore = 70;
-        public const int MaxCenterDistanceCutScore = 15;
-        public const int MaxAfterCutScore = 30;
-    }
+
     public class MaxScoreCounterElement
     {
         public NoteScoreDefinition ScoreDef { get; }
@@ -116,6 +126,58 @@ namespace Parser.Utils
 
     public static class ScoringExtensions
     {
+        public static readonly Dictionary<ScoringType, NoteScoreDefinition> ScoreDefinitions = new Dictionary<ScoringType, NoteScoreDefinition>()
+        {
+            {
+                ScoringType.Ignore,
+                (NoteScoreDefinition) null
+            },
+            {
+                ScoringType.NoScore,
+                new NoteScoreDefinition(0, 0, 0, 0, 0, 0)
+            },
+            {
+                ScoringType.Normal,
+                new NoteScoreDefinition(15, 0, 70, 0, 30, 0)
+            },
+            {
+                ScoringType.ArcHead,
+                new NoteScoreDefinition(15, 0, 70, 30, 30, 0)
+            },
+            {
+                ScoringType.ArcTail,
+                new NoteScoreDefinition(15, 70, 70, 0, 30, 0)
+            },
+            {
+                ScoringType.ChainHead,
+                new NoteScoreDefinition(15, 0, 70, 0, 0, 0)
+            },
+            {
+                ScoringType.ChainLink,
+                new NoteScoreDefinition(0, 0, 0, 0, 0, 20)
+            },
+            {
+                ScoringType.ArcHeadArcTail,
+                new NoteScoreDefinition(15, 70, 70, 30, 30, 0)
+            },
+            {
+                ScoringType.ChainHeadArcTail,
+                new NoteScoreDefinition(15, 70, 70, 30, 30, 0)
+            },
+            {
+                ScoringType.ChainLinkArcHead,
+                new NoteScoreDefinition(0, 0, 0, 0, 0, 20)
+            },
+            {
+                ScoringType.ChainHeadArcHead,
+                new NoteScoreDefinition(15, 0, 70, 30, 30, 0)
+            },
+            {
+                ScoringType.ChainHeadArcHeadArcTail,
+                new NoteScoreDefinition(15, 70, 70, 30, 30, 0)
+            }
+        };
+
         public static List<(float, int)> MaxScoreGraph(this DifficultySet self)
         {
             var notes = self.Data.Notes.Where(note => note.Color == 0 || note.Color == 1);
@@ -132,22 +194,35 @@ namespace Parser.Utils
                 var matchesTail = slidersByTailBeat.ContainsKey(note.BpmTime) && slidersByTailBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.tx && note.y == s.ty);
                 var matchesBurst = burstSlidersByBeat.ContainsKey(note.BpmTime) && burstSlidersByBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.x && note.y == note.y);
 
-                NoteScoreDefinition type;
-                if (matchesTail)
-                {
-                    type = NoteScoreDefinition.SliderTail;
-                } else if (matchesBurst)
-                {
-                    type = NoteScoreDefinition.BurstSliderHead;
-                } else if (matchesHead)
-                {
-                    type = NoteScoreDefinition.SliderHead;
-                } else
-                {
-                    type = NoteScoreDefinition.Normal;
+                if (matchesBurst && matchesHead && matchesTail) {
+                    return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ChainHeadArcHeadArcTail], note.Seconds);
                 }
 
-                return new MaxScoreCounterElement(type, note.Seconds);
+                if (matchesBurst && matchesHead) {
+                    return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ChainHeadArcHead], note.Seconds);
+                }
+
+                if (matchesBurst && matchesTail) {
+                    return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ChainHeadArcTail], note.Seconds);
+                }
+
+                if (matchesHead && matchesTail) {
+                    return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ArcHeadArcTail], note.Seconds);
+                }
+
+                if (matchesBurst) {
+                    return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ChainHead], note.Seconds);
+                }
+
+                if (matchesHead) {
+                    return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ArcHead], note.Seconds);
+                }
+
+                if (matchesTail) {
+                    return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ArcTail], note.Seconds);
+                }
+
+                return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.Normal], note.Seconds);
             }).ToList();
 
             var burstItems = burstSliders.SelectMany(bs =>
@@ -156,14 +231,23 @@ namespace Parser.Utils
                 return sliceCount == 0 ? new List<MaxScoreCounterElement>() : Enumerable.Range(1, sliceCount - 1).Select(i =>
                 {
                     float t = (float)i / (sliceCount - 1);
-                    var beat = bs.Seconds + (bs.TailInSeconds - bs.Seconds) * t;
-                    return new MaxScoreCounterElement(NoteScoreDefinition.BurstSliderElement, beat);
+
+                    var seconds = bs.Seconds + (bs.TailInSeconds - bs.Seconds) * t;
+                    var beat = bs.Beats + (bs.TailInBeats - bs.Beats) * t;
+
+                    var matchesHead = slidersByBeat.ContainsKey(beat) && slidersByBeat[beat].Any(s => bs.Color == s.Color && bs.x == s.x && bs.y == s.y);
+
+                    if (matchesHead) {
+                        return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ChainLinkArcHead], seconds);
+                    } else {
+                        return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ChainLink], seconds);
+                    }
                 });
             }).ToList();
 
             var items = noteItems.Concat(burstItems)
                 .OrderBy(elem => elem.Time)
-                .ThenBy(elem => elem.ScoreDef.MaxCutScore())
+                .ThenBy(elem => elem.ScoreDef.maxCutScore)
                 .ToList();
 
             var maxScores = new List<(float, int)>();
@@ -171,12 +255,34 @@ namespace Parser.Utils
             var score = 0;
             foreach (var item in items) {
                 smc = smc.ProcessMultiplierEvent(MultiplierEventType.Positive);
-                score += item.ScoreDef.MaxCutScore() * smc.Multiplier;
+                score += item.ScoreDef.maxCutScore * smc.Multiplier;
 
                 maxScores.Add((item.Time, score));
             }
 
             return maxScores;
+        }
+
+        public static bool IsV3Pepega(this DifficultySet self)
+        {
+            var notes = self.Data.Notes.Where(note => note.Color == 0 || note.Color == 1);
+            var sliders = self.Data.Arcs;
+            var burstSliders = self.Data.Chains;
+
+            var slidersByBeat = sliders.GroupBy(s => s.BpmTime).ToDictionary(g => g.Key, g => g.ToList());
+            var slidersByTailBeat = sliders.GroupBy(s => s.TailBpmTime).ToDictionary(g => g.Key, g => g.ToList());
+            var burstSlidersByBeat = burstSliders.GroupBy(s => s.BpmTime).ToDictionary(g => g.Key, g => g.ToList());
+
+            var noteItems = notes.Any(note =>
+            {
+                var matchesHead = slidersByBeat.ContainsKey(note.BpmTime) && slidersByBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.x && note.y == s.y);
+                var matchesTail = slidersByTailBeat.ContainsKey(note.BpmTime) && slidersByTailBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.tx && note.y == s.ty);
+                var matchesBurst = burstSlidersByBeat.ContainsKey(note.BpmTime) && burstSlidersByBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.x && note.y == note.y);
+
+                return matchesBurst && matchesHead && matchesTail || matchesBurst && matchesHead || matchesBurst && matchesTail || matchesHead && matchesTail;
+            });
+
+            return noteItems;
         }
 
         public static int MaxScore(this DifficultySet self) {
