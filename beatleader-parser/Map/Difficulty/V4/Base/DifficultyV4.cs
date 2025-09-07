@@ -1,6 +1,6 @@
 ﻿using beatleader_parser.Timescale;
 using Newtonsoft.Json;
-
+using Parser.Map.Difficulty.V3.Base;
 using System.Collections.Generic;
 
 namespace Parser.Map.Difficulty.V4.Base
@@ -84,6 +84,7 @@ namespace Parser.Map.Difficulty.V4.Base
         public int Direction { get; set; }
         [JsonProperty("a")]
         public int AngleOffset { get; set; }
+        public GridObjectCustomData? customData { get; set; }
     }
 
     public class BombNoteData
@@ -92,6 +93,7 @@ namespace Parser.Map.Difficulty.V4.Base
         public int X { get; set; }
         [JsonProperty("y")]
         public int Y { get; set; }
+        public GridObjectCustomData? customData { get; set; }
     }
 
     public class ObstacleData
@@ -134,6 +136,7 @@ namespace Parser.Map.Difficulty.V4.Base
         public float TailControlPointLengthMultiplier { get; set; }
         [JsonProperty("a")]
         public int MidAnchorMode { get; set; }
+        public GridObjectCustomData? customData { get; set; }
     }
 
     public class ChainNote
@@ -162,6 +165,7 @@ namespace Parser.Map.Difficulty.V4.Base
         public int SliceCount { get; set; }
         [JsonProperty("s")]
         public float SquishFactor { get; set; }
+        public GridObjectCustomData? customData { get; set; }
     }
 
     public class BaseEvent

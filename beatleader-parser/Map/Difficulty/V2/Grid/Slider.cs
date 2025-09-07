@@ -14,5 +14,13 @@
         public float _tailControlPointLengthMultiplier { get; set; }
         public int _tailCutDirection { get; set; }
         public int _sliderMidAnchorMode { get; set; }
+
+        public SliderCustomData? _customData { get; set; }
+    }
+
+    public class SliderCustomData
+    {
+        public float[]? _position { get; set; }
+        public float[]? _tailPosition { get; set; }
     }
 }

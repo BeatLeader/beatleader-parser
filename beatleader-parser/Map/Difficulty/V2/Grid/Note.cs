@@ -7,5 +7,11 @@
         public int _lineLayer { get; set; }
         public int _type { get; set; }
         public int _cutDirection { get; set; }
+        public NoteCustomData? _customData { get; set; }
+    }
+
+    public class NoteCustomData
+    {
+        public float[]? _position { get; set; }
     }
 }

@@ -6,6 +6,8 @@
         public int y { get; set; }
         public float njs { get; set; }
 
+        public virtual GridObjectCustomData? customData { get; set; }
+
         public override bool Equals(object obj)
         {
             return obj is BeatmapGridObject @object &&

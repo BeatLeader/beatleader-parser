@@ -76,7 +76,8 @@ namespace Parser.Map.Difficulty.V3.Base
                         y = noteData.Y,
                         Color = noteData.Color,
                         CutDirection = noteData.Direction,
-                        AngleOffset = noteData.AngleOffset
+                        AngleOffset = noteData.AngleOffset,
+                        customData = noteData.customData
                     };
                     difficultyV3.Notes.Add(colorNote);
                 }
@@ -93,7 +94,8 @@ namespace Parser.Map.Difficulty.V3.Base
                     {
                         Beats = bomb.Beat,
                         x = bombData.X,
-                        y = bombData.Y
+                        y = bombData.Y,
+                        customData = bombData.customData
                     };
                     difficultyV3.Bombs.Add(bombNote);
                 }
@@ -142,7 +144,11 @@ namespace Parser.Map.Difficulty.V3.Base
                         Multiplier = arcData.HeadControlPointLengthMultiplier,
                         TailMultiplier = arcData.TailControlPointLengthMultiplier,
                         TailDirection = tailNoteData.Direction,
-                        AnchorMode = arcData.MidAnchorMode
+                        AnchorMode = arcData.MidAnchorMode,
+                        customData = headNoteData.customData != null || tailNoteData.customData != null ? new GridObjectCustomData {
+                            coordinates = headNoteData.customData?.coordinates,
+                            tailCoordinates = tailNoteData.customData?.coordinates,
+                        } : null
                     };
                     difficultyV3.Arcs.Add(slider);
                 }
@@ -442,7 +448,10 @@ namespace Parser.Map.Difficulty.V3.Base
                         Beats = note._time,
                         x = note._lineIndex,
                         y = note._lineLayer,
-                        AngleOffset = 0
+                        AngleOffset = 0,
+                        customData = note._customData != null ? new GridObjectCustomData {
+                            coordinates = note._customData._position
+                        } : null,
                     };
                     difficultyV3.Notes.Add(colornote);
                 }
@@ -453,6 +462,9 @@ namespace Parser.Map.Difficulty.V3.Base
                         Beats = note._time,
                         x = note._lineIndex,
                         y = note._lineLayer,
+                        customData = note._customData != null ? new GridObjectCustomData {
+                            coordinates = note._customData._position
+                        } : null,
                     };
                     difficultyV3.Bombs.Add(bombnote);
                 }
@@ -476,6 +488,29 @@ namespace Parser.Map.Difficulty.V3.Base
                     obs.y = 2;
                     obs.Height = 3;
                 }
+
+                if ((obstacle._type >= 1000 && obstacle._type <= 4000) || (obstacle._type >= 4001 && obstacle._type <= 4005000)) {
+					int obsHeight = 0;
+					int startHeight = 0;
+					var value = obstacle._type;
+					if (obstacle._type >= 4001 && obstacle._type <= 4100000) {
+						value -= 4001;
+						obsHeight = value / 1000;
+						startHeight = value % 1000;
+					} else {
+						obsHeight = value - 1000;
+					}
+
+					var height = (obsHeight / 1000) * 5;
+					height = height * 1000 + 1000;
+
+					var layer = (startHeight / 750) * 5;
+					layer = layer * 1000 + 1334;
+
+					obs.y = layer / 1000 - 2;
+					obs.Height = (height - 1000) / 1000;
+				}
+
                 difficultyV3.Walls.Add(obs);
             }
             foreach (var arc in v2._sliders)
@@ -492,7 +527,11 @@ namespace Parser.Map.Difficulty.V3.Base
                     ty = arc._tailLineLayer,
                     AnchorMode = arc._sliderMidAnchorMode,
                     Multiplier = arc._headControlPointLengthMultiplier,
-                    TailMultiplier = arc._tailControlPointLengthMultiplier
+                    TailMultiplier = arc._tailControlPointLengthMultiplier,
+                    customData = arc._customData != null ? new GridObjectCustomData {
+                        coordinates = arc._customData._position,
+                        tailCoordinates = arc._customData._tailPosition
+                    } : null,
                 };
                 difficultyV3.Arcs.Add(slider);
             }
