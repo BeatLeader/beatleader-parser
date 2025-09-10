@@ -10,13 +10,24 @@ namespace beatleader_parser.Utils
 {
     [JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
     [JsonSerializable(typeof(Info))]
-    [JsonSerializable(typeof(InfoV4))]
     [JsonSerializable(typeof(DifficultyV2))]
+    internal partial class SerializeV2Context : JsonSerializerContext
+    {
+    }
+
+    [JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
+    [JsonSerializable(typeof(Info))]
     [JsonSerializable(typeof(DifficultyV3))]
+    internal partial class SerializeV3Context : JsonSerializerContext
+    {
+    }
+
+    [JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
+    [JsonSerializable(typeof(InfoV4))]
     [JsonSerializable(typeof(DifficultyV4))]
     [JsonSerializable(typeof(AudioData))]
     [JsonSerializable(typeof(Lighting))]
-    internal partial class SerializeOnlyContext : JsonSerializerContext
+    internal partial class SerializeV4Context : JsonSerializerContext
     {
     }
 }

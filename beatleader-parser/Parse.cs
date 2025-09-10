@@ -37,9 +37,9 @@ namespace beatleader_parser
                 var infoFile = archive.Entries.FirstOrDefault(e => IsInfoFile(e.Name));
                 if (infoFile == null) return null;
 
-                var info = Helper.DeserializeFromStream<Info>(infoFile.Open(), SerializeOnlyContext.Default.Info);
+                var info = Helper.DeserializeFromStream<Info>(infoFile.Open(), SerializeV3Context.Default.Info);
                 if (info == null || info._difficultyBeatmapSets == null) {
-                    var v4Info = Helper.DeserializeFromStream<InfoV4>(infoFile.Open(), SerializeOnlyContext.Default.InfoV4);
+                    var v4Info = Helper.DeserializeFromStream<InfoV4>(infoFile.Open(), SerializeV4Context.Default.InfoV4);
                     if (v4Info == null) {
                         return null;
                     }
@@ -49,7 +49,7 @@ namespace beatleader_parser
 
                     var audioDataFile = archive.Entries.FirstOrDefault(e => e.Name == v4Info.audio.audioDataFilename);
                     if (audioDataFile != null) {
-                        audioData = Helper.DeserializeFromStream<AudioData>(audioDataFile.Open(), SerializeOnlyContext.Default.AudioData);
+                        audioData = Helper.DeserializeFromStream<AudioData>(audioDataFile.Open(), SerializeV4Context.Default.AudioData);
                     }
 
                     foreach (var beatmap in v4Info.difficultyBeatmaps)
@@ -57,13 +57,13 @@ namespace beatleader_parser
                         var diffFile = archive.Entries.FirstOrDefault(e => e.Name == beatmap.beatmapDataFilename);
                         if (diffFile == null) continue;
 
-                        var diff = Helper.DeserializeFromStream<DifficultyV4>(diffFile.Open(), SerializeOnlyContext.Default.DifficultyV4);
+                        var diff = Helper.DeserializeFromStream<DifficultyV4>(diffFile.Open(), SerializeV4Context.Default.DifficultyV4);
                         if (diff == null || diff.colorNotes == null) continue;
 
                         Lighting? lighting = null;
                         var lightsFile = archive.Entries.FirstOrDefault(e => e.Name == beatmap.lightshowDataFilename);
                         if (lightsFile != null) {
-                            lighting = Helper.DeserializeFromStream<Lighting>(lightsFile.Open(), SerializeOnlyContext.Default.Lighting);
+                            lighting = Helper.DeserializeFromStream<Lighting>(lightsFile.Open(), SerializeV4Context.Default.Lighting);
                         }
 
                         var v3Diff = DifficultyV3.V4toV3(diff, audioData, lighting);
@@ -84,13 +84,13 @@ namespace beatleader_parser
                                 string content = reader.ReadToEnd();
                                 if (content.Contains("_cutDirection") && !content.Contains("colorBoostBeatmapEvents"))
                                 {
-                                    var diff = Helper.DeserializeFromStream<DifficultyV2>(diffFile.Open(), SerializeOnlyContext.Default.DifficultyV2);
+                                    var diff = Helper.DeserializeFromStream<DifficultyV2>(diffFile.Open(), SerializeV2Context.Default.DifficultyV2);
                                     if (diff == null || diff._notes == null) continue;
                                     v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, DifficultyV3.V2toV3(diff, info._beatsPerMinute, beatmap._noteJumpMovementSpeed), beatmap));
                                 }
                                 else
                                 {
-                                    var diff = Helper.DeserializeFromStream<DifficultyV3>(diffFile.Open(), SerializeOnlyContext.Default.DifficultyV3);
+                                    var diff = Helper.DeserializeFromStream<DifficultyV3>(diffFile.Open(), SerializeV3Context.Default.DifficultyV3);
                                     if (diff == null || diff.Notes == null) continue;
                                     DifficultyV3.ConvertTime(diff, info._beatsPerMinute);
                                     DifficultyV3.CalculateObjectNjs(diff, beatmap._noteJumpMovementSpeed);
@@ -127,9 +127,9 @@ namespace beatleader_parser
                 BeatmapV3 v3 = new();
 
                 var infoJson = jsonStrings.Where(x => IsInfoFile(x.filename)).FirstOrDefault().json;
-                var info = JsonSerializer.Deserialize<Info>(infoJson, SerializeOnlyContext.Default.Info);
+                var info = JsonSerializer.Deserialize<Info>(infoJson, SerializeV3Context.Default.Info);
                 if (info == null || info._difficultyBeatmapSets == null) {
-                    var v4Info = JsonSerializer.Deserialize<InfoV4>(infoJson, SerializeOnlyContext.Default.InfoV4);
+                    var v4Info = JsonSerializer.Deserialize<InfoV4>(infoJson, SerializeV4Context.Default.InfoV4);
                     if (v4Info == null) {
                         return null;
                     }
@@ -139,7 +139,7 @@ namespace beatleader_parser
 
                     var audioDataJson = jsonStrings.Where(x => x.filename == v4Info.audio.audioDataFilename).FirstOrDefault().json;
                     if (audioDataJson != null) {
-                        audioData = JsonSerializer.Deserialize<AudioData>(audioDataJson, SerializeOnlyContext.Default.AudioData);
+                        audioData = JsonSerializer.Deserialize<AudioData>(audioDataJson, SerializeV4Context.Default.AudioData);
                     }
 
                     foreach (var beatmap in v4Info.difficultyBeatmaps)
@@ -147,13 +147,13 @@ namespace beatleader_parser
                         var json = jsonStrings.Where(x => x.filename == beatmap.beatmapDataFilename).FirstOrDefault().json;
                         if (string.IsNullOrEmpty(json)) continue;
 
-                        var diff = JsonSerializer.Deserialize<DifficultyV4>(json, SerializeOnlyContext.Default.DifficultyV4);
+                        var diff = JsonSerializer.Deserialize<DifficultyV4>(json, SerializeV4Context.Default.DifficultyV4);
                         if (diff == null || diff.colorNotes == null) continue;
 
                         Lighting? lighting = null;
                         var lightsFile = jsonStrings.Where(e => e.filename == beatmap.lightshowDataFilename).FirstOrDefault().json;
                         if (string.IsNullOrEmpty(lightsFile)) {
-                            lighting = JsonSerializer.Deserialize<Lighting>(lightsFile, SerializeOnlyContext.Default.Lighting);
+                            lighting = JsonSerializer.Deserialize<Lighting>(lightsFile, SerializeV4Context.Default.Lighting);
                         }
 
                         var v3Diff = DifficultyV3.V4toV3(diff, audioData, lighting);
@@ -173,7 +173,7 @@ namespace beatleader_parser
                             string json = jsonStrings.Where(x => x.filename == $"{difficultyName + characteristicName}.dat").FirstOrDefault().json;
                             if (json.Contains("_cutDirection") && !json.Contains("colorBoostBeatmapEvents"))
                             {
-                                DifficultyV2 v2 = JsonSerializer.Deserialize<DifficultyV2>(json, SerializeOnlyContext.Default.DifficultyV2);
+                                DifficultyV2 v2 = JsonSerializer.Deserialize<DifficultyV2>(json, SerializeV2Context.Default.DifficultyV2);
                                 if (v2 != null)
                                 {
                                     v3.Difficulties.Add(new(difficultyName, characteristicName, DifficultyV3.V2toV3(v2, info._beatsPerMinute, difficultyBeatmap._noteJumpMovementSpeed), difficultyBeatmap));
@@ -181,7 +181,7 @@ namespace beatleader_parser
                             }
                             else
                             {
-                                DifficultyV3 diffv3 = JsonSerializer.Deserialize<DifficultyV3>(json, SerializeOnlyContext.Default.DifficultyV3);
+                                DifficultyV3 diffv3 = JsonSerializer.Deserialize<DifficultyV3>(json, SerializeV3Context.Default.DifficultyV3);
                                 DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
                                 DifficultyV3.CalculateObjectNjs(diffv3, difficultyBeatmap._noteJumpMovementSpeed);
                                 if (v3 != null)
@@ -210,44 +210,43 @@ namespace beatleader_parser
             {
                 DifficultyV3 v3 = new();
 
-                var info = JsonSerializer.Deserialize<Info>(infoStrings, SerializeOnlyContext.Default.Info);
+                var info = JsonSerializer.Deserialize<Info>(infoStrings, SerializeV3Context.Default.Info);
                 if (info == null || info._difficultyBeatmapSets == null)
                 {
-
                     AudioData? audioData = null;
                     if (audioDataJson != null)
                     {
-                        audioData = JsonSerializer.Deserialize<AudioData>(audioDataJson, SerializeOnlyContext.Default.AudioData);
+                        audioData = JsonSerializer.Deserialize<AudioData>(audioDataJson, SerializeV4Context.Default.AudioData);
                     }
 
-                    var diff = JsonSerializer.Deserialize<DifficultyV4>(jsonStrings, SerializeOnlyContext.Default.DifficultyV4);
+                    var diff = JsonSerializer.Deserialize<DifficultyV4>(jsonStrings, SerializeV4Context.Default.DifficultyV4);
 
                     Lighting? lighting = null;
                     if (lightsDataJson != null)
                     {
-                        lighting = JsonSerializer.Deserialize<Lighting>(lightsDataJson, SerializeOnlyContext.Default.Lighting);
+                        lighting = JsonSerializer.Deserialize<Lighting>(lightsDataJson, SerializeV4Context.Default.Lighting);
                     }
-
                     v3 = DifficultyV3.V4toV3(diff, audioData, lighting);
                     DifficultyV3.ConvertTime(v3, bpm);
                     DifficultyV3.CalculateObjectNjs(v3, njs);
                 }
                 else if (jsonStrings.Contains("_cutDirection") && !jsonStrings.Contains("colorBoostBeatmapEvents"))
                 {
-                    DifficultyV2 v2 = JsonSerializer.Deserialize<DifficultyV2>(jsonStrings, SerializeOnlyContext.Default.DifficultyV2);
+                    DifficultyV2 v2 = JsonSerializer.Deserialize<DifficultyV2>(jsonStrings, SerializeV2Context.Default.DifficultyV2);
                     v3 = DifficultyV3.V2toV3(v2, bpm, njs);
                 }
                 else
                 {
-                    v3 = JsonSerializer.Deserialize<DifficultyV3>(jsonStrings, SerializeOnlyContext.Default.DifficultyV3);
+                    v3 = JsonSerializer.Deserialize<DifficultyV3>(jsonStrings, SerializeV3Context.Default.DifficultyV3);
                     DifficultyV3.ConvertTime(v3, bpm);
                     DifficultyV3.CalculateObjectNjs(v3, njs);
                 }
 
                 return v3;
             }
-            catch
+            catch (Exception e)
             {
+                File.AppendAllText("C:\\Users\\Laure\\test1.txt", e.Message);
                 return null;
             }
         }
@@ -272,9 +271,9 @@ namespace beatleader_parser
                 var infoFile = archive.Entries.FirstOrDefault(e => IsInfoFile(e.Name));
                 if (infoFile == null) return null;
 
-                var info = Helper.DeserializeFromStream<Info>(infoFile.Open(), SerializeOnlyContext.Default.Info);
+                var info = Helper.DeserializeFromStream<Info>(infoFile.Open(), SerializeV3Context.Default.Info);
                 if (info == null || info._difficultyBeatmapSets == null) {
-                    var v4Info = Helper.DeserializeFromStream<InfoV4>(infoFile.Open(), SerializeOnlyContext.Default.InfoV4);
+                    var v4Info = Helper.DeserializeFromStream<InfoV4>(infoFile.Open(), SerializeV4Context.Default.InfoV4);
                     if (v4Info == null) {
                         return null;
                     }
@@ -284,7 +283,7 @@ namespace beatleader_parser
 
                     var audioDataFile = archive.Entries.FirstOrDefault(e => e.Name == v4Info.audio.audioDataFilename);
                     if (audioDataFile != null) {
-                        audioData = Helper.DeserializeFromStream<AudioData>(audioDataFile.Open(), SerializeOnlyContext.Default.AudioData);
+                        audioData = Helper.DeserializeFromStream<AudioData>(audioDataFile.Open(), SerializeV4Context.Default.AudioData);
                     }
 
                     foreach (var beatmap in v4Info.difficultyBeatmaps)
@@ -292,13 +291,13 @@ namespace beatleader_parser
                         var diffFile = archive.Entries.FirstOrDefault(e => e.Name == beatmap.beatmapDataFilename);
                         if (diffFile == null) continue;
 
-                        var diff = Helper.DeserializeFromStream<DifficultyV4>(diffFile.Open(), SerializeOnlyContext.Default.DifficultyV4);
+                        var diff = Helper.DeserializeFromStream<DifficultyV4>(diffFile.Open(), SerializeV4Context.Default.DifficultyV4);
                         if (diff == null || diff.colorNotes == null) continue;
 
                         Lighting? lighting = null;
                         var lightsFile = archive.Entries.FirstOrDefault(e => e.Name == beatmap.lightshowDataFilename);
                         if (lightsFile != null) {
-                            lighting = Helper.DeserializeFromStream<Lighting>(lightsFile.Open(), SerializeOnlyContext.Default.Lighting);
+                            lighting = Helper.DeserializeFromStream<Lighting>(lightsFile.Open(), SerializeV4Context.Default.Lighting);
                         }
 
                         var v3Diff = DifficultyV3.V4toV3(diff, audioData, lighting);
@@ -319,13 +318,13 @@ namespace beatleader_parser
                             string content = reader.ReadToEnd();
                             if (content.Contains("_cutDirection") && !content.Contains("colorBoostBeatmapEvents"))
                             {
-                                var diff = Helper.DeserializeFromStream<DifficultyV2>(diffFile.Open(), SerializeOnlyContext.Default.DifficultyV2);
+                                var diff = Helper.DeserializeFromStream<DifficultyV2>(diffFile.Open(), SerializeV2Context.Default.DifficultyV2);
                                 if (diff == null || diff._notes == null) continue;
                                 v3.Difficulties.Add(new(beatmap._difficulty, set._beatmapCharacteristicName, DifficultyV3.V2toV3(diff, info._beatsPerMinute, beatmap._noteJumpMovementSpeed), beatmap));
                             }
                             else
                             {
-                                var diff = Helper.DeserializeFromStream<DifficultyV3>(diffFile.Open(), SerializeOnlyContext.Default.DifficultyV3);
+                                var diff = Helper.DeserializeFromStream<DifficultyV3>(diffFile.Open(), SerializeV3Context.Default.DifficultyV3);
                                 if (diff == null || diff.Notes == null) continue;
                                 DifficultyV3.ConvertTime(diff, info._beatsPerMinute);
                                 DifficultyV3.CalculateObjectNjs(diff, beatmap._noteJumpMovementSpeed);
@@ -353,16 +352,16 @@ namespace beatleader_parser
         public BeatmapV3? TryLoadPath(string folderPath)
         {
             var infoContent = File.Exists($"{folderPath}/Info.dat") ? File.ReadAllText($"{folderPath}/Info.dat") : File.ReadAllText($"{folderPath}/info.dat");
-            var info = JsonSerializer.Deserialize<Info>(infoContent, SerializeOnlyContext.Default.Info);
+            var info = JsonSerializer.Deserialize<Info>(infoContent, SerializeV3Context.Default.Info);
             AudioData? audioData = null;
             if (info == null || info._difficultyBeatmapSets == null) {
-                var v4Info = JsonSerializer.Deserialize<InfoV4>(infoContent, SerializeOnlyContext.Default.InfoV4);
+                var v4Info = JsonSerializer.Deserialize<InfoV4>(infoContent, SerializeV4Context.Default.InfoV4);
                 if (v4Info == null) {
                     return null;
                 }
                 
                 if (File.Exists($"{folderPath}/{v4Info.audio.audioDataFilename}")) {
-                    audioData = JsonSerializer.Deserialize<AudioData>(File.ReadAllText($"{folderPath}/{v4Info.audio.audioDataFilename}"), SerializeOnlyContext.Default.AudioData);
+                    audioData = JsonSerializer.Deserialize<AudioData>(File.ReadAllText($"{folderPath}/{v4Info.audio.audioDataFilename}"), SerializeV4Context.Default.AudioData);
                 }
 
                 info = v4Info.ToV2();
@@ -391,7 +390,7 @@ namespace beatleader_parser
                 var text = File.ReadAllText($"{folderPath}/{diff.path}");
                 if (text.Contains("_cutDirection") && !text.Contains("colorBoostBeatmapEvents"))
                 {
-                    DifficultyV2? v2 = JsonSerializer.Deserialize<DifficultyV2>(text, SerializeOnlyContext.Default.DifficultyV2);
+                    DifficultyV2? v2 = JsonSerializer.Deserialize<DifficultyV2>(text, SerializeV2Context.Default.DifficultyV2);
                     if (v2 != null)
                     {
                         v3.Difficulties.Add(new(diff.difficulty, diff.characteristic, DifficultyV3.V2toV3(v2, info._beatsPerMinute, diff.beatmap._noteJumpMovementSpeed), diff.beatmap));
@@ -400,9 +399,9 @@ namespace beatleader_parser
                 else if (text.Contains("colorNotesData"))
                 {
                     DifficultyV3 diffv3 = DifficultyV3.V4toV3(
-                        JsonSerializer.Deserialize<DifficultyV4>(text, SerializeOnlyContext.Default.DifficultyV4), 
+                        JsonSerializer.Deserialize<DifficultyV4>(text, SerializeV4Context.Default.DifficultyV4), 
                         audioData,
-                        JsonSerializer.Deserialize<Lighting>(File.ReadAllText($"{folderPath}/{diff.lightingPath}"), SerializeOnlyContext.Default.Lighting));
+                        JsonSerializer.Deserialize<Lighting>(File.ReadAllText($"{folderPath}/{diff.lightingPath}"), SerializeV4Context.Default.Lighting));
                     DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
                     DifficultyV3.CalculateObjectNjs(diffv3, diff.beatmap._noteJumpMovementSpeed);
                     if (v3 != null)
@@ -412,7 +411,7 @@ namespace beatleader_parser
                 }
                 else
                 {
-                    DifficultyV3 diffv3 = JsonSerializer.Deserialize<DifficultyV3>(text, SerializeOnlyContext.Default.DifficultyV3);
+                    DifficultyV3 diffv3 = JsonSerializer.Deserialize<DifficultyV3>(text, SerializeV3Context.Default.DifficultyV3);
                     DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
                     DifficultyV3.CalculateObjectNjs(diffv3, diff.beatmap._noteJumpMovementSpeed);
                     if (v3 != null)
@@ -436,17 +435,17 @@ namespace beatleader_parser
         public SingleDiffBeatmapV3? TryLoadPath(string folderPath, string characteristic, string difficulty)
         {
             var infoContent = File.Exists($"{folderPath}/Info.dat") ? File.ReadAllText($"{folderPath}/Info.dat") : File.ReadAllText($"{folderPath}/info.dat");
-            var info = JsonSerializer.Deserialize<Info>(infoContent, SerializeOnlyContext.Default.Info);
+            var info = JsonSerializer.Deserialize<Info>(infoContent, SerializeV3Context.Default.Info);
             
             AudioData? audioData = null;
             if (info == null || info._difficultyBeatmapSets == null) {
-                var v4Info = JsonSerializer.Deserialize<InfoV4>(infoContent, SerializeOnlyContext.Default.InfoV4);
+                var v4Info = JsonSerializer.Deserialize<InfoV4>(infoContent, SerializeV4Context.Default.InfoV4);
                 if (v4Info == null) {
                     return null;
                 }
                 
                 if (File.Exists($"{folderPath}/{v4Info.audio.audioDataFilename}")) {
-                    audioData = JsonSerializer.Deserialize<AudioData>(File.ReadAllText($"{folderPath}/{v4Info.audio.audioDataFilename}"), SerializeOnlyContext.Default.AudioData);
+                    audioData = JsonSerializer.Deserialize<AudioData>(File.ReadAllText($"{folderPath}/{v4Info.audio.audioDataFilename}"), SerializeV4Context.Default.AudioData);
                 }
 
                 info = v4Info.ToV2();
@@ -480,7 +479,7 @@ namespace beatleader_parser
                     var text = File.ReadAllText($"{folderPath}/{diff.path}");
                     if (text.Contains("_cutDirection") && !text.Contains("colorBoostBeatmapEvents"))
                     {
-                        DifficultyV2? v2 = JsonSerializer.Deserialize<DifficultyV2>(text, SerializeOnlyContext.Default.DifficultyV2);
+                        DifficultyV2? v2 = JsonSerializer.Deserialize<DifficultyV2>(text, SerializeV2Context.Default.DifficultyV2);
                         if (v2 != null)
                         {
                             result.Difficulty = (new(diff.difficulty, diff.characteristic, DifficultyV3.V2toV3(v2, info._beatsPerMinute, diff.beatMap._noteJumpMovementSpeed), diff.beatMap));
@@ -489,9 +488,9 @@ namespace beatleader_parser
                     else if (text.Contains("colorNotesData"))
                     {
                         DifficultyV3 diffv3 = DifficultyV3.V4toV3(
-                            JsonSerializer.Deserialize<DifficultyV4>(text, SerializeOnlyContext.Default.DifficultyV4), 
+                            JsonSerializer.Deserialize<DifficultyV4>(text, SerializeV4Context.Default.DifficultyV4), 
                             audioData,
-                            JsonSerializer.Deserialize<Lighting>(File.ReadAllText($"{folderPath}/{diff.lightingPath}"), SerializeOnlyContext.Default.Lighting));
+                            JsonSerializer.Deserialize<Lighting>(File.ReadAllText($"{folderPath}/{diff.lightingPath}"), SerializeV4Context.Default.Lighting));
                         DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
                         DifficultyV3.CalculateObjectNjs(diffv3, diff.beatMap._noteJumpMovementSpeed);
                         if (result != null)
@@ -501,7 +500,7 @@ namespace beatleader_parser
                     }
                     else
                     {
-                        DifficultyV3 diffv3 = JsonSerializer.Deserialize<DifficultyV3>(text, SerializeOnlyContext.Default.DifficultyV3);
+                        DifficultyV3 diffv3 = JsonSerializer.Deserialize<DifficultyV3>(text, SerializeV3Context.Default.DifficultyV3);
                         DifficultyV3.ConvertTime(diffv3, info._beatsPerMinute);
                         DifficultyV3.CalculateObjectNjs(diffv3, diff.beatMap._noteJumpMovementSpeed);
                         if (result != null)
