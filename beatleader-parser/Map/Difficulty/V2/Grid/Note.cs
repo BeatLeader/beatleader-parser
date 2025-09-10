@@ -13,5 +13,6 @@
     public class NoteCustomData
     {
         public float[]? _position { get; set; }
+        public float? _cutDirection { get; set; }
     }
 }

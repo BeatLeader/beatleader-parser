@@ -443,12 +443,12 @@ namespace Parser.Map.Difficulty.V3.Base
                 {
                     Note colornote = new()
                     {
-                        CutDirection = note._cutDirection,
+                        CutDirection = note._cutDirection != 8 && note._customData?._cutDirection != null ? 1 : note._cutDirection,
                         Color = note._type,
                         Beats = note._time,
                         x = note._lineIndex,
                         y = note._lineLayer,
-                        AngleOffset = 0,
+                        AngleOffset = note._customData?._cutDirection ?? 0,
                         customData = note._customData != null ? new GridObjectCustomData {
                             coordinates = note._customData._position
                         } : null,

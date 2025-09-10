@@ -6,7 +6,7 @@ namespace Parser.Map.Difficulty.V3.Grid
     public class Note : BeatmapColorGridObject
     {
         [JsonPropertyName("a")]
-        public int AngleOffset { get; set; }
+        public float AngleOffset { get; set; }
         [JsonPropertyName("d")]
         public int CutDirection { get; set; }
 
