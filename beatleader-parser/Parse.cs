@@ -204,49 +204,48 @@ namespace beatleader_parser
             }
         }
 
-        public DifficultyV3 TryLoadDifficulty(string infoStrings, string jsonStrings, string audioDataJson, string lightsDataJson, float bpm, float njs)
+        public DifficultyV3 TryLoadDifficulty(string infoJson, string diffJson, string audioJson, string lightJson, float bpm, float njs)
         {
             try
             {
                 DifficultyV3 v3 = new();
 
-                var info = JsonSerializer.Deserialize<Info>(infoStrings, SerializeV3Context.Default.Info);
+                var info = JsonSerializer.Deserialize<Info>(infoJson, SerializeV3Context.Default.Info);
                 if (info == null || info._difficultyBeatmapSets == null)
                 {
                     AudioData? audioData = null;
-                    if (audioDataJson != null)
+                    if (audioJson != null)
                     {
-                        audioData = JsonSerializer.Deserialize<AudioData>(audioDataJson, SerializeV4Context.Default.AudioData);
+                        audioData = JsonSerializer.Deserialize<AudioData>(audioJson, SerializeV4Context.Default.AudioData);
                     }
 
-                    var diff = JsonSerializer.Deserialize<DifficultyV4>(jsonStrings, SerializeV4Context.Default.DifficultyV4);
+                    var diff = JsonSerializer.Deserialize<DifficultyV4>(diffJson, SerializeV4Context.Default.DifficultyV4);
 
                     Lighting? lighting = null;
-                    if (lightsDataJson != null)
+                    if (lightJson != null)
                     {
-                        lighting = JsonSerializer.Deserialize<Lighting>(lightsDataJson, SerializeV4Context.Default.Lighting);
+                        lighting = JsonSerializer.Deserialize<Lighting>(lightJson, SerializeV4Context.Default.Lighting);
                     }
                     v3 = DifficultyV3.V4toV3(diff, audioData, lighting);
                     DifficultyV3.ConvertTime(v3, bpm);
                     DifficultyV3.CalculateObjectNjs(v3, njs);
                 }
-                else if (jsonStrings.Contains("_cutDirection") && !jsonStrings.Contains("colorBoostBeatmapEvents"))
+                else if (diffJson.Contains("_cutDirection") && !diffJson.Contains("colorBoostBeatmapEvents"))
                 {
-                    DifficultyV2 v2 = JsonSerializer.Deserialize<DifficultyV2>(jsonStrings, SerializeV2Context.Default.DifficultyV2);
+                    DifficultyV2 v2 = JsonSerializer.Deserialize<DifficultyV2>(diffJson, SerializeV2Context.Default.DifficultyV2);
                     v3 = DifficultyV3.V2toV3(v2, bpm, njs);
                 }
                 else
                 {
-                    v3 = JsonSerializer.Deserialize<DifficultyV3>(jsonStrings, SerializeV3Context.Default.DifficultyV3);
+                    v3 = JsonSerializer.Deserialize<DifficultyV3>(diffJson, SerializeV3Context.Default.DifficultyV3);
                     DifficultyV3.ConvertTime(v3, bpm);
                     DifficultyV3.CalculateObjectNjs(v3, njs);
                 }
 
                 return v3;
             }
-            catch (Exception e)
+            catch
             {
-                File.AppendAllText("C:\\Users\\Laure\\test1.txt", e.Message);
                 return null;
             }
         }
