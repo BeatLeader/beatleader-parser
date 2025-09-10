@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace Parser.Map.V4 {
-    public class Info {
+    public class InfoV4 {
         public string version { get; set; }
         public Song song { get; set; }
         public Audio audio { get; set; }
