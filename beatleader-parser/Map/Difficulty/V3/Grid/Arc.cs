@@ -1,17 +1,15 @@
-﻿using Newtonsoft.Json;
-using Parser.Map.Difficulty.V3.Base;
+﻿using Parser.Map.Difficulty.V3.Base;
+using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
     public class Arc : BeatmapColorGridObjectWithTail
     {
-        [JsonProperty(PropertyName = "mu")]
+        [JsonPropertyName("mu")]
         public float Multiplier { get; set; }
-        [JsonProperty(PropertyName = "tc")]
-        public int TailDirection { get; set; }
-        [JsonProperty(PropertyName = "tmu")]
+        [JsonPropertyName("tmu")]
         public float TailMultiplier { get; set; }
-        [JsonProperty(PropertyName = "m")]
+        [JsonPropertyName("m")]
         public int AnchorMode { get; set; }
 
         public override bool Equals(object obj)
@@ -26,7 +24,7 @@ namespace Parser.Map.Difficulty.V3.Grid
                    TailInBeats == arc.TailInBeats &&
                    tx == arc.tx &&
                    ty == arc.ty &&
-                   TailDirection == arc.TailDirection &&
+                   TailCutDirection == arc.TailCutDirection &&
                    TailMultiplier == arc.TailMultiplier &&
                    AnchorMode == arc.AnchorMode;
         }
@@ -43,7 +41,7 @@ namespace Parser.Map.Difficulty.V3.Grid
             hashCode = hashCode * -1521134295 + TailInBeats.GetHashCode();
             hashCode = hashCode * -1521134295 + tx.GetHashCode();
             hashCode = hashCode * -1521134295 + ty.GetHashCode();
-            hashCode = hashCode * -1521134295 + TailDirection.GetHashCode();
+            hashCode = hashCode * -1521134295 + TailCutDirection.GetHashCode();
             hashCode = hashCode * -1521134295 + TailMultiplier.GetHashCode();
             hashCode = hashCode * -1521134295 + AnchorMode.GetHashCode();
             return hashCode;

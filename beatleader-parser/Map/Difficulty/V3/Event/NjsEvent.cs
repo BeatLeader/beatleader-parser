@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
-using Parser.Map.Difficulty.V3.Base;
+﻿using Parser.Map.Difficulty.V3.Base;
+using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Event {
     public class NjsEvent : BeatmapObject {
-        [JsonProperty(PropertyName = "d")]
+        [JsonPropertyName("d")]
         public float Delta { get; set; }
-        [JsonProperty(PropertyName = "p")]
+        [JsonPropertyName("p")]
         public int UsePrevious { get; set; }
-        [JsonProperty(PropertyName = "e")]
+        [JsonPropertyName("e")]
         public int Easing { get; set; }
 
         public override bool Equals(object obj)

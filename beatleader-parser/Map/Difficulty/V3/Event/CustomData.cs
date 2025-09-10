@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Event
 {
@@ -13,7 +13,6 @@ namespace Parser.Map.Difficulty.V3.Event
         public float speed { get; set; }
         public float step { get; set; }
 
-        [JsonConverter(typeof(LightIDConverter))]
         public int[] lightID { get; set; }
         public int direction { get; set; }
         public bool lockRotation { get; set; }
@@ -49,37 +48,6 @@ namespace Parser.Map.Difficulty.V3.Event
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(lerpType);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(easing);
             return hashCode;
-        }
-    }
-
-    public class LightIDConverter : JsonConverter
-    {
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(int[]);
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            JToken token = JToken.Load(reader);
-            if (token.Type == JTokenType.Array)
-            {
-                return token.ToObject<int[]>();
-            }
-            return new int[] { token.ToObject<int>() };
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            int[] lightIDs = (int[])value;
-            if (lightIDs.Length == 1)
-            {
-                serializer.Serialize(writer, lightIDs[0]);
-            }
-            else
-            {
-                serializer.Serialize(writer, lightIDs);
-            }
         }
     }
 }

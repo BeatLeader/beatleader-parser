@@ -1,10 +1,6 @@
-﻿using Parser.Map.Difficulty.V2.Base;
-using Parser.Map.Difficulty.V3.Base;
-using Parser.Map;
-using Newtonsoft.Json;
-using System.IO;
+﻿using System.IO;
 using System;
-using Parser.Audio.V4;
+using System.Text.Json;
 
 namespace Parser.Json
 {
@@ -14,10 +10,7 @@ namespace Parser.Json
         {
             try
             {
-                var serializer = new JsonSerializer();
-                using var sr = new StreamReader(stream);
-                using var jsonTextReader = new JsonTextReader(sr);
-                return serializer.Deserialize<T>(jsonTextReader);
+                return JsonSerializer.Deserialize<T>(stream);
             }
             catch (Exception e)
             {

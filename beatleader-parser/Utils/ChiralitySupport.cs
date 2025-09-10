@@ -554,7 +554,7 @@ namespace Parser.Utils
                 TailInBeats = sliderData.TailInBeats,
                 tx = Check_Index(sliderData.tx),
                 ty = v_taillayer,
-                TailDirection = (int)v_tailcutDirection
+                TailCutDirection = (int)v_tailcutDirection
             };
         }
 

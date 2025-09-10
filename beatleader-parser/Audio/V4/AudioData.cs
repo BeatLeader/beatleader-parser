@@ -1,32 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Parser.Audio.V4 {
     public class AudioData {
-        [JsonProperty("version")]
+        [JsonPropertyName("version")]
         public string version { get; set; }
-        [JsonProperty("songChecksum")] 
+        [JsonPropertyName("songChecksum")] 
         public string songChecksum { get; set; }
-        [JsonProperty("songSampleCount")]
+        [JsonPropertyName("songSampleCount")]
         public int songSampleCount { get; set; }
-        [JsonProperty("songFrequency")]
+        [JsonPropertyName("songFrequency")]
         public int songFrequency { get; set; }
-        [JsonProperty("bpmData")]
+        [JsonPropertyName("bpmData")]
         public List<BpmData> bpmData { get; set; }
-        [JsonProperty("lufsData")]
+        [JsonPropertyName("lufsData")]
         public List<object> lufsData { get; set; }
     }
 
     public class BpmData {
-        [JsonProperty("si")]
+        [JsonPropertyName("si")]
         public int startSampleIndex { get; set; }
-        [JsonProperty("ei")]
+        [JsonPropertyName("ei")]
         public int endSampleIndex { get; set; }
-        [JsonProperty("sb")]
+        [JsonPropertyName("sb")]
         public float startBeat { get; set; }
-        [JsonProperty("eb")]
+        [JsonPropertyName("eb")]
         public float endBeat { get; set; }
     }
 }

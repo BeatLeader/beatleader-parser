@@ -1,16 +1,15 @@
-﻿using Newtonsoft.Json;
-using Parser.Map.Difficulty.V3.Base;
-using System.Collections.Generic;
+﻿using Parser.Map.Difficulty.V3.Base;
+using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Event
 {
     public class Light : BeatmapObject
     {
-        [JsonProperty(PropertyName = "et")]
+        [JsonPropertyName("et")]
         public int Type { get; set; }
-        [JsonProperty(PropertyName = "i")]
+        [JsonPropertyName("i")]
         public int Value { get; set; }
-        [JsonProperty(PropertyName = "f")]
+        [JsonPropertyName("f")]
         public float f { get; set; }
 
         [JsonIgnore]

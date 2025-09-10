@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using Parser.Map.Difficulty.V3.Base;
+﻿using Parser.Map.Difficulty.V3.Base;
+using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Event
 {
     public class Colorboostbeatmapevent : BeatmapObject
     {
-        [JsonProperty(PropertyName = "o")]
+        [JsonPropertyName("o")]
         public bool On { get; set; }
 
         public override bool Equals(object obj)

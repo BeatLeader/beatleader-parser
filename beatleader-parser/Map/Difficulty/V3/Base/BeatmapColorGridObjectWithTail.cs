@@ -1,14 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Base
 {
     public class BeatmapColorGridObjectWithTail : BeatmapColorGridObject
     {
-        [JsonProperty(PropertyName = "d")]
+        [JsonPropertyName("d")]
         public int CutDirection { get; set; }
-        [JsonProperty(PropertyName = "tb")]
+        [JsonPropertyName("tb")]
         public float TailInBeats { get; set; }
-        [JsonProperty(PropertyName = "tc")]
+        [JsonPropertyName("tc")]
         public int TailCutDirection { get; set; }
         [JsonIgnore]
         public float TailInSeconds { get; set; } = 0f;

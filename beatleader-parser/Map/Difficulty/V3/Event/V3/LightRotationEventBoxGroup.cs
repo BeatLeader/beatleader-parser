@@ -1,14 +1,14 @@
-﻿using Newtonsoft.Json;
-using Parser.Map.Difficulty.V3.Base;
+﻿using Parser.Map.Difficulty.V3.Base;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Event.V3
 {
     public class Lightrotationeventboxgroup : BeatmapObject
     {
-        [JsonProperty(PropertyName = "g")]
+        [JsonPropertyName("g")]
         public int Group { get; set; }
-        [JsonProperty(PropertyName = "e")]
+        [JsonPropertyName("e")]
         public List<E2> EventBoxGroup { get; set; }
 
         public override bool Equals(object obj)

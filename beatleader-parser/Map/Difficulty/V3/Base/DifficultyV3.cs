@@ -1,6 +1,5 @@
 ﻿using beatleader_parser.Timescale;
 using beatleader_parser.VNJS;
-using Newtonsoft.Json;
 using Parser.Audio.V4;
 using Parser.Map.Difficulty.V2.Base;
 using Parser.Map.Difficulty.V3.Custom;
@@ -9,30 +8,31 @@ using Parser.Map.Difficulty.V3.Event.V3;
 using Parser.Map.Difficulty.V3.Grid;
 using Parser.Map.Difficulty.V4.Base;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Base
 {
     public class DifficultyV3
     {
-        [JsonProperty(PropertyName = "version")]
+        [JsonPropertyName("version")]
         public string Version { get; set; } = "3.3.0";
         public List<BpmEvent> bpmEvents { get; set; } = new();
         public List<NjsEvent> njsEvents { get; set; } = new();
-        [JsonProperty(PropertyName = "rotationEvents")]
+        [JsonPropertyName("rotationEvents")]
         public List<RotationEvent> Rotations { get; set; } = new();
-        [JsonProperty(PropertyName = "colorNotes")]
+        [JsonPropertyName("colorNotes")]
         public List<Note> Notes { get; set; } = new();
-        [JsonProperty(PropertyName = "bombNotes")]
+        [JsonPropertyName("bombNotes")]
         public List<Bomb> Bombs { get; set; } = new();
-        [JsonProperty(PropertyName = "obstacles")]
+        [JsonPropertyName("obstacles")]
         public List<Wall> Walls { get; set; } = new();
-        [JsonProperty(PropertyName = "sliders")]
+        [JsonPropertyName("sliders")]
         public List<Arc> Arcs { get; set; } = new();
-        [JsonProperty(PropertyName = "burstSliders")]
+        [JsonPropertyName("burstSliders")]
         public List<Chain> Chains { get; set; } = new();
-        [JsonProperty(PropertyName = "waypoints")]
+        [JsonPropertyName("waypoints")]
         public object[] Waypoints { get; set; }
-        [JsonProperty(PropertyName = "basicBeatmapEvents")]
+        [JsonPropertyName("basicBeatmapEvents")]
         public List<Light> Lights { get; set; } = new();
         public List<Colorboostbeatmapevent> colorBoostBeatmapEvents { get; set; } = new();
         public List<Lightcoloreventboxgroup> lightColorEventBoxGroups { get; set; } = new();
@@ -143,7 +143,7 @@ namespace Parser.Map.Difficulty.V3.Base
                         ty = tailNoteData.Y,
                         Multiplier = arcData.HeadControlPointLengthMultiplier,
                         TailMultiplier = arcData.TailControlPointLengthMultiplier,
-                        TailDirection = tailNoteData.Direction,
+                        TailCutDirection = tailNoteData.Direction,
                         AnchorMode = arcData.MidAnchorMode,
                         customData = headNoteData.customData != null || tailNoteData.customData != null ? new GridObjectCustomData {
                             coordinates = headNoteData.customData?.coordinates,

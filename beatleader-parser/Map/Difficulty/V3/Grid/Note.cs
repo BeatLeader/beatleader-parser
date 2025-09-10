@@ -1,14 +1,13 @@
-﻿using Newtonsoft.Json;
-using Parser.Map.Difficulty.V3.Base;
-using System;
+﻿using Parser.Map.Difficulty.V3.Base;
+using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
     public class Note : BeatmapColorGridObject
     {
-        [JsonProperty(PropertyName = "a")]
+        [JsonPropertyName("a")]
         public int AngleOffset { get; set; }
-        [JsonProperty(PropertyName = "d")]
+        [JsonPropertyName("d")]
         public int CutDirection { get; set; }
 
         public override bool Equals(object obj)

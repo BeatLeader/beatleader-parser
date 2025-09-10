@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Base
 {
     public class BeatmapObject : IComparable<BeatmapObject>
     {
-        [JsonProperty(PropertyName = "b")]
+        [JsonPropertyName("b")]
         public float Beats { get; set; }
         [JsonIgnore]
         public float Seconds { get; set; } = 0f;

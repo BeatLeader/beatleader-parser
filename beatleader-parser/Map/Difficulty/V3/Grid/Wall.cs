@@ -1,17 +1,17 @@
-﻿using Newtonsoft.Json;
-using Parser.Map.Difficulty.V3.Base;
+﻿using Parser.Map.Difficulty.V3.Base;
+using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
     public class Wall : BeatmapGridObject
     {
-        [JsonProperty(PropertyName = "d")]
+        [JsonPropertyName("d")]
         public float DurationInBeats { get; set; }
         [JsonIgnore]
         public float DurationInSeconds { get; set; } = 0;
-        [JsonProperty(PropertyName = "w")]
+        [JsonPropertyName("w")]
         public int Width { get; set; }
-        [JsonProperty(PropertyName = "h")]
+        [JsonPropertyName("h")]
         public int Height { get; set; }
 
         public override bool Equals(object obj)

@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Event.V3
 {
     public class BasicEventTypesWithKeywords
     {
-        [JsonProperty(PropertyName = "d")]
+        [JsonPropertyName("d")]
         public List<BasicEventTypesForKeyword> data { get; }
 
         public BasicEventTypesWithKeywords(List<BasicEventTypesForKeyword> data) {
@@ -14,9 +14,9 @@ namespace Parser.Map.Difficulty.V3.Event.V3
 
         public class BasicEventTypesForKeyword
         {
-            [JsonProperty(PropertyName = "k")]
+            [JsonPropertyName("k")]
             public string keyword { get; }
-            [JsonProperty(PropertyName = "e")]
+            [JsonPropertyName("e")]
             public List<int> eventTypes { get; }
 
             public BasicEventTypesForKeyword(string keyword, List<int> eventTypes) {

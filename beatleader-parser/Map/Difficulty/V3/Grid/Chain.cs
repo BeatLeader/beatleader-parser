@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
-using Parser.Map.Difficulty.V3.Base;
+﻿using Parser.Map.Difficulty.V3.Base;
+using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Grid
 {
     public class Chain : BeatmapColorGridObjectWithTail
     {
-        [JsonProperty(PropertyName = "sc")]
+        [JsonPropertyName("sc")]
         public int SliceCount { get; set; } = 8;
-        [JsonProperty(PropertyName = "s")]
+        [JsonPropertyName("s")]
         public float Squish { get; set; } = 1f;
 
         public override bool Equals(object obj)
