@@ -204,6 +204,54 @@ namespace beatleader_parser
             }
         }
 
+        public DifficultyV3 TryLoadDifficulty(string infoStrings, string jsonStrings, string audioDataJson, string lightsDataJson, float bpm, float njs)
+        {
+            try
+            {
+                DifficultyV3 v3 = new();
+
+                var info = JsonSerializer.Deserialize<Info>(infoStrings, SerializeOnlyContext.Default.Info);
+                if (info == null || info._difficultyBeatmapSets == null)
+                {
+
+                    AudioData? audioData = null;
+                    if (audioDataJson != null)
+                    {
+                        audioData = JsonSerializer.Deserialize<AudioData>(audioDataJson, SerializeOnlyContext.Default.AudioData);
+                    }
+
+                    var diff = JsonSerializer.Deserialize<DifficultyV4>(jsonStrings, SerializeOnlyContext.Default.DifficultyV4);
+
+                    Lighting? lighting = null;
+                    if (lightsDataJson != null)
+                    {
+                        lighting = JsonSerializer.Deserialize<Lighting>(lightsDataJson, SerializeOnlyContext.Default.Lighting);
+                    }
+
+                    v3 = DifficultyV3.V4toV3(diff, audioData, lighting);
+                    DifficultyV3.ConvertTime(v3, bpm);
+                    DifficultyV3.CalculateObjectNjs(v3, njs);
+                }
+                else if (jsonStrings.Contains("_cutDirection") && !jsonStrings.Contains("colorBoostBeatmapEvents"))
+                {
+                    DifficultyV2 v2 = JsonSerializer.Deserialize<DifficultyV2>(jsonStrings, SerializeOnlyContext.Default.DifficultyV2);
+                    v3 = DifficultyV3.V2toV3(v2, bpm, njs);
+                }
+                else
+                {
+                    v3 = JsonSerializer.Deserialize<DifficultyV3>(jsonStrings, SerializeOnlyContext.Default.DifficultyV3);
+                    DifficultyV3.ConvertTime(v3, bpm);
+                    DifficultyV3.CalculateObjectNjs(v3, njs);
+                }
+
+                return v3;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public List<BeatmapV3> TryDownloadLink(string downloadLink)
         {
             try
