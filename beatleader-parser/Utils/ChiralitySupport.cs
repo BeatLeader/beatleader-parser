@@ -45,31 +45,20 @@ namespace Parser.Utils
         };
 
         #region "Main Transform Functions"
-        public static DifficultyV3 Mirror_Horizontal(DifficultyV3 beatmapSaveData, int numberOfLines, bool flip_lines, bool remove_walls, bool is_ME)
+        public static DifficultyV3 Mirror_Horizontal(DifficultyV3 beatmapSaveData, int numberOfLines, bool flip_lines, bool remove_walls)
         {
             // Bombs:
             List<Bomb> h_bombNotes = new List<Bomb>();
             foreach (Bomb bomb in beatmapSaveData.Bombs)
             {
-                if (flip_lines == false)
-                {
-                    h_bombNotes.Add(new Bomb { 
-                       Beats = bomb.Beats, 
-                       x = bomb.x, 
-                       y = bomb.y 
-                    });
-                }
-                else
-                {
-                    h_bombNotes.Add(new Bomb { Beats = bomb.Beats, x = numberOfLines - 1 - bomb.x, y = bomb.y });
-                }
+                h_bombNotes.Add(Mirror_Horizontal_Bomb(bomb, numberOfLines, flip_lines));
             }
 
             // ColorNotes:
             List<Note> h_colorNotes = new List<Note>();
             foreach (Note colorNote in beatmapSaveData.Notes)
             {
-                h_colorNotes.Add(Mirror_Horizontal_Note(colorNote, numberOfLines, flip_lines, is_ME));
+                h_colorNotes.Add(Mirror_Horizontal_Note(colorNote, numberOfLines, flip_lines));
             }
 
             // Obstacles:
@@ -86,7 +75,7 @@ namespace Parser.Utils
             List<Arc> h_sliderDatas = new List<Arc>();
             foreach (Arc sliderData in beatmapSaveData.Arcs)
             {
-                h_sliderDatas.Add(Mirror_Horizontal_Slider(sliderData, numberOfLines, flip_lines, is_ME));
+                h_sliderDatas.Add(Mirror_Horizontal_Slider(sliderData, numberOfLines, flip_lines));
             }
 
             // BurstSliders:
@@ -94,7 +83,7 @@ namespace Parser.Utils
             foreach (Chain burstSliderData in beatmapSaveData.Chains)
             {
                 int headcutDirection = burstSliderData.CutDirection;
-                var mirroredNote = Mirror_Horizontal_BurstSlider(burstSliderData, numberOfLines, flip_lines, is_ME);
+                var mirroredNote = Mirror_Horizontal_BurstSlider(burstSliderData, numberOfLines, flip_lines);
                 if (mirroredNote.CutDirection != headcutDirection) {
                     foreach (var note in h_colorNotes)
                     {
@@ -133,27 +122,20 @@ namespace Parser.Utils
         }
 
 
-        public static DifficultyV3 Mirror_Vertical(DifficultyV3 beatmapSaveData, bool flip_rows, bool remove_walls, bool is_ME)
+        public static DifficultyV3 Mirror_Vertical(DifficultyV3 beatmapSaveData, bool flip_rows, bool remove_walls)
         {
             // Bombs:
             List<Bomb> v_bombNotes = new List<Bomb>();
             foreach (Bomb bomb in beatmapSaveData.Bombs)
             {
-                if (flip_rows)
-                {
-                    v_bombNotes.Add(new Bomb { Beats = bomb.Beats, x = bomb.x, y = 3 - 1 - bomb.y });
-                }
-                else
-                {
-                    v_bombNotes.Add(bomb);
-                }
+                v_bombNotes.Add(Mirror_Vertical_Bomb(bomb, flip_rows));
             }
 
             // ColorNotes:
             List<Note> v_colorNotes = new List<Note>();
             foreach (Note colorNote in beatmapSaveData.Notes)
             {
-                v_colorNotes.Add(Mirror_Vertical_Note(colorNote, flip_rows, is_ME));
+                v_colorNotes.Add(Mirror_Vertical_Note(colorNote, flip_rows));
             }
 
             // Obstacles:
@@ -170,7 +152,7 @@ namespace Parser.Utils
             List<Arc> v_sliderDatas = new List<Arc>();
             foreach (Arc sliderData in beatmapSaveData.Arcs)
             {
-                v_sliderDatas.Add(Mirror_Vertical_Slider(sliderData, flip_rows, is_ME));
+                v_sliderDatas.Add(Mirror_Vertical_Slider(sliderData, flip_rows));
             }
 
             // BurstSliders:
@@ -178,7 +160,7 @@ namespace Parser.Utils
             foreach (Chain burstSliderData in beatmapSaveData.Chains)
             {
                 int headcutDirection = burstSliderData.CutDirection;
-                var mirroredNote = Mirror_Vertical_BurstSlider(burstSliderData, flip_rows, is_ME);
+                var mirroredNote = Mirror_Vertical_BurstSlider(burstSliderData, flip_rows);
                 if (mirroredNote.CutDirection != headcutDirection) {
                     foreach (var note in v_colorNotes)
                     {
@@ -218,72 +200,127 @@ namespace Parser.Utils
         }
 
 
-        public static DifficultyV3 Mirror_Inverse(DifficultyV3 beatmapSaveData, int numberOfLines, bool flip_lines, bool flip_rows, bool remove_walls, bool is_ME)
+        public static DifficultyV3 Mirror_Inverse(DifficultyV3 beatmapSaveData, int numberOfLines, bool flip_lines, bool flip_rows, bool remove_walls)
         {
-            return Mirror_Vertical(Mirror_Horizontal(beatmapSaveData, numberOfLines, flip_lines, remove_walls, is_ME), flip_rows, remove_walls, is_ME);
+            return Mirror_Vertical(Mirror_Horizontal(beatmapSaveData, numberOfLines, flip_lines, remove_walls), flip_rows, remove_walls);
         }
         #endregion
 
 
         #region "Horizontal Transform Functions"
 
-        private static Note Mirror_Horizontal_Note(Note colorNoteData, int numberOfLines, bool flip_lines, bool is_ME)
+        private static Note Mirror_Horizontal_Note(Note colorNoteData, int numberOfLines, bool flip_lines)
         {
-            int h_line;
-
-            int color;
-            if (colorNoteData.Color == (int)Note.Type.Red)
-            {
-                color = (int)Note.Type.Blue;
-            }
-            else
-            {
-                color = (int)Note.Type.Red;
-            }
-
-            if (colorNoteData.x >= 1000 || colorNoteData.x <= -1000)
-            {
-                h_line = colorNoteData.x / 1000 - 1;
-                color = colorNoteData.Color;
-            }
-            else if (flip_lines)
-            {
-                h_line = numberOfLines - 1 - colorNoteData.x;
-            }
-            else
-            {
-                h_line = colorNoteData.x;
-                color = colorNoteData.Color;
+            // Apply Mapping Extensions precision horizontal flip logic to x, and transform cut direction accordingly.
+            int mirroredX = colorNoteData.x;
+            if (flip_lines) {
+                if (mirroredX <= -1000 || mirroredX >= 1000) {
+                    var leftSide = false;
+                    if (mirroredX <= -1000) mirroredX += 2000;
+                    if (mirroredX >= 4000) leftSide = true;
+                    mirroredX = 5000 - mirroredX;
+                    if (leftSide) mirroredX -= 2000;
+                } else if (mirroredX > 3) {
+                    var diff = (mirroredX - 3) * 2;
+                    var newLaneCount = 4 + diff;
+                    mirroredX = newLaneCount - diff - 1 - mirroredX;
+                } else if (mirroredX < 0) {
+                    var diff = (0 - mirroredX) * 2;
+                    var newLaneCount = 4 + diff;
+                    mirroredX = newLaneCount - diff - 1 - mirroredX;
+                } else {
+                    mirroredX = numberOfLines - 1 - mirroredX;
+                }
             }
 
-            Note.Direction h_cutDirection;
-            if (horizontal_cut_transform.TryGetValue((Note.Direction)colorNoteData.CutDirection, out h_cutDirection) == false || is_ME)
-            {
-                h_cutDirection = Get_Random_Direction();
+            GridObjectCustomData? customData = colorNoteData.customData;
+
+            if (colorNoteData.customData != null && colorNoteData.customData.coordinates != null) {
+                customData = new GridObjectCustomData {
+                    coordinates = new float[] { -colorNoteData.customData.coordinates[0] - 1, colorNoteData.customData.coordinates[1] },
+                };
             }
 
-            return new Note { 
+            var newCut = horizontal_cut_transform.TryGetValue((Note.Direction)colorNoteData.CutDirection, out var mapped)
+                ? mapped
+                : (Note.Direction)colorNoteData.CutDirection;
+
+            return new Note {
                 Beats = colorNoteData.Beats,
                 Seconds = colorNoteData.Seconds,
                 BpmTime = colorNoteData.BpmTime,
-                x = h_line,
-                y = Check_Layer(colorNoteData.y),
-                Color = color,
-                CutDirection = (int)h_cutDirection,
-                AngleOffset = colorNoteData.AngleOffset
+                x = mirroredX,
+                y = colorNoteData.y,
+                Color = colorNoteData.Color,
+                CutDirection = (int)newCut,
+                AngleOffset = -colorNoteData.AngleOffset,
+                customData = customData
+            };
+        }
+
+        private static Bomb Mirror_Horizontal_Bomb(Bomb bombData, int numberOfLines, bool flip_lines)
+        {
+            int mirrorX(int value) {
+                var v = value;
+                if (!flip_lines) return v;
+                if (v <= -1000 || v >= 1000) {
+                    var leftSide = false;
+                    if (v <= -1000) v += 2000;
+                    if (v >= 4000) leftSide = true;
+                    v = 5000 - v;
+                    if (leftSide) v -= 2000;
+                } else if (v > 3) {
+                    var diff = (v - 3) * 2;
+                    var newLaneCount = 4 + diff;
+                    v = newLaneCount - diff - 1 - v;
+                } else if (v < 0) {
+                    var diff = (0 - v) * 2;
+                    var newLaneCount = 4 + diff;
+                    v = newLaneCount - diff - 1 - v;
+                } else {
+                    v = numberOfLines - 1 - v;
+                }
+                return v;
+            }
+
+            GridObjectCustomData? customData = bombData.customData;
+
+            if (bombData.customData != null && bombData.customData.coordinates != null) {
+                customData = new GridObjectCustomData {
+                    coordinates = new float[] { -bombData.customData.coordinates[0] - 1, bombData.customData.coordinates[1] },
+                };
+            }
+
+            var mirroredX = mirrorX(bombData.x);
+            return new Bomb {
+                Beats = bombData.Beats,
+                Seconds = bombData.Seconds,
+                BpmTime = bombData.BpmTime,
+                x = mirroredX,
+                y = bombData.y,
+                customData = customData
             };
         }
 
 
         private static Wall Mirror_Horizontal_Obstacle(Wall obstacleData, int numberOfLines, bool flip_lines)
         {
-            if (flip_lines)
+            if (!flip_lines) {
+                return obstacleData;
+            }
+
+            var lineIndex = obstacleData.x;
+            var obstacleWidth = obstacleData.Width;
+            var precisionWidth = obstacleWidth >= 1000 || obstacleWidth <= -1000;
+
+            if (lineIndex <= 3 && lineIndex >= 0 && !precisionWidth)
             {
+                var mirrorLane = (lineIndex - 2) * -1 + 2;
                 return new Wall {
                     Beats = obstacleData.Beats,
                     Seconds = obstacleData.Seconds,
                     BpmTime = obstacleData.BpmTime,
-                    x = numberOfLines - obstacleData.Width - obstacleData.x,
+                    x = mirrorLane - obstacleWidth,
                     y = obstacleData.y,
                     DurationInBeats = obstacleData.DurationInBeats,
                     Width = obstacleData.Width,
@@ -291,147 +328,140 @@ namespace Parser.Utils
                 };
             }
 
-            return obstacleData;
+            // Precision logic adapted from MappingExtensions ObstacleData.Mirror
+            int idx;
+            if (lineIndex <= -1000)
+            {
+                idx = lineIndex + 1000; // normalize
+            }
+            else if (lineIndex >= 1000)
+            {
+                idx = lineIndex - 1000; // normalize
+            }
+            else
+            {
+                idx = lineIndex * 1000; // convert to precision
+            }
+
+            idx = (idx - 2000) * -1 + 2000; // flip
+
+            int width;
+            if (obstacleWidth < 1000 && obstacleWidth > -1000)
+            {
+                width = obstacleWidth * 1000; // normalize width
+            }
+            else
+            {
+                width = obstacleWidth;
+                if (width >= 1000) width -= 1000;
+                if (width <= -1000) width += 1000;
+            }
+
+            idx -= width;
+            if (idx < 0) idx -= 1000; else idx += 1000; // fix bounds
+
+            return new Wall {
+                Beats = obstacleData.Beats,
+                Seconds = obstacleData.Seconds,
+                BpmTime = obstacleData.BpmTime,
+                x = idx,
+                y = obstacleData.y,
+                DurationInBeats = obstacleData.DurationInBeats,
+                Width = obstacleData.Width,
+                Height = obstacleData.Height
+            };
         }
 
-        private static Arc Mirror_Horizontal_Slider(Arc sliderData, int numberOfLines, bool flip_lines, bool is_ME)
+        private static Arc Mirror_Horizontal_Slider(Arc sliderData, int numberOfLines, bool flip_lines)
         {
-            int h_headline;
-            int h_tailline;
-
-            int color;
-            if (sliderData.Color == (int)Note.Type.Red)
-            {
-                color = (int)Note.Type.Blue;
-            }
-            else
-            {
-                color = (int)Note.Type.Red;
-            }
-
-
-            if (sliderData.x >= 1000 || sliderData.x <= -1000)
-            {
-                h_headline = sliderData.x / 1000 - 1;
-                color = sliderData.Color;
-            }
-            else if (flip_lines)
-            {
-                h_headline = numberOfLines - 1 - sliderData.x;
-            }
-            else
-            {
-                h_headline = sliderData.x;
-                color = sliderData.Color;
+            int mirrorX(int value) {
+                var v = value;
+                if (!flip_lines) return v;
+                if (v <= -1000 || v >= 1000) {
+                    var leftSide = false;
+                    if (v <= -1000) v += 2000;
+                    if (v >= 4000) leftSide = true;
+                    v = 5000 - v;
+                    if (leftSide) v -= 2000;
+                } else if (v > 3) {
+                    var diff = (v - 3) * 2;
+                    var newLaneCount = 4 + diff;
+                    v = newLaneCount - diff - 1 - v;
+                } else if (v < 0) {
+                    var diff = (0 - v) * 2;
+                    var newLaneCount = 4 + diff;
+                    v = newLaneCount - diff - 1 - v;
+                } else {
+                    v = numberOfLines - 1 - v;
+                }
+                return v;
             }
 
-
-            if (sliderData.tx >= 1000 || sliderData.tx <= -1000)
-            {
-                h_tailline = sliderData.tx / 1000 - 1;
-                color = sliderData.Color;
-            }
-            else if (flip_lines)
-            {
-                h_tailline = numberOfLines - 1 - sliderData.tx;
-            }
-            else
-            {
-                h_tailline = sliderData.tx;
-                color = sliderData.Color;
-            }
-
-            Note.Direction h_headcutDirection;
-            if (horizontal_cut_transform.TryGetValue((Note.Direction)sliderData.CutDirection, out h_headcutDirection) == false || is_ME)
-            {
-                h_headcutDirection = Get_Random_Direction();
-            }
-
-            Note.Direction h_tailcutDirection;
-            if (horizontal_cut_transform.TryGetValue((Note.Direction)sliderData.CutDirection, out h_tailcutDirection) == false || is_ME)
-            {
-                h_headcutDirection = Get_Random_Direction();
-            }
+            var headX = mirrorX(sliderData.x);
+            var tailX = mirrorX(sliderData.tx);
+            var headCut = horizontal_cut_transform.TryGetValue((Note.Direction)sliderData.CutDirection, out var hHead) ? hHead : (Note.Direction)sliderData.CutDirection;
+            var tailCut = horizontal_cut_transform.TryGetValue((Note.Direction)sliderData.TailCutDirection, out var hTail) ? hTail : (Note.Direction)sliderData.TailCutDirection;
 
             return new Arc {
-                Color = color,
+                Color = sliderData.Color,
                 Beats = sliderData.Beats,
                 Seconds = sliderData.Seconds,
                 BpmTime = sliderData.BpmTime,
-                x = h_headline,
-                y = Check_Layer(sliderData.y),
-                CutDirection = (int)h_headcutDirection,
+                x = headX,
+                y = sliderData.y,
+                CutDirection = (int)headCut,
                 TailInBeats = sliderData.TailInBeats,
-                tx = h_tailline,
-                ty = Check_Layer(sliderData.ty)
+                tx = tailX,
+                ty = sliderData.ty,
+                TailCutDirection = (int)tailCut,
+                Multiplier = sliderData.Multiplier,
+                TailMultiplier = sliderData.TailMultiplier,
+                AnchorMode = sliderData.AnchorMode,
+                customData = sliderData.customData
             };
         }
 
 
-        private static Chain Mirror_Horizontal_BurstSlider(Chain burstSliderData, int numberOfLines, bool flip_lines, bool is_ME)
+        private static Chain Mirror_Horizontal_BurstSlider(Chain burstSliderData, int numberOfLines, bool flip_lines)
         {
-            int h_headline;
-            int h_tailline;
-
-            int color;
-            if (burstSliderData.Color == (int)Note.Type.Red)
-            {
-                color = (int)Note.Type.Blue;
-            }
-            else
-            {
-                color = (int)Note.Type.Red;
-            }
-
-
-            if (burstSliderData.x >= 1000 || burstSliderData.x <= -1000)
-            {
-                h_headline = burstSliderData.x / 1000 - 1;
-                color = burstSliderData.Color;
-            }
-            else if (flip_lines)
-            {
-                h_headline = numberOfLines - 1 - burstSliderData.x;
-            }
-            else
-            {
-                h_headline = burstSliderData.x;
-                color = burstSliderData.Color;
+            int mirrorX(int value) {
+                var v = value;
+                if (!flip_lines) return v;
+                if (v <= -1000 || v >= 1000) {
+                    var leftSide = false;
+                    if (v <= -1000) v += 2000;
+                    if (v >= 4000) leftSide = true;
+                    v = 5000 - v;
+                    if (leftSide) v -= 2000;
+                } else if (v > 3) {
+                    var diff = (v - 3) * 2;
+                    var newLaneCount = 4 + diff;
+                    v = newLaneCount - diff - 1 - v;
+                } else if (v < 0) {
+                    var diff = (0 - v) * 2;
+                    var newLaneCount = 4 + diff;
+                    v = newLaneCount - diff - 1 - v;
+                } else {
+                    v = numberOfLines - 1 - v;
+                }
+                return v;
             }
 
-
-            if (burstSliderData.tx >= 1000 || burstSliderData.tx <= -1000)
-            {
-                h_tailline = burstSliderData.tx / 1000 - 1;
-                color = burstSliderData.Color;
-            }
-            else if (flip_lines)
-            {
-                h_tailline = numberOfLines - 1 - burstSliderData.tx;
-            }
-            else
-            {
-                h_tailline = burstSliderData.tx;
-                color = burstSliderData.Color;
-            }
-
-            Note.Direction h_headcutDirection;
-            if (horizontal_cut_transform.TryGetValue((Note.Direction)burstSliderData.CutDirection, out h_headcutDirection) == false || is_ME)
-            {
-                h_headcutDirection = Get_Random_Direction();
-            }
+            var headX = mirrorX(burstSliderData.x);
+            var tailX = mirrorX(burstSliderData.tx);
+            var headCut = horizontal_cut_transform.TryGetValue((Note.Direction)burstSliderData.CutDirection, out var hHead) ? hHead : (Note.Direction)burstSliderData.CutDirection;
 
             return new Chain {
-                Color = color,
+                Color = burstSliderData.Color,
                 Beats = burstSliderData.Beats,
                 Seconds = burstSliderData.Seconds,
                 BpmTime = burstSliderData.BpmTime,
-                x = h_headline,
-                y = Check_Layer(burstSliderData.y),
-                CutDirection = (int)h_headcutDirection,
+                x = headX,
+                y = burstSliderData.y,
+                CutDirection = (int)headCut,
                 TailInBeats = burstSliderData.TailInBeats,
-                tx = h_tailline,
-                ty = Check_Layer(burstSliderData.ty),
+                tx = tailX,
+                ty = burstSliderData.ty,
                 SliceCount = burstSliderData.SliceCount,
                 Squish = burstSliderData.Squish
             };
@@ -442,208 +472,185 @@ namespace Parser.Utils
         #region "Vertical Transform Functions"
 
 
-        private static Note Mirror_Vertical_Note(Note colorNoteData, bool flip_rows, bool has_ME)
+        private static Note Mirror_Vertical_Note(Note colorNoteData, bool flip_rows)
         {
-            int v_layer;
+            // Apply Mapping Extensions precision vertical flip logic to y, and transform cut direction accordingly.
+            int mirroredY = colorNoteData.y;
+            if (flip_rows) {
+                if (mirroredY <= -1000 || mirroredY >= 1000) {
+                    // Vertical precision behaves like horizontal but on rows: flip around center 2*1000 and reapply side offset when needed.
+                    bool bottomSide = false;
+                    if (mirroredY <= -1000) mirroredY += 2000;
+                    if (mirroredY >= 4000) bottomSide = true;
+                    mirroredY = 5000 - mirroredY;
+                    if (bottomSide) mirroredY -= 2000;
+                } else if (mirroredY > 2) { // rows are 0..2 standard
+                    var diff = (mirroredY - 2) * 2;
+                    var newRowCount = 3 + diff;
+                    mirroredY = newRowCount - diff - 1 - mirroredY;
+                } else if (mirroredY < 0) {
+                    var diff = (0 - mirroredY) * 2;
+                    var newRowCount = 3 + diff;
+                    mirroredY = newRowCount - diff - 1 - mirroredY;
+                } else {
+                    mirroredY = 3 - 1 - mirroredY;
+                }
+            }
 
-            if (colorNoteData.y >= 1000 || colorNoteData.y <= -1000)
-            {
-                v_layer = (colorNoteData.y / 1000) - 1;
-            }
-            else if (flip_rows)
-            {
-                v_layer = 3 - 1 - colorNoteData.y;
-            }
-            else
-            {
-                v_layer = colorNoteData.y;
-            }
-
-            Note.Direction v_cutDirection;
-            if (vertical_cut_transform.TryGetValue((Note.Direction)colorNoteData.CutDirection, out v_cutDirection) == false || has_ME)
-            {
-                v_cutDirection = Get_Random_Direction();
-            }
+            var newCut = vertical_cut_transform.TryGetValue((Note.Direction)colorNoteData.CutDirection, out var mapped)
+                ? mapped
+                : (Note.Direction)colorNoteData.CutDirection;
 
             return new Note {
                 Beats = colorNoteData.Beats,
                 Seconds = colorNoteData.Seconds,
                 BpmTime = colorNoteData.BpmTime,
-                x = Check_Index(colorNoteData.x),
-                y = v_layer,
+                x = colorNoteData.x,
+                y = mirroredY,
                 Color = colorNoteData.Color,
-                CutDirection = (int)v_cutDirection,
+                CutDirection = (int)newCut,
                 AngleOffset = colorNoteData.AngleOffset
+            };
+        }
+
+        private static Bomb Mirror_Vertical_Bomb(Bomb bombData, bool flip_rows)
+        {
+            int mirrorY(int value) {
+                var v = value;
+                if (!flip_rows) return v;
+                if (v <= -1000 || v >= 1000) {
+                    bool bottomSide = false;
+                    if (v <= -1000) v += 2000;
+                    if (v >= 4000) bottomSide = true;
+                    v = 5000 - v;
+                    if (bottomSide) v -= 2000;
+                } else if (v > 2) { // standard rows 0..2
+                    var diff = (v - 2) * 2;
+                    var newRowCount = 3 + diff;
+                    v = newRowCount - diff - 1 - v;
+                } else if (v < 0) {
+                    var diff = (0 - v) * 2;
+                    var newRowCount = 3 + diff;
+                    v = newRowCount - diff - 1 - v;
+                } else {
+                    v = 3 - 1 - v;
+                }
+                return v;
+            }
+
+            var mirroredY = mirrorY(bombData.y);
+            return new Bomb {
+                Beats = bombData.Beats,
+                Seconds = bombData.Seconds,
+                BpmTime = bombData.BpmTime,
+                x = bombData.x,
+                y = mirroredY,
+                customData = bombData.customData
             };
         }
 
 
         private static Wall Mirror_Vertical_Obstacle(Wall obstacleData, bool flip_rows)
         {
-            if (flip_rows)
-            {
-                return new Wall {
-                    Beats = obstacleData.Beats,
-                    Seconds = obstacleData.Seconds,
-                    BpmTime = obstacleData.BpmTime,
-                    x = 0,
-                    y = 0,
-                    DurationInBeats = 0,
-                    Width = 0,
-                    Height = 0
-                };
-            }
-
+            // Vertical flip does not change obstacle when removing walls is false; ME does not define vertical precision for obstacles here.
             return obstacleData;
         }
 
-        private static Arc Mirror_Vertical_Slider(Arc sliderData, bool flip_rows, bool has_ME)
+        private static Arc Mirror_Vertical_Slider(Arc sliderData, bool flip_rows)
         {
-            int v_headlayer;
-            int v_taillayer;
-
-            if (sliderData.y >= 1000 || sliderData.y <= -1000)
-            {
-                v_headlayer = (sliderData.y / 1000) - 1;
-            }
-            else if (flip_rows)
-            {
-                v_headlayer = 3 - 1 - sliderData.y;
-            }
-            else
-            {
-                v_headlayer = sliderData.y;
-            }
-
-
-            if (sliderData.ty >= 1000 || sliderData.ty <= -1000)
-            {
-                v_taillayer = (sliderData.ty / 1000) - 1;
-            }
-            else if (flip_rows)
-            {
-                v_taillayer = 3 - 1 - sliderData.ty;
-            }
-            else
-            {
-                v_taillayer = sliderData.ty;
+            int mirrorY(int value) {
+                var v = value;
+                if (!flip_rows) return v;
+                if (v <= -1000 || v >= 1000) {
+                    bool bottomSide = false;
+                    if (v <= -1000) v += 2000;
+                    if (v >= 4000) bottomSide = true;
+                    v = 5000 - v;
+                    if (bottomSide) v -= 2000;
+                } else if (v > 2) {
+                    var diff = (v - 2) * 2;
+                    var newRowCount = 3 + diff;
+                    v = newRowCount - diff - 1 - v;
+                } else if (v < 0) {
+                    var diff = (0 - v) * 2;
+                    var newRowCount = 3 + diff;
+                    v = newRowCount - diff - 1 - v;
+                } else {
+                    v = 3 - 1 - v;
+                }
+                return v;
             }
 
-
-            Note.Direction v_headcutDirection;
-            if (vertical_cut_transform.TryGetValue((Note.Direction)sliderData.CutDirection, out v_headcutDirection) == false || has_ME)
-            {
-                v_headcutDirection = Get_Random_Direction();
-            }
-
-            Note.Direction v_tailcutDirection;
-            if (vertical_cut_transform.TryGetValue((Note.Direction)sliderData.CutDirection, out v_tailcutDirection) == false || has_ME)
-            {
-                v_tailcutDirection = Get_Random_Direction();
-            }
-
+            var headY = mirrorY(sliderData.y);
+            var tailY = mirrorY(sliderData.ty);
+            var headCut = vertical_cut_transform.TryGetValue((Note.Direction)sliderData.CutDirection, out var vHead) ? vHead : (Note.Direction)sliderData.CutDirection;
+            var tailCut = vertical_cut_transform.TryGetValue((Note.Direction)sliderData.TailCutDirection, out var vTail) ? vTail : (Note.Direction)sliderData.TailCutDirection;
 
             return new Arc {
                 Color = sliderData.Color,
                 Beats = sliderData.Beats,
                 Seconds = sliderData.Seconds,
                 BpmTime = sliderData.BpmTime,
-                x = Check_Index(sliderData.x),
-                y = v_headlayer,
-                CutDirection = (int)v_headcutDirection,
+                x = sliderData.x,
+                y = headY,
+                CutDirection = (int)headCut,
                 TailInBeats = sliderData.TailInBeats,
-                tx = Check_Index(sliderData.tx),
-                ty = v_taillayer,
-                TailCutDirection = (int)v_tailcutDirection
+                tx = sliderData.tx,
+                ty = tailY,
+                TailCutDirection = (int)tailCut,
+                Multiplier = sliderData.Multiplier,
+                TailMultiplier = sliderData.TailMultiplier,
+                AnchorMode = sliderData.AnchorMode,
+                customData = sliderData.customData
             };
         }
 
 
-        private static Chain Mirror_Vertical_BurstSlider(Chain burstSliderData, bool flip_rows, bool has_ME)
+        private static Chain Mirror_Vertical_BurstSlider(Chain burstSliderData, bool flip_rows)
         {
-            int v_headlayer;
-            int v_taillayer;
-
-            if (burstSliderData.y >= 1000 || burstSliderData.y <= -1000)
-            {
-                v_headlayer = (burstSliderData.y / 1000) - 1;
-            }
-            else if (flip_rows)
-            {
-                v_headlayer = 3 - 1 - burstSliderData.y;
-            }
-            else
-            {
-                v_headlayer = burstSliderData.y;
-            }
-
-
-            if (burstSliderData.ty >= 1000 || burstSliderData.ty <= -1000)
-            {
-                v_taillayer = (burstSliderData.ty / 1000) - 1;
-            }
-            else if (flip_rows)
-            {
-                v_taillayer = 3 - 1 - burstSliderData.ty;
-            }
-            else
-            {
-                v_taillayer = burstSliderData.ty;
+            int mirrorY(int value) {
+                var v = value;
+                if (!flip_rows) return v;
+                if (v <= -1000 || v >= 1000) {
+                    bool bottomSide = false;
+                    if (v <= -1000) v += 2000;
+                    if (v >= 4000) bottomSide = true;
+                    v = 5000 - v;
+                    if (bottomSide) v -= 2000;
+                } else if (v > 2) {
+                    var diff = (v - 2) * 2;
+                    var newRowCount = 3 + diff;
+                    v = newRowCount - diff - 1 - v;
+                } else if (v < 0) {
+                    var diff = (0 - v) * 2;
+                    var newRowCount = 3 + diff;
+                    v = newRowCount - diff - 1 - v;
+                } else {
+                    v = 3 - 1 - v;
+                }
+                return v;
             }
 
-
-            Note.Direction v_headcutDirection;
-            if (vertical_cut_transform.TryGetValue((Note.Direction)burstSliderData.CutDirection, out v_headcutDirection) == false || has_ME)
-            {
-                v_headcutDirection = Get_Random_Direction();
-            }
+            var headY = mirrorY(burstSliderData.y);
+            var tailY = mirrorY(burstSliderData.ty);
+            var headCut = vertical_cut_transform.TryGetValue((Note.Direction)burstSliderData.CutDirection, out var vHead) ? vHead : (Note.Direction)burstSliderData.CutDirection;
 
             return new Chain {
                 Color = burstSliderData.Color,
                 Beats = burstSliderData.Beats,
                 Seconds = burstSliderData.Seconds,
                 BpmTime = burstSliderData.BpmTime,
-                x = Check_Index(burstSliderData.x),
-                y = v_headlayer,
-                CutDirection = (int)v_headcutDirection,
+                x = burstSliderData.x,
+                y = headY,
+                CutDirection = (int)headCut,
                 TailInBeats = burstSliderData.TailInBeats,
-                tx = Check_Index(burstSliderData.tx),
-                ty = v_taillayer,
+                tx = burstSliderData.tx,
+                ty = tailY,
                 SliceCount = burstSliderData.SliceCount,
                 Squish = burstSliderData.Squish
             };
         }
 
-        #endregion
-
-
-        #region "Utility Functions"
-        public static Note.Direction Get_Random_Direction()
-        {
-            int index = rand.Next(directions.Count);
-
-            return directions[index];
-        }
-
-        public static int Check_Index(int lineIndex)
-        {
-            if (lineIndex >= 500 || lineIndex <= -500)
-            {
-                return lineIndex / 1000;
-            }
-
-            return lineIndex;
-        }
-
-        public static int Check_Layer(int lineLayer)
-        {
-            if (lineLayer >= 500 || lineLayer <= -500)
-            {
-                return lineLayer / 1000;
-            }
-
-            return lineLayer;
-        }
         #endregion
     }
 }
