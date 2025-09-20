@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System;
-using Parser.Map.Difficulty.V3.Event;
+using BeatMapParser.Map.Difficulty.V3.Event;
 using System.Linq;
-using Parser.Map.Difficulty.V3.Base;
-using Parser.Map.Difficulty.V3.Grid;
+using BeatMapParser.Map.Difficulty.V3.Base;
+using BeatMapParser.Map.Difficulty.V3.Grid;
 
 namespace BeatMapParser.Timescale
 {

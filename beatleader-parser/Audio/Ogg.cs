@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Parser.Audio
+namespace BeatMapParser.Audio
 {
     internal class Ogg
     {

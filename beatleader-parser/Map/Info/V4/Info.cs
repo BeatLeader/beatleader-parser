@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Parser.Map.V4 {
+namespace BeatMapParser.Map.V4 {
     public class InfoV4 {
         public string version { get; set; }
         public Song song { get; set; }

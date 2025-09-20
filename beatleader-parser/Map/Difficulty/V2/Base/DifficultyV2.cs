@@ -1,9 +1,9 @@
-﻿using Parser.Map.Difficulty.V2.Event;
-using Parser.Map.Difficulty.V2.Grid;
+﻿using BeatMapParser.Map.Difficulty.V2.Event;
+using BeatMapParser.Map.Difficulty.V2.Grid;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Parser.Map.Difficulty.V2.Base
+namespace BeatMapParser.Map.Difficulty.V2.Base
 {
     public class DifficultyV2
     {

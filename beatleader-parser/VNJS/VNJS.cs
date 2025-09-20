@@ -1,5 +1,5 @@
-﻿using Parser.Map.Difficulty.V3.Base;
-using Parser.Map.Difficulty.V3.Event;
+﻿using BeatMapParser.Map.Difficulty.V3.Base;
+using BeatMapParser.Map.Difficulty.V3.Event;
 using System.Collections.Generic;
 using System.Linq;
 

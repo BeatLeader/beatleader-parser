@@ -1,9 +1,9 @@
-﻿using Parser.Map;
-using Parser.Map.Difficulty.V3.Base;
-using Parser.Map.Difficulty.V3.Grid;
+﻿using BeatMapParser.Map;
+using BeatMapParser.Map.Difficulty.V3.Base;
+using BeatMapParser.Map.Difficulty.V3.Grid;
 using System.Collections.Generic;
 
-namespace Parser.Utils
+namespace BeatMapParser.Utils
 {
     public class ChiralitySupport
     {

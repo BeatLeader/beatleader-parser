@@ -1,9 +1,9 @@
-﻿using Parser.Audio.V4;
-using Parser.Map;
-using Parser.Map.Difficulty.V2.Base;
-using Parser.Map.Difficulty.V3.Base;
-using Parser.Map.Difficulty.V4.Base;
-using Parser.Map.V4;
+﻿using BeatMapParser.Audio.V4;
+using BeatMapParser.Map;
+using BeatMapParser.Map.Difficulty.V2.Base;
+using BeatMapParser.Map.Difficulty.V3.Base;
+using BeatMapParser.Map.Difficulty.V4.Base;
+using BeatMapParser.Map.V4;
 using System.Text.Json.Serialization;
 
 namespace BeatMapParser.Utils
