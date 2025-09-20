@@ -5,7 +5,7 @@ using System.Linq;
 using Parser.Map.Difficulty.V3.Base;
 using Parser.Map.Difficulty.V3.Grid;
 
-namespace beatleader_parser.Timescale
+namespace BeatMapParser.Timescale
 {
     public class Timescale
     {

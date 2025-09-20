@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1;net48</TargetFrameworks>
-    <RootNamespace>beatleader_parser</RootNamespace>
+    <RootNamespace>BeatMapParser</RootNamespace>
     <LangVersion>10.0</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>

@@ -1,4 +1,4 @@
-﻿using beatleader_parser.Utils;
+﻿using BeatMapParser.Utils;
 using Parser.Audio;
 using Parser.Audio.V4;
 using Parser.Json;
@@ -15,9 +15,9 @@ using System.Linq;
 using System.Net;
 using System.Text.Json;
 
-namespace beatleader_parser
+namespace BeatMapParser
 {
-    public class Parse
+    public class Parser
     {
         internal List<string> CharacteristicName = new() { "Standard", "NoArrows", "OneSaber", "360Degree", "90Degree", "Legacy", "Lightshow", "Lawless" };
 

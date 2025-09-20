@@ -1,5 +1,5 @@
-﻿using beatleader_parser.Timescale;
-using beatleader_parser.VNJS;
+﻿using BeatMapParser.Timescale;
+using BeatMapParser.VNJS;
 using Parser.Audio.V4;
 using Parser.Map.Difficulty.V2.Base;
 using Parser.Map.Difficulty.V3.Custom;

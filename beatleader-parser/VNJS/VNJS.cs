@@ -3,7 +3,7 @@ using Parser.Map.Difficulty.V3.Event;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace beatleader_parser.VNJS
+namespace BeatMapParser.VNJS
 {
     public class VNJS
     {

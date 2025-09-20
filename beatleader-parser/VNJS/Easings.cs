@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace beatleader_parser.VNJS
+namespace BeatMapParser.VNJS
 {
     // yoinked from https://github.com/AllPoland/ArcViewer/blob/eab5c898b797d3ff4645a760abda3a485efaa48d/Assets/__Scripts/Utilities/Easings.cs (with permission)
     public class Easings

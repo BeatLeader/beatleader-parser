@@ -6,7 +6,7 @@ using Parser.Map.Difficulty.V4.Base;
 using Parser.Map.V4;
 using System.Text.Json.Serialization;
 
-namespace beatleader_parser.Utils
+namespace BeatMapParser.Utils
 {
     [JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
     [JsonSerializable(typeof(Info))]
