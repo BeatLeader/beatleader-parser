@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Parser.Audio.V4 {
+namespace BeatMapParser.Audio.V4 {
     public class AudioData {
         [JsonPropertyName("version")]
         public string version { get; set; }

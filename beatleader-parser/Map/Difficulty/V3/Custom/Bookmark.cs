@@ -1,6 +1,6 @@
-﻿using Parser.Map.Difficulty.V3.Base;
+﻿using BeatMapParser.Map.Difficulty.V3.Base;
 
-namespace Parser.Map.Difficulty.V3.Custom
+namespace BeatMapParser.Map.Difficulty.V3.Custom
 {
     public class Bookmark : BeatmapObject
     {

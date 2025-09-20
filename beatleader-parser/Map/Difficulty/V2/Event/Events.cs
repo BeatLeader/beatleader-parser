@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Parser.Map.Difficulty.V2.Event
+namespace BeatMapParser.Map.Difficulty.V2.Event
 {
     public class Events
     {

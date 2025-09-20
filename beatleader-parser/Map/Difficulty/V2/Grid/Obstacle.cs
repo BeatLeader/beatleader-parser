@@ -1,4 +1,4 @@
-﻿namespace Parser.Map.Difficulty.V2.Grid
+﻿namespace BeatMapParser.Map.Difficulty.V2.Grid
 {
     public class Obstacle
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Parser.Map.Difficulty.V3.Event.V3
+namespace BeatMapParser.Map.Difficulty.V3.Event.V3
 {
     public class BasicEventTypesWithKeywords
     {

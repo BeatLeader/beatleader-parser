@@ -1,16 +1,16 @@
-﻿using BeatMapParser.Timescale;
+﻿using BeatMapParser;
 using BeatMapParser.VNJS;
-using Parser.Audio.V4;
-using Parser.Map.Difficulty.V2.Base;
-using Parser.Map.Difficulty.V3.Custom;
-using Parser.Map.Difficulty.V3.Event;
-using Parser.Map.Difficulty.V3.Event.V3;
-using Parser.Map.Difficulty.V3.Grid;
-using Parser.Map.Difficulty.V4.Base;
+using BeatMapParser.Audio.V4;
+using BeatMapParser.Map.Difficulty.V2.Base;
+using BeatMapParser.Map.Difficulty.V3.Custom;
+using BeatMapParser.Map.Difficulty.V3.Event;
+using BeatMapParser.Map.Difficulty.V3.Event.V3;
+using BeatMapParser.Map.Difficulty.V3.Grid;
+using BeatMapParser.Map.Difficulty.V4.Base;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Parser.Map.Difficulty.V3.Base
+namespace BeatMapParser.Map.Difficulty.V3.Base
 {
     public class DifficultyV3
     {
@@ -615,7 +615,7 @@ namespace Parser.Map.Difficulty.V3.Base
             obj.AddRange(diff.Walls);
             obj.AddRange(diff.Arcs);
             obj.AddRange(diff.Chains);
-            var vnjs = new VNJS(baseNjs, diff.njsEvents);
+            var vnjs = new VNJSInfo(baseNjs, diff.njsEvents);
             vnjs.CalculateAllObjectNjs(obj);
         }
     }

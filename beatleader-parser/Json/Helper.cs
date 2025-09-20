@@ -3,7 +3,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
-namespace Parser.Json
+namespace BeatMapParser.Json
 {
     internal class Helper
     {

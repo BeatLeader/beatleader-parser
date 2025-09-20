@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Parser.Map.Difficulty.V3.Event
+namespace BeatMapParser.Map.Difficulty.V3.Event
 {
     public class Customdata
     {

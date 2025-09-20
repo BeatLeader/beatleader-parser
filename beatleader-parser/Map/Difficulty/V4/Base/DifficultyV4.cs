@@ -1,8 +1,8 @@
-﻿using Parser.Map.Difficulty.V3.Base;
+﻿using BeatMapParser.Map.Difficulty.V3.Base;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Parser.Map.Difficulty.V4.Base
+namespace BeatMapParser.Map.Difficulty.V4.Base
 {
     public class DifficultyV4
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Parser.Map.Difficulty.V3.Base
+namespace BeatMapParser.Map.Difficulty.V3.Base
 {
     public class BeatmapObject : IComparable<BeatmapObject>
     {

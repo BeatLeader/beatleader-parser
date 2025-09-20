@@ -1,11 +1,11 @@
-﻿using Parser.Map;
+﻿using BeatMapParser.Map;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 // Copied from: https://github.com/beatmaps-io/beatsaver-common-mp/blob/ccfc56bffd02dc2b08ce285eeb9be9de8646b2ba/src/commonMain/kotlin/io/beatmaps/common/beatsaber/maxScore.kt
 // Translated from Kotlin to C# with ChatGPT
-namespace Parser.Utils
+namespace BeatMapParser.Utils
 {
     public enum MultiplierEventType
     {

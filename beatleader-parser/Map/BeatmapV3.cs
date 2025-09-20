@@ -1,7 +1,7 @@
-﻿using Parser.Map.Difficulty.V3.Base;
+﻿using BeatMapParser.Map.Difficulty.V3.Base;
 using System.Collections.Generic;
 
-namespace Parser.Map
+namespace BeatMapParser.Map
 {
     public class BeatmapV3
     {

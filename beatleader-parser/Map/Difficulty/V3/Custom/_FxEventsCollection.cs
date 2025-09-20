@@ -1,4 +1,4 @@
-﻿namespace Parser.Map.Difficulty.V3.Custom
+﻿namespace BeatMapParser.Map.Difficulty.V3.Custom
 {
     public class _Fxeventscollection
     {

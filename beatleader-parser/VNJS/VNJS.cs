@@ -1,16 +1,16 @@
-﻿using Parser.Map.Difficulty.V3.Base;
-using Parser.Map.Difficulty.V3.Event;
+﻿using BeatMapParser.Map.Difficulty.V3.Base;
+using BeatMapParser.Map.Difficulty.V3.Event;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace BeatMapParser.VNJS
 {
-    public class VNJS
+    public class VNJSInfo
     {
         public float baseNjs { get; set; }
         public List<NjsEvent> njsEvents { get; set; }
 
-        public VNJS(float baseNjs, List<NjsEvent> njsEvents)
+        public VNJSInfo(float baseNjs, List<NjsEvent> njsEvents)
         {
             this.baseNjs = baseNjs;
             this.njsEvents = njsEvents.OrderBy(x => x.Seconds).ToList();
