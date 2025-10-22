@@ -185,16 +185,18 @@ namespace Parser.Utils
             var burstSliders = self.Data.Chains;
 
             var slidersByBeat = sliders.GroupBy(s => s.BpmTime).ToDictionary(g => g.Key, g => g.ToList());
-            var slidersByTailBeat = sliders.GroupBy(s => s.TailBpmTime).ToDictionary(g => g.Key, g => g.ToList());
+            var slidersByTailBeat = sliders.Where(s => Math.Abs(s.Seconds - s.TailInSeconds) > 0.001).GroupBy(s => s.TailBpmTime).ToDictionary(g => g.Key, g => g.ToList());
             var burstSlidersByBeat = burstSliders.GroupBy(s => s.BpmTime).ToDictionary(g => g.Key, g => g.ToList());
+            var burstSlidersByTailBeat = burstSliders.Where(s => Math.Abs(s.Seconds - s.TailInSeconds) > 0.001).GroupBy(s => s.TailBpmTime).ToDictionary(g => g.Key, g => g.ToList());
 
             var noteItems = notes.Select(note =>
             {
                 var matchesHead = slidersByBeat.ContainsKey(note.BpmTime) && slidersByBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.x && note.y == s.y);
                 var matchesTail = slidersByTailBeat.ContainsKey(note.BpmTime) && slidersByTailBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.tx && note.y == s.ty);
                 var matchesBurst = burstSlidersByBeat.ContainsKey(note.BpmTime) && burstSlidersByBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.x && note.y == note.y);
+                var matchesBurstTail = burstSlidersByTailBeat.ContainsKey(note.BpmTime) && burstSlidersByTailBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.tx && note.y == s.ty);
 
-                if (matchesBurst && matchesHead && matchesTail) {
+                if (matchesBurst && matchesHead && (matchesTail || matchesBurstTail)) {
                     return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ChainHeadArcHeadArcTail], note.Seconds);
                 }
 
@@ -202,11 +204,11 @@ namespace Parser.Utils
                     return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ChainHeadArcHead], note.Seconds);
                 }
 
-                if (matchesBurst && matchesTail) {
+                if (matchesBurst && (matchesTail || matchesBurstTail)) {
                     return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ChainHeadArcTail], note.Seconds);
                 }
 
-                if (matchesHead && matchesTail) {
+                if (matchesHead && (matchesTail || matchesBurstTail)) {
                     return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ArcHeadArcTail], note.Seconds);
                 }
 
@@ -218,7 +220,7 @@ namespace Parser.Utils
                     return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ArcHead], note.Seconds);
                 }
 
-                if (matchesTail) {
+                if (matchesTail || matchesBurstTail) {
                     return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ArcTail], note.Seconds);
                 }
 

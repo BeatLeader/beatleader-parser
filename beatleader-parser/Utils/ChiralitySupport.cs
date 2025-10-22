@@ -2,6 +2,7 @@
 using Parser.Map.Difficulty.V3.Base;
 using Parser.Map.Difficulty.V3.Grid;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Parser.Utils
 {
@@ -54,9 +55,46 @@ namespace Parser.Utils
                 h_bombNotes.Add(Mirror_Horizontal_Bomb(bomb, numberOfLines, flip_lines));
             }
 
+            List<Note> notes_copy = beatmapSaveData.Notes.Select(n => new Note { 
+                Beats = n.Beats,
+                Seconds = n.Seconds,
+                BpmTime = n.BpmTime,
+                x = n.x,
+                y = n.y,
+                Color = n.Color,
+                CutDirection = n.CutDirection,
+                AngleOffset = n.AngleOffset
+            }).ToList();
+
+            // BurstSliders:
+            List<Chain> h_burstSliderDatas = new List<Chain>();
+            foreach (Chain burstSliderData in beatmapSaveData.Chains)
+            {   
+                Note.Direction h_headcutDirection;
+                if (horizontal_cut_transform.TryGetValue((Note.Direction)burstSliderData.CutDirection, out h_headcutDirection) == false)
+                {
+                    h_headcutDirection = (Note.Direction)burstSliderData.CutDirection;
+                }
+                if (!flip_lines && ((int)h_headcutDirection) != burstSliderData.CutDirection) {
+                    foreach (var note in notes_copy)
+                    {
+                        if (burstSliderData.x == note.x && burstSliderData.y == note.y && burstSliderData.Beats == note.Beats) {
+                            note.x = burstSliderData.tx;
+                        }
+                    }
+
+                    var tailLineIdex = burstSliderData.tx;
+			        burstSliderData.tx = burstSliderData.x;
+			        burstSliderData.x = tailLineIdex;
+                }
+
+                var mirroredNote = Mirror_Horizontal_BurstSlider(burstSliderData, numberOfLines, flip_lines);
+                h_burstSliderDatas.Add(mirroredNote);
+            }
+
             // ColorNotes:
             List<Note> h_colorNotes = new List<Note>();
-            foreach (Note colorNote in beatmapSaveData.Notes)
+            foreach (Note colorNote in notes_copy)
             {
                 h_colorNotes.Add(Mirror_Horizontal_Note(colorNote, numberOfLines, flip_lines));
             }
@@ -76,28 +114,6 @@ namespace Parser.Utils
             foreach (Arc sliderData in beatmapSaveData.Arcs)
             {
                 h_sliderDatas.Add(Mirror_Horizontal_Slider(sliderData, numberOfLines, flip_lines));
-            }
-
-            // BurstSliders:
-            List<Chain> h_burstSliderDatas = new List<Chain>();
-            foreach (Chain burstSliderData in beatmapSaveData.Chains)
-            {
-                int headcutDirection = burstSliderData.CutDirection;
-                var mirroredNote = Mirror_Horizontal_BurstSlider(burstSliderData, numberOfLines, flip_lines);
-                if (mirroredNote.CutDirection != headcutDirection) {
-                    foreach (var note in h_colorNotes)
-                    {
-                        if (mirroredNote.x == note.x && mirroredNote.y == note.y && mirroredNote.Beats == note.Beats) {
-                            note.x = mirroredNote.tx;
-                        }
-                    }
-
-                    var tailLineIdex = mirroredNote.tx;
-			        mirroredNote.tx = mirroredNote.x;
-			        mirroredNote.x = tailLineIdex;
-                }
-
-                h_burstSliderDatas.Add(mirroredNote);
             }
 
             return new DifficultyV3 {
@@ -211,6 +227,16 @@ namespace Parser.Utils
 
         private static Note Mirror_Horizontal_Note(Note colorNoteData, int numberOfLines, bool flip_lines)
         {
+            int color;
+            if (colorNoteData.Color == (int)Note.Type.Red)
+            {
+                color = (int)Note.Type.Blue;
+            }
+            else
+            {
+                color = (int)Note.Type.Red;
+            }
+
             // Apply Mapping Extensions precision horizontal flip logic to x, and transform cut direction accordingly.
             int mirroredX = colorNoteData.x;
             if (flip_lines) {
@@ -251,7 +277,7 @@ namespace Parser.Utils
                 BpmTime = colorNoteData.BpmTime,
                 x = mirroredX,
                 y = colorNoteData.y,
-                Color = colorNoteData.Color,
+                Color = color,
                 CutDirection = (int)newCut,
                 AngleOffset = -colorNoteData.AngleOffset,
                 customData = customData
@@ -374,6 +400,16 @@ namespace Parser.Utils
 
         private static Arc Mirror_Horizontal_Slider(Arc sliderData, int numberOfLines, bool flip_lines)
         {
+            int color;
+            if (sliderData.Color == (int)Note.Type.Red)
+            {
+                color = (int)Note.Type.Blue;
+            }
+            else
+            {
+                color = (int)Note.Type.Red;
+            }
+
             int mirrorX(int value) {
                 var v = value;
                 if (!flip_lines) return v;
@@ -403,7 +439,7 @@ namespace Parser.Utils
             var tailCut = horizontal_cut_transform.TryGetValue((Note.Direction)sliderData.TailCutDirection, out var hTail) ? hTail : (Note.Direction)sliderData.TailCutDirection;
 
             return new Arc {
-                Color = sliderData.Color,
+                Color = color,
                 Beats = sliderData.Beats,
                 Seconds = sliderData.Seconds,
                 BpmTime = sliderData.BpmTime,
@@ -411,6 +447,8 @@ namespace Parser.Utils
                 y = sliderData.y,
                 CutDirection = (int)headCut,
                 TailInBeats = sliderData.TailInBeats,
+                TailBpmTime = sliderData.TailBpmTime,
+                TailInSeconds = sliderData.TailInSeconds,
                 tx = tailX,
                 ty = sliderData.ty,
                 TailCutDirection = (int)tailCut,
@@ -424,6 +462,15 @@ namespace Parser.Utils
 
         private static Chain Mirror_Horizontal_BurstSlider(Chain burstSliderData, int numberOfLines, bool flip_lines)
         {
+            int color;
+            if (burstSliderData.Color == (int)Note.Type.Red)
+            {
+                color = (int)Note.Type.Blue;
+            }
+            else
+            {
+                color = (int)Note.Type.Red;
+            }
             int mirrorX(int value) {
                 var v = value;
                 if (!flip_lines) return v;
@@ -452,7 +499,7 @@ namespace Parser.Utils
             var headCut = horizontal_cut_transform.TryGetValue((Note.Direction)burstSliderData.CutDirection, out var hHead) ? hHead : (Note.Direction)burstSliderData.CutDirection;
 
             return new Chain {
-                Color = burstSliderData.Color,
+                Color = color,
                 Beats = burstSliderData.Beats,
                 Seconds = burstSliderData.Seconds,
                 BpmTime = burstSliderData.BpmTime,
@@ -460,6 +507,8 @@ namespace Parser.Utils
                 y = burstSliderData.y,
                 CutDirection = (int)headCut,
                 TailInBeats = burstSliderData.TailInBeats,
+                TailBpmTime = burstSliderData.TailBpmTime,
+                TailInSeconds = burstSliderData.TailInSeconds,
                 tx = tailX,
                 ty = burstSliderData.ty,
                 SliceCount = burstSliderData.SliceCount,
