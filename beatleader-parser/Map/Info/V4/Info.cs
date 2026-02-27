@@ -14,13 +14,27 @@ namespace Parser.Map.V4 {
         public ColorScheme[] colorSchemes { get; set; }
         public DifficultyBeatmap[] difficultyBeatmaps { get; set; }
 
+        public string GetAllMappers() {
+            if (difficultyBeatmaps.Length == 0) {
+                return "";
+            } else {
+                var allMappers = new List<string>();
+                foreach (var diff in difficultyBeatmaps) {
+                    allMappers.AddRange(diff.beatmapAuthors.mappers);
+                    allMappers.AddRange(diff.beatmapAuthors.lighters);
+                }
+
+                return string.Join(", ", allMappers.Distinct());
+            }
+        }
+
         public Map.Info ToV2() {
             return new Map.Info {
                 _version = "2.1.0",
                 _songName = song.title,
                 _songSubName = song.subTitle ?? "",
                 _songAuthorName = song.author,
-                _levelAuthorName = difficultyBeatmaps.Length > 0 && difficultyBeatmaps[0].beatmapAuthors.mappers.Length > 0 ? difficultyBeatmaps[0].beatmapAuthors.mappers[0] : "",
+                _levelAuthorName = GetAllMappers(),
                 _beatsPerMinute = audio.bpm,
                 _songTimeOffset = 0,
                 _shuffle = 0,
