@@ -2,9 +2,9 @@
 
 namespace Parser.Audio
 {
-    internal class Ogg
+    internal static class Ogg
     {
-        public double AudioStreamToLength(Stream audioStream)
+        public static double AudioStreamToLength(Stream audioStream)
         {
             try
             {

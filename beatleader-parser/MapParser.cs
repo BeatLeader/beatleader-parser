@@ -13,26 +13,25 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Text.Json;
 
 namespace beatleader_parser
 {
-    public class Parse
+    public static class MapParser
     {
-        internal List<string> CharacteristicName = new() { "Standard", "NoArrows", "OneSaber", "360Degree", "90Degree", "Legacy", "Lightshow", "Lawless" };
+        internal static List<string> CharacteristicName = new() { "Standard", "NoArrows", "OneSaber", "360Degree", "90Degree", "Legacy", "Lightshow", "Lawless" };
 
-        internal bool IsInfoFile(string filename) {
+        internal static bool IsInfoFile(string filename) {
             return filename.ToLower() == "info.dat";
         }
 
         private static (Info?, AudioData?) ParseInfo(string infoJson, ZipArchive audio)
         {
-            var info = JsonSerializer.Deserialize<Info>(infoJson, SerializeV3Context.Default.Info);
+            var info = JsonSerializerHelper.Deserialize<Info>(infoJson, SerializeV3Context.Default.Info);
             AudioData? audioData = null;
 
             if (info == null || info._difficultyBeatmapSets == null)
             {
-                var v4Info = JsonSerializer.Deserialize<InfoV4>(infoJson, SerializeV4Context.Default.InfoV4);
+                var v4Info = JsonSerializerHelper.Deserialize<InfoV4>(infoJson, SerializeV4Context.Default.InfoV4);
                 if (v4Info == null)
                 {
                     return (null, null);
@@ -40,7 +39,7 @@ namespace beatleader_parser
                 var audioDataFile = audio.Entries.FirstOrDefault(e => e.Name == v4Info.audio.audioDataFilename);
                 if (audioDataFile != null)
                 {
-                    audioData = Helper.DeserializeFromStream<AudioData>(audioDataFile.Open(), SerializeV4Context.Default.AudioData);
+                    audioData = JsonSerializerHelper.DeserializeFromStream<AudioData>(audioDataFile.Open(), SerializeV4Context.Default.AudioData);
                 }
                 info = v4Info.ToV2();
             }
@@ -50,12 +49,12 @@ namespace beatleader_parser
 
         private static (Info?, AudioData?) ParseInfo(string infoJson, List<(string filename, string json)> jsonStrings)
         {
-            var info = JsonSerializer.Deserialize<Info>(infoJson, SerializeV3Context.Default.Info);
+            var info = JsonSerializerHelper.Deserialize<Info>(infoJson, SerializeV3Context.Default.Info);
             AudioData? audioData = null;
 
             if (info == null || info._difficultyBeatmapSets == null)
             {
-                var v4Info = JsonSerializer.Deserialize<InfoV4>(infoJson, SerializeV4Context.Default.InfoV4);
+                var v4Info = JsonSerializerHelper.Deserialize<InfoV4>(infoJson, SerializeV4Context.Default.InfoV4);
                 if (v4Info == null)
                 {
                     return (null, null);
@@ -63,7 +62,7 @@ namespace beatleader_parser
                 var audioDataEntry = jsonStrings.FirstOrDefault(e => e.filename == v4Info.audio.audioDataFilename);
                 if (audioDataEntry.filename != null)
                 {
-                    audioData = JsonSerializer.Deserialize<AudioData>(audioDataEntry.json, SerializeV4Context.Default.AudioData);
+                    audioData = JsonSerializerHelper.Deserialize<AudioData>(audioDataEntry.json, SerializeV4Context.Default.AudioData);
                 }
                 info = v4Info.ToV2();
             }
@@ -73,25 +72,25 @@ namespace beatleader_parser
 
         private static (Info?, AudioData?) ParseInfo(string infoJson, string folderPath, bool audioJson = false)
         {
-            var info = JsonSerializer.Deserialize<Info>(infoJson, SerializeV3Context.Default.Info);
+            var info = JsonSerializerHelper.Deserialize<Info>(infoJson, SerializeV3Context.Default.Info);
             AudioData? audioData = null;
 
             if (info == null || info._difficultyBeatmapSets == null)
             {
-                var v4Info = JsonSerializer.Deserialize<InfoV4>(infoJson, SerializeV4Context.Default.InfoV4);
+                var v4Info = JsonSerializerHelper.Deserialize<InfoV4>(infoJson, SerializeV4Context.Default.InfoV4);
                 if (v4Info == null)
                 {
                     return (null, null);
                 }
                 if (audioJson)
                 {
-                    audioData = JsonSerializer.Deserialize<AudioData>(File.ReadAllText($"{folderPath}"), SerializeV4Context.Default.AudioData);
+                    audioData = JsonSerializerHelper.Deserialize<AudioData>(File.ReadAllText($"{folderPath}"), SerializeV4Context.Default.AudioData);
                 }
                 else
                 {
                     if (File.Exists($"{folderPath}/{v4Info.audio.audioDataFilename}"))
                     {
-                        audioData = JsonSerializer.Deserialize<AudioData>(File.ReadAllText($"{folderPath}/{v4Info.audio.audioDataFilename}"), SerializeV4Context.Default.AudioData);
+                        audioData = JsonSerializerHelper.Deserialize<AudioData>(File.ReadAllText($"{folderPath}/{v4Info.audio.audioDataFilename}"), SerializeV4Context.Default.AudioData);
                     }
 
                 }
@@ -106,7 +105,7 @@ namespace beatleader_parser
         {
             if (diffJson.Contains("_cutDirection") && !diffJson.Contains("colorBoostBeatmapEvents"))
             {
-                var diff = JsonSerializer.Deserialize<DifficultyV2>(diffJson, SerializeV2Context.Default.DifficultyV2);
+                var diff = JsonSerializerHelper.Deserialize<DifficultyV2>(diffJson, SerializeV2Context.Default.DifficultyV2);
                 if (diff != null)
                 {
                     v3.Difficulties.Add(new(difficulty, characteristic, DifficultyV3.V2toV3(diff, bpm, njs), beatmapInfo));
@@ -114,13 +113,13 @@ namespace beatleader_parser
             }
             else if (diffJson.Contains("colorNotesData"))
             {
-                var diff = JsonSerializer.Deserialize<DifficultyV4>(diffJson, SerializeV4Context.Default.DifficultyV4);
+                var diff = JsonSerializerHelper.Deserialize<DifficultyV4>(diffJson, SerializeV4Context.Default.DifficultyV4);
                 if (diff == null || diff.colorNotes == null) return;
 
                 Lighting? lighting = null;
                 if (!string.IsNullOrEmpty(lightJson))
                 {
-                    lighting = JsonSerializer.Deserialize<Lighting>(lightJson, SerializeV4Context.Default.Lighting);
+                    lighting = JsonSerializerHelper.Deserialize<Lighting>(lightJson, SerializeV4Context.Default.Lighting);
                 }
 
                 DifficultyV3 diffv3 = DifficultyV3.V4toV3(diff, audioData, lighting);
@@ -130,7 +129,7 @@ namespace beatleader_parser
             }
             else
             {
-                var diff = JsonSerializer.Deserialize<DifficultyV3>(diffJson, SerializeV3Context.Default.DifficultyV3);
+                var diff = JsonSerializerHelper.Deserialize<DifficultyV3>(diffJson, SerializeV3Context.Default.DifficultyV3);
                 if (diff == null || diff.Notes == null) return;
                 DifficultyV3.ConvertTime(diff, bpm);
                 DifficultyV3.CalculateObjectNjs(diff, njs);
@@ -138,7 +137,7 @@ namespace beatleader_parser
             }
         }
 
-        public BeatmapV3? TryLoadZip(MemoryStream data)
+        public static BeatmapV3? TryLoadZip(MemoryStream data)
         {
             try
             {
@@ -185,8 +184,7 @@ namespace beatleader_parser
                 var audioFile = archive.Entries.FirstOrDefault(e => e.Name.ToLower().EndsWith(".ogg") || e.Name.ToLower().EndsWith(".egg") || e.Name.ToLower().EndsWith(".wav"));
                 if (audioFile == null) return null;
 
-                Ogg ogg = new();
-                v3.SongLength = ogg.AudioStreamToLength(audioFile.Open());
+                v3.SongLength = Ogg.AudioStreamToLength(audioFile.Open());
 
                 return v3;
             }
@@ -196,7 +194,7 @@ namespace beatleader_parser
             }
         }
 
-        public BeatmapV3? TryLoadString(List<(string filename, string json)> jsonStrings, float songLength)
+        public static BeatmapV3? TryLoadString(List<(string filename, string json)> jsonStrings, float songLength)
         {
             try
             {
@@ -240,7 +238,7 @@ namespace beatleader_parser
             }
         }
 
-        public BeatmapV3? TryLoadDifficulty(string infoJson, string diffJson, string audioJson, string lightJson, float bpm, float njs, string characteristic, string difficulty)
+        public static BeatmapV3? TryLoadDifficulty(string infoJson, string diffJson, string audioJson, string lightJson, float bpm, float njs, string characteristic, string difficulty)
         {
             try
             {
@@ -270,7 +268,7 @@ namespace beatleader_parser
         }
 
         #nullable enable
-        public BeatmapV3? TryDownloadLink(string downloadLink)
+        public static BeatmapV3? TryDownloadLink(string downloadLink)
         {
             try
             {
@@ -325,8 +323,7 @@ namespace beatleader_parser
                 var audioFile = archive.Entries.FirstOrDefault(e => e.Name.ToLower().EndsWith(".ogg") || e.Name.ToLower().EndsWith(".egg") || e.Name.ToLower().EndsWith(".wav"));
                 if (audioFile == null) return null;
 
-                Ogg ogg = new();
-                v3.SongLength = ogg.AudioStreamToLength(audioFile.Open());
+                v3.SongLength = Ogg.AudioStreamToLength(audioFile.Open());
 
                 return v3;
             }
@@ -336,7 +333,7 @@ namespace beatleader_parser
             }
         }
         #nullable enable
-        public BeatmapV3? TryLoadPath(string folderPath)
+        public static BeatmapV3? TryLoadPath(string folderPath)
         {
             try
             {
@@ -374,9 +371,7 @@ namespace beatleader_parser
                 var audioFilePath = Directory.GetFiles(folderPath, "*", SearchOption.TopDirectoryOnly).Where(f => f.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".egg", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                 if (audioFilePath != null)
                 {
-                    using var stream = File.OpenRead(audioFilePath);
-                    using var vorbis = new NVorbis.VorbisReader(stream);
-                    v3.SongLength = (double)vorbis.TotalSamples / vorbis.SampleRate;
+                    v3.SongLength = Ogg.AudioStreamToLength(File.OpenRead(audioFilePath));
                 }
 
                 return v3;
@@ -387,7 +382,7 @@ namespace beatleader_parser
             }
         }
 
-        public BeatmapV3? TryLoadPath(string folderPath, string characteristic, string difficulty)
+        public static BeatmapV3? TryLoadPath(string folderPath, string characteristic, string difficulty)
         {
             try
             {
@@ -427,7 +422,7 @@ namespace beatleader_parser
 
                         string diffJson = File.ReadAllText(diffPath);
 
-                        string lightJson = null;
+                        string lightJson = "";
                         var lightPath = $"{folderPath}/{diff.beatMap._lightshowDataFilename}";
                         if (File.Exists(lightPath))
                         {
@@ -442,9 +437,7 @@ namespace beatleader_parser
                 var audioFilePath = Directory.GetFiles(folderPath, "*", SearchOption.TopDirectoryOnly).Where(f => f.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".egg", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                 if (audioFilePath != null)
                 {
-                    using var stream = File.OpenRead(audioFilePath);
-                    using var vorbis = new NVorbis.VorbisReader(stream);
-                    v3.SongLength = (double)vorbis.TotalSamples / vorbis.SampleRate;
+                    v3.SongLength = Ogg.AudioStreamToLength(File.OpenRead(audioFilePath));
                 }
 
                 return v3;
