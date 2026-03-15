@@ -23,11 +23,11 @@ namespace Parser.Map
         public object[] _environmentNames { get; set; }
         public object[] _colorSchemes { get; set; }
         [JsonIgnore]
-        public _Customdata _customData { get; set; }
+        public _InfoCustomdata _customData { get; set; }
         public List<_Difficultybeatmapsets> _difficultyBeatmapSets { get; set; }
     }
 
-    public class _Customdata
+    public class _InfoCustomdata
     {
         public List<_Contributors> _contributors { get; set; }
         public _Editors _editors { get; set; }

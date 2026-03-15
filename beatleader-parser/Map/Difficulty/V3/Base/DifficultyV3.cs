@@ -16,7 +16,9 @@ namespace Parser.Map.Difficulty.V3.Base
     {
         [JsonPropertyName("version")]
         public string Version { get; set; } = "3.3.0";
+        [JsonPropertyName("bpmEvents")]
         public List<BpmEvent> bpmEvents { get; set; } = new();
+        [JsonIgnore]
         public List<NjsEvent> njsEvents { get; set; } = new();
         [JsonPropertyName("rotationEvents")]
         public List<RotationEvent> Rotations { get; set; } = new();
@@ -34,14 +36,21 @@ namespace Parser.Map.Difficulty.V3.Base
         public object[] Waypoints { get; set; }
         [JsonPropertyName("basicBeatmapEvents")]
         public List<Light> Lights { get; set; } = new();
+        [JsonPropertyName("colorBoostBeatmapEvents")]
         public List<Colorboostbeatmapevent> colorBoostBeatmapEvents { get; set; } = new();
+        [JsonPropertyName("lightColorEventBoxGroups")]
         public List<Lightcoloreventboxgroup> lightColorEventBoxGroups { get; set; } = new();
+        [JsonPropertyName("lightRotationEventBoxGroups")]
         public List<Lightrotationeventboxgroup> lightRotationEventBoxGroups { get; set; } = new();
+        [JsonPropertyName("lightTranslationEventBoxGroups")]
         public List<Lighttranslationeventboxgroup> lightTranslationEventBoxGroups { get; set; } = new();
+        [JsonPropertyName("basicEventTypesWithKeywords")]
         public BasicEventTypesWithKeywords basicEventTypesWithKeywords { get; set; } = new (new List<BasicEventTypesWithKeywords.BasicEventTypesForKeyword> { });
+        [JsonPropertyName("useNormalEventsAsCompatibleEvents")]
         public bool useNormalEventsAsCompatibleEvents { get; set; }
         [JsonIgnore]
         public Custom.Customdata customData { get; set; }
+        [JsonPropertyName("vfxEventBoxGroups")]
         public object[] vfxEventBoxGroups { get; set; }
         [JsonIgnore]
         public _Fxeventscollection _fxEventsCollection { get; set; }

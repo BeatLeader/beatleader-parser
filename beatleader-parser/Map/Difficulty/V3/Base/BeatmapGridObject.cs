@@ -1,11 +1,16 @@
-﻿namespace Parser.Map.Difficulty.V3.Base
+﻿using System.Text.Json.Serialization;
+
+namespace Parser.Map.Difficulty.V3.Base
 {
     public class BeatmapGridObject : BeatmapObject
     {
+        [JsonPropertyName("x")]
         public int x { get; set; }
+        [JsonPropertyName("y")]
         public int y { get; set; }
+        [JsonIgnore]
         public float njs { get; set; }
-
+        [JsonIgnore]
         public virtual GridObjectCustomData? customData { get; set; }
 
         public override bool Equals(object obj)
