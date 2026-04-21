@@ -2,8 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Parser.Map.V4 {
+    [JsonSourceGenerationOptions(
+    NumberHandling =
+        JsonNumberHandling.AllowNamedFloatingPointLiterals |
+        JsonNumberHandling.AllowReadingFromString)]
     public class InfoV4 {
         public string version { get; set; }
         public Song song { get; set; }
@@ -30,7 +35,7 @@ namespace Parser.Map.V4 {
 
         public Map.Info ToV2() {
             return new Map.Info {
-                _version = "2.1.0",
+                _version = version,
                 _songName = song.title,
                 _songSubName = song.subTitle ?? "",
                 _songAuthorName = song.author,
@@ -79,6 +84,10 @@ namespace Parser.Map.V4 {
         public string author { get; set; }
     }
 
+    [JsonSourceGenerationOptions(
+    NumberHandling =
+        JsonNumberHandling.AllowNamedFloatingPointLiterals |
+        JsonNumberHandling.AllowReadingFromString)]
     public class Audio {
         public string songFilename { get; set; }
         public float songDuration { get; set; }
@@ -106,6 +115,10 @@ namespace Parser.Map.V4 {
         public string[] lighters { get; set; }
     }
 
+    [JsonSourceGenerationOptions(
+    NumberHandling =
+        JsonNumberHandling.AllowNamedFloatingPointLiterals |
+        JsonNumberHandling.AllowReadingFromString)]
     public class DifficultyBeatmap {
         public string characteristic { get; set; }
         public string difficulty { get; set; }

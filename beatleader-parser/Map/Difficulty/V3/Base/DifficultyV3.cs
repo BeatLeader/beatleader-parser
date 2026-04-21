@@ -12,6 +12,10 @@ using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Base
 {
+    [JsonSourceGenerationOptions(
+    NumberHandling =
+        JsonNumberHandling.AllowNamedFloatingPointLiterals |
+        JsonNumberHandling.AllowReadingFromString)]
     public class DifficultyV3
     {
         [JsonPropertyName("version")]
@@ -59,7 +63,7 @@ namespace Parser.Map.Difficulty.V3.Base
         {
             DifficultyV3 difficultyV3 = new()
             {
-                Version = "3.0.0",
+                Version = v4.Version,
                 Notes = new(),
                 Bombs = new(),
                 Chains = new(),
@@ -435,7 +439,7 @@ namespace Parser.Map.Difficulty.V3.Base
         {
             DifficultyV3 difficultyV3 = new()
             {
-                Version = "3.0.0",
+                Version = v2._version,
                 Notes = new(),
                 Bombs = new(),
                 Chains = new(),

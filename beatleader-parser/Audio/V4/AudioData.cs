@@ -2,6 +2,10 @@
 using System.Text.Json.Serialization;
 
 namespace Parser.Audio.V4 {
+    [JsonSourceGenerationOptions(
+    NumberHandling =
+        JsonNumberHandling.AllowNamedFloatingPointLiterals |
+        JsonNumberHandling.AllowReadingFromString)]
     public class AudioData {
         [JsonPropertyName("version")]
         public string version { get; set; }
@@ -17,6 +21,10 @@ namespace Parser.Audio.V4 {
         public List<object> lufsData { get; set; }
     }
 
+    [JsonSourceGenerationOptions(
+    NumberHandling =
+        JsonNumberHandling.AllowNamedFloatingPointLiterals |
+        JsonNumberHandling.AllowReadingFromString)]
     public class BpmData {
         [JsonPropertyName("si")]
         public int startSampleIndex { get; set; }

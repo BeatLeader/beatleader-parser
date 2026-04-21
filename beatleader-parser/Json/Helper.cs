@@ -12,7 +12,6 @@ namespace Parser.Json
             if (value == null) return default;
             try
             {
-                info.Options.NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals | System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString;
                 return JsonSerializer.Deserialize(value, info);
             }
             catch (Exception e)
@@ -25,7 +24,6 @@ namespace Parser.Json
         {
             try
             {
-                info.Options.NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals | System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString;
                 return JsonSerializer.Deserialize(stream, info);
             }
             catch (Exception e)

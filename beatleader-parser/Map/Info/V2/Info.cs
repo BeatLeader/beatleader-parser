@@ -3,6 +3,10 @@ using System.Text.Json.Serialization;
 
 namespace Parser.Map
 {
+    [JsonSourceGenerationOptions(
+    NumberHandling =
+        JsonNumberHandling.AllowNamedFloatingPointLiterals |
+        JsonNumberHandling.AllowReadingFromString)]
     public class Info
     {
         public string _version { get; set; }
@@ -27,6 +31,10 @@ namespace Parser.Map
         public List<_Difficultybeatmapsets> _difficultyBeatmapSets { get; set; }
     }
 
+    [JsonSourceGenerationOptions(
+    NumberHandling =
+        JsonNumberHandling.AllowNamedFloatingPointLiterals |
+        JsonNumberHandling.AllowReadingFromString)]
     public class _InfoCustomdata
     {
         public List<_Contributors> _contributors { get; set; }
@@ -51,6 +59,10 @@ namespace Parser.Map
         public string _iconPath { get; set; }
     }
 
+    [JsonSourceGenerationOptions(
+    NumberHandling =
+        JsonNumberHandling.AllowNamedFloatingPointLiterals |
+        JsonNumberHandling.AllowReadingFromString)]
     public class _Difficultybeatmapsets
     {
         public string _beatmapCharacteristicName { get; set; }

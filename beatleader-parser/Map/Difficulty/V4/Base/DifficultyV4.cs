@@ -4,6 +4,10 @@ using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V4.Base
 {
+    [JsonSourceGenerationOptions(
+    NumberHandling =
+        JsonNumberHandling.AllowNamedFloatingPointLiterals |
+        JsonNumberHandling.AllowReadingFromString)]
     public class DifficultyV4
     {
         [JsonPropertyName("version")]
@@ -41,6 +45,10 @@ namespace Parser.Map.Difficulty.V4.Base
         public object[] Waypoints { get; set; }
     }
 
+    [JsonSourceGenerationOptions(
+    NumberHandling =
+        JsonNumberHandling.AllowNamedFloatingPointLiterals |
+        JsonNumberHandling.AllowReadingFromString)]
     public class Lighting {
         // V4 Lighting Box Groups
         [JsonPropertyName("eventBoxGroups")]

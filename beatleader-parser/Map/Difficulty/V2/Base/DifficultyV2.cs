@@ -5,6 +5,10 @@ using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V2.Base
 {
+    [JsonSourceGenerationOptions(
+    NumberHandling =
+        JsonNumberHandling.AllowNamedFloatingPointLiterals |
+        JsonNumberHandling.AllowReadingFromString)]
     public class DifficultyV2
     {
         [JsonPropertyName("_version")]
