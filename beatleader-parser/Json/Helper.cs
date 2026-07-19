@@ -1,5 +1,6 @@
-﻿using System.IO;
 using System;
+using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
@@ -30,6 +31,17 @@ namespace Parser.Json
             {
                 return default;
             }
+        }
+
+        internal static string Serialize<T>(T value, JsonTypeInfo<T> info, bool writeIndented = false)
+        {
+            using var stream = new MemoryStream();
+            using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = writeIndented }))
+            {
+                JsonSerializer.Serialize(writer, value, info);
+            }
+
+            return Encoding.UTF8.GetString(stream.ToArray());
         }
     }
 }

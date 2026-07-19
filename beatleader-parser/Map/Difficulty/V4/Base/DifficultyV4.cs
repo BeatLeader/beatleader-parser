@@ -1,4 +1,5 @@
-﻿using Parser.Map.Difficulty.V3.Base;
+using Parser.Map.Difficulty.V3.Base;
+using Parser.Map.Difficulty.V3.Event.V3;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -15,7 +16,7 @@ namespace Parser.Map.Difficulty.V4.Base
 
         [JsonPropertyName("colorNotes")]
         public List<BaseNote> colorNotes { get; set; } = new();
-        [JsonPropertyName("colorNotesData")] 
+        [JsonPropertyName("colorNotesData")]
         public List<ColorNoteData> colorNotesData { get; set; } = new();
         [JsonPropertyName("bombNotes")]
         public List<BaseNote> bombNotes { get; set; } = new();
@@ -49,8 +50,24 @@ namespace Parser.Map.Difficulty.V4.Base
     NumberHandling =
         JsonNumberHandling.AllowNamedFloatingPointLiterals |
         JsonNumberHandling.AllowReadingFromString)]
-    public class Lighting {
-        // V4 Lighting Box Groups
+    public class Lighting
+    {
+        [JsonPropertyName("version")]
+        public string Version { get; set; } = "4.0.0";
+        [JsonPropertyName("basicEvents")]
+        public List<BaseEvent> basicEvents { get; set; } = new();
+        [JsonPropertyName("basicEventsData")]
+        public List<BasicEventData> basicEventsData { get; set; } = new();
+        [JsonPropertyName("colorBoostEvents")]
+        public List<BaseEvent> colorBoostEvents { get; set; } = new();
+        [JsonPropertyName("colorBoostEventsData")]
+        public List<ColorBoostEventData> colorBoostEventsData { get; set; } = new();
+        [JsonPropertyName("waypoints")]
+        public List<BaseEvent> waypoints { get; set; } = new();
+        [JsonPropertyName("waypointsData")]
+        public List<WaypointData> waypointsData { get; set; } = new();
+        [JsonPropertyName("basicEventTypesWithKeywords")]
+        public BasicEventTypesWithKeywords? basicEventTypesWithKeywords { get; set; }
         [JsonPropertyName("eventBoxGroups")]
         public List<EventBoxGroup> eventBoxGroups { get; set; } = new();
         [JsonPropertyName("indexFilters")]
@@ -79,7 +96,7 @@ namespace Parser.Map.Difficulty.V4.Base
         public int Index { get; set; }
     }
 
-    public class ColorNoteData 
+    public class ColorNoteData
     {
         [JsonPropertyName("x")]
         public int X { get; set; }
@@ -183,6 +200,32 @@ namespace Parser.Map.Difficulty.V4.Base
         public int Index { get; set; }
     }
 
+    public class BasicEventData
+    {
+        [JsonPropertyName("t")]
+        public int Type { get; set; }
+        [JsonPropertyName("i")]
+        public int Value { get; set; }
+        [JsonPropertyName("f")]
+        public float FloatValue { get; set; }
+    }
+
+    public class ColorBoostEventData
+    {
+        [JsonPropertyName("b")]
+        public int Boost { get; set; }
+    }
+
+    public class WaypointData
+    {
+        [JsonPropertyName("x")]
+        public int X { get; set; }
+        [JsonPropertyName("y")]
+        public int Y { get; set; }
+        [JsonPropertyName("d")]
+        public int Direction { get; set; }
+    }
+
     public class RotationData
     {
         [JsonPropertyName("t")]
@@ -191,7 +234,8 @@ namespace Parser.Map.Difficulty.V4.Base
         public float Rotation { get; set; }
     }
 
-    public class NjsEventData {
+    public class NjsEventData
+    {
         [JsonPropertyName("d")]
         public float Delta { get; set; }
         [JsonPropertyName("p")]
@@ -200,7 +244,6 @@ namespace Parser.Map.Difficulty.V4.Base
         public int Easing { get; set; }
     }
 
-    // V4 Event Box Group Classes
     public class EventBoxGroup
     {
         [JsonPropertyName("b")]

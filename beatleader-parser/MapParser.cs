@@ -181,10 +181,14 @@ namespace beatleader_parser
                     }
                 }
 
-                var audioFile = archive.Entries.FirstOrDefault(e => e.Name.ToLower().EndsWith(".ogg") || e.Name.ToLower().EndsWith(".egg") || e.Name.ToLower().EndsWith(".wav"));
-                if (audioFile == null) return null;
+                if (audioData != null) {
+                    v3.SongLength = audioData.songSampleCount / (double)audioData.songFrequency;
+                } else {
+                    var audioFile = archive.Entries.FirstOrDefault(e => e.Name.ToLower().EndsWith(".ogg") || e.Name.ToLower().EndsWith(".egg") || e.Name.ToLower().EndsWith(".wav"));
+                    if (audioFile == null) return null;
 
-                v3.SongLength = Ogg.AudioStreamToLength(audioFile.Open());
+                    v3.SongLength = Ogg.AudioStreamToLength(audioFile.Open());
+                }
 
                 return v3;
             }
@@ -382,7 +386,7 @@ namespace beatleader_parser
             }
         }
 
-        public static BeatmapV3? TryLoadPath(string folderPath, string characteristic, string difficulty)
+        public static BeatmapV3? TryLoadPath(string folderPath, string characteristic, string difficulty, bool readSongLength = true)
         {
             try
             {
@@ -434,10 +438,13 @@ namespace beatleader_parser
                     }
                 }
 
-                var audioFilePath = Directory.GetFiles(folderPath, "*", SearchOption.TopDirectoryOnly).Where(f => f.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".egg", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                if (audioFilePath != null)
+                if (readSongLength)
                 {
-                    v3.SongLength = Ogg.AudioStreamToLength(File.OpenRead(audioFilePath));
+                    var audioFilePath = Directory.GetFiles(folderPath, "*", SearchOption.TopDirectoryOnly).Where(f => f.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".egg", StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                    if (audioFilePath != null)
+                    {
+                        v3.SongLength = Ogg.AudioStreamToLength(File.OpenRead(audioFilePath));
+                    }
                 }
 
                 return v3;

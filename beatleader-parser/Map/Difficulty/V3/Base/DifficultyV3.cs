@@ -251,6 +251,39 @@ namespace Parser.Map.Difficulty.V3.Base
                 }
             }
 
+            if (lighting?.basicEvents != null)
+            {
+                foreach (var basicEvent in lighting.basicEvents)
+                {
+                    var eventData = basicEvent.Index < lighting.basicEventsData.Count ? lighting.basicEventsData[basicEvent.Index] : new();
+                    difficultyV3.Lights.Add(new Light
+                    {
+                        Beats = basicEvent.Beat,
+                        Type = eventData.Type,
+                        Value = eventData.Value,
+                        f = eventData.FloatValue
+                    });
+                }
+            }
+
+            if (lighting?.colorBoostEvents != null)
+            {
+                foreach (var colorBoostEvent in lighting.colorBoostEvents)
+                {
+                    var eventData = colorBoostEvent.Index < lighting.colorBoostEventsData.Count ? lighting.colorBoostEventsData[colorBoostEvent.Index] : new();
+                    difficultyV3.colorBoostBeatmapEvents.Add(new Colorboostbeatmapevent
+                    {
+                        Beats = colorBoostEvent.Beat,
+                        On = eventData.Boost != 0
+                    });
+                }
+            }
+
+            if (lighting?.basicEventTypesWithKeywords != null)
+            {
+                difficultyV3.basicEventTypesWithKeywords = lighting.basicEventTypesWithKeywords;
+            }
+
             // Convert lighting box groups
             if (lighting?.eventBoxGroups != null)
             {
