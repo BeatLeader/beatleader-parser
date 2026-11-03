@@ -9,6 +9,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Il2CppFloat)' == 'true'">
+    <DefineConstants>$(DefineConstants);IL2CPP_FLOAT</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="NVorbis" Version="0.10.5" />
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />

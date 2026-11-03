@@ -1,4 +1,5 @@
-﻿using beatleader_parser.Timescale;
+﻿using System.Text.Json;
+using beatleader_parser.Timescale;
 using beatleader_parser.VNJS;
 using Parser.Audio.V4;
 using Parser.Map.Difficulty.V2.Base;
@@ -54,6 +55,8 @@ namespace Parser.Map.Difficulty.V3.Base
         public bool useNormalEventsAsCompatibleEvents { get; set; }
         [JsonIgnore]
         public Custom.Customdata customData { get; set; }
+        [JsonPropertyName("customData")]
+        public JsonElement? RawCustomData { get; set; }
         [JsonPropertyName("vfxEventBoxGroups")]
         public object[] vfxEventBoxGroups { get; set; }
         [JsonIgnore]
@@ -472,7 +475,8 @@ namespace Parser.Map.Difficulty.V3.Base
         {
             DifficultyV3 difficultyV3 = new()
             {
-                Version = v2._version,
+                Version = string.IsNullOrEmpty(v2._version) ? "2.0.0" : v2._version,
+                RawCustomData = v2._customData,
                 Notes = new(),
                 Bombs = new(),
                 Chains = new(),
@@ -483,8 +487,10 @@ namespace Parser.Map.Difficulty.V3.Base
                 Rotations = new(),
                 bpmEvents = new(),
             };
+            int sourceIndex = -1;
             foreach (var note in v2._notes)
             {
+                sourceIndex++;
                 if (note._type == 0 || note._type == 1)
                 {
                     Note colornote = new()
@@ -496,8 +502,10 @@ namespace Parser.Map.Difficulty.V3.Base
                         y = note._lineLayer,
                         AngleOffset = note._customData?._cutDirection ?? 0,
                         customData = note._customData != null ? new GridObjectCustomData {
-                            coordinates = note._customData._position
+                            coordinates = note._customData._position,
+                            Extra = note._customData.Extra
                         } : null,
+                        SourceIndex = sourceIndex,
                     };
                     difficultyV3.Notes.Add(colornote);
                 }
@@ -509,8 +517,10 @@ namespace Parser.Map.Difficulty.V3.Base
                         x = note._lineIndex,
                         y = note._lineLayer,
                         customData = note._customData != null ? new GridObjectCustomData {
-                            coordinates = note._customData._position
+                            coordinates = note._customData._position,
+                            Extra = note._customData.Extra
                         } : null,
+                        SourceIndex = sourceIndex,
                     };
                     difficultyV3.Bombs.Add(bombnote);
                 }
@@ -576,7 +586,8 @@ namespace Parser.Map.Difficulty.V3.Base
                     TailMultiplier = arc._tailControlPointLengthMultiplier,
                     customData = arc._customData != null ? new GridObjectCustomData {
                         coordinates = arc._customData._position,
-                        tailCoordinates = arc._customData._tailPosition
+                        tailCoordinates = arc._customData._tailPosition,
+                        Extra = arc._customData.Extra
                     } : null,
                 };
                 difficultyV3.Arcs.Add(slider);

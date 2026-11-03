@@ -14,5 +14,7 @@
     {
         public float[]? _position { get; set; }
         public float? _cutDirection { get; set; }
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.Dictionary<string, System.Text.Json.JsonElement>? Extra { get; set; }
     }
 }

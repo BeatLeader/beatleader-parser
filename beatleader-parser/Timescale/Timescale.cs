@@ -15,6 +15,7 @@ namespace beatleader_parser.Timescale
         private List<IBPMChange> _bpmChange { get; set; }
         private List<IBPMTimeScale> _timeScale { get; set; }
         private float _offset { get; set; }
+        private List<BpmRegion> _regions { get; set; }
 
         public Timescale(float bpm, List<IBPMChange> bpmChange, float offset)
         {
@@ -23,6 +24,48 @@ namespace beatleader_parser.Timescale
             _offset = offset;
             _timeScale = GetTimeScale(bpmChange);
             _bpmChange = GetBpmChangeTime(bpmChange);
+            _regions = BuildRegions(bpm, bpmChange);
+        }
+
+        private struct BpmRegion
+        {
+            public float startTime;
+            public float startBeat;
+            public float bpm;
+        }
+
+        private static List<BpmRegion> BuildRegions(float startBpm, List<IBPMChange> bpmChange)
+        {
+            var events = (bpmChange ?? new List<IBPMChange>()).OrderBy(e => e.b).ToList();
+            var regions = new List<BpmRegion>();
+            if (events.Any(e => e.startTime > 0f))
+            {
+                foreach (var e in events)
+                    regions.Add(new BpmRegion { startTime = e.startTime, startBeat = e.b, bpm = e.m });
+                return regions;
+            }
+            int first = 0;
+            if (events.Count > 0 && events[0].b == 0f)
+            {
+                if (events[0].m > 0f) startBpm = events[0].m;
+                first = 1;
+            }
+            regions.Add(new BpmRegion { startTime = 0f, startBeat = 0f, bpm = startBpm });
+            for (int i = first; i < events.Count; i++)
+            {
+                var prev = regions[regions.Count - 1];
+                regions.Add(new BpmRegion { startTime = RegionTime(prev, events[i].b), startBeat = events[i].b, bpm = events[i].m });
+            }
+            return regions;
+        }
+
+        private static float RegionTime(BpmRegion r, float beat)
+        {
+#if IL2CPP_FLOAT
+            return r.startTime + (beat - r.startBeat) / r.bpm * 60f;
+#else
+            return (float)((double)r.startTime + ((double)beat - r.startBeat) / r.bpm * 60.0);
+#endif
         }
 
         public static Timescale Create(float bpm, List<BpmEvent> bpmChange, float offset)
@@ -141,20 +184,17 @@ namespace beatleader_parser.Timescale
 
         public float ToRealTime(float beat, bool timescale = true)
         {
-            if (!timescale)
+            if (!timescale || _regions == null || _regions.Count == 0 || _regions.Any(r => !(r.bpm > 0f)))
             {
-                return (beat / _bpm) * 60;
+#if IL2CPP_FLOAT
+                return beat / _bpm * 60f;
+#else
+                return (float)((double)beat / _bpm * 60.0);
+#endif
             }
-            float calculatedBeat = 0;
-            for (int i = _timeScale.Count - 1; i >= 0; i--)
-            {
-                if (beat > _timeScale[i].time)
-                {
-                    calculatedBeat += (beat - _timeScale[i].time) * _timeScale[i].scale;
-                    beat = _timeScale[i].time;
-                }
-            }
-            return ((beat + calculatedBeat) / _bpm) * 60;
+            int idx = 0;
+            while (idx < _regions.Count - 1 && _regions[idx + 1].startBeat < beat) idx++;
+            return RegionTime(_regions[idx], beat);
         }
 
         public float ToBeatTime(float seconds, bool timescale = false)
@@ -268,7 +308,9 @@ namespace beatleader_parser.Timescale
                 b = ev.Beats;
                 m = ev.Bpm;
                 newTime = ev.Beats;
+                startTime = ev.BpmChangeStartTime;
             }
+            public float startTime { get; set; } = 0;
             public float b { get; set; }
             public float m { get; set; }
             public float p { get; set; } = 0;

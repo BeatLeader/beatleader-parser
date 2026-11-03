@@ -1,6 +1,7 @@
 ﻿using Parser.Map.Difficulty.V2.Event;
 using Parser.Map.Difficulty.V2.Grid;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V2.Base
@@ -13,6 +14,8 @@ namespace Parser.Map.Difficulty.V2.Base
     {
         [JsonPropertyName("_version")]
         public string _version { get; set; } = "";
+        [JsonPropertyName("_customData")]
+        public JsonElement? _customData { get; set; }
         [JsonPropertyName("_notes")]
         public List<Note> _notes { get; set; } = new();
         [JsonPropertyName("_sliders")]

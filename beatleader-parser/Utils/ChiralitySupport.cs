@@ -63,7 +63,8 @@ namespace Parser.Utils
                 y = n.y,
                 Color = n.Color,
                 CutDirection = n.CutDirection,
-                AngleOffset = n.AngleOffset
+                AngleOffset = n.AngleOffset,
+                customData = n.customData
             }).ToList();
 
             // BurstSliders:
@@ -261,10 +262,8 @@ namespace Parser.Utils
 
             GridObjectCustomData? customData = colorNoteData.customData;
 
-            if (colorNoteData.customData != null && colorNoteData.customData.coordinates != null) {
-                customData = new GridObjectCustomData {
-                    coordinates = new float[] { -colorNoteData.customData.coordinates[0] - 1, colorNoteData.customData.coordinates[1] },
-                };
+            if (colorNoteData.customData != null) {
+                customData = MirrorCustomData(colorNoteData.customData);
             }
 
             var newCut = horizontal_cut_transform.TryGetValue((Note.Direction)colorNoteData.CutDirection, out var mapped)
@@ -311,10 +310,8 @@ namespace Parser.Utils
 
             GridObjectCustomData? customData = bombData.customData;
 
-            if (bombData.customData != null && bombData.customData.coordinates != null) {
-                customData = new GridObjectCustomData {
-                    coordinates = new float[] { -bombData.customData.coordinates[0] - 1, bombData.customData.coordinates[1] },
-                };
+            if (bombData.customData != null) {
+                customData = MirrorCustomData(bombData.customData);
             }
 
             var mirroredX = mirrorX(bombData.x);
@@ -455,10 +452,20 @@ namespace Parser.Utils
                 Multiplier = sliderData.Multiplier,
                 TailMultiplier = sliderData.TailMultiplier,
                 AnchorMode = sliderData.AnchorMode,
-                customData = sliderData.customData
+                customData = sliderData.customData != null ? MirrorCustomData(sliderData.customData) : null
             };
         }
 
+
+        private static GridObjectCustomData MirrorCustomData(GridObjectCustomData c)
+        {
+            float[]? m(float[]? v) => v == null || v.Length == 0 ? v : v.Select((x, i) => i == 0 ? -x - 1 : x).ToArray();
+            return new GridObjectCustomData {
+                coordinates = m(c.coordinates),
+                tailCoordinates = m(c.tailCoordinates),
+                Extra = c.Extra,
+            };
+        }
 
         private static Chain Mirror_Horizontal_BurstSlider(Chain burstSliderData, int numberOfLines, bool flip_lines)
         {
@@ -512,7 +519,8 @@ namespace Parser.Utils
                 tx = tailX,
                 ty = burstSliderData.ty,
                 SliceCount = burstSliderData.SliceCount,
-                Squish = burstSliderData.Squish
+                Squish = burstSliderData.Squish,
+                customData = burstSliderData.customData != null ? MirrorCustomData(burstSliderData.customData) : null
             };
         }
         #endregion

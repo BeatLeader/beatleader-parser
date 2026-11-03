@@ -10,7 +10,7 @@ namespace Parser.Map.Difficulty.V3.Base
         public int y { get; set; }
         [JsonIgnore]
         public float njs { get; set; }
-        [JsonIgnore]
+        [JsonPropertyName("customData")]
         public virtual GridObjectCustomData? customData { get; set; }
 
         public override bool Equals(object obj)
