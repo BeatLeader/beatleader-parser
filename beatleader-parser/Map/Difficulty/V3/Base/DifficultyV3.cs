@@ -221,7 +221,7 @@ namespace Parser.Map.Difficulty.V3.Base
             {
                 foreach (var bpmData in audioData.bpmData)
                 {
-                    float bpmChangeStartTime = bpmData.startSampleIndex / audioData.songFrequency;
+                    float bpmChangeStartTime = (float)bpmData.startSampleIndex / audioData.songFrequency;
                     float numSamples = bpmData.endSampleIndex - bpmData.startSampleIndex;
                     float bpm = ((bpmData.endBeat - bpmData.startBeat) / (numSamples / audioData.songFrequency)) * 60.0f;
 
