@@ -298,7 +298,8 @@ namespace Parser.Map.Difficulty.V3.Base
                                         b = evt.Beat,
                                         c = colorEvent.Color,
                                         s = colorEvent.Brightness,
-                                        i = colorEvent.TransitionType,
+                                        // V4 "p" is 0 transition or 1 extend, an easing of -1 is instant. V3 "i" is 0 instant, 1 transition, 2 extend
+                                        i = colorEvent.TransitionType == 1 ? 2 : colorEvent.Easing == -1 ? 0 : 1,
                                         f = colorEvent.StrobeFrequency,
                                         sb = colorEvent.StrobeBrightness,
                                         sf = colorEvent.StrobeFade

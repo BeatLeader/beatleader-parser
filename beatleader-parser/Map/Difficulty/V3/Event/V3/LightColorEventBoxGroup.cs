@@ -33,6 +33,7 @@ namespace Parser.Map.Difficulty.V3.Event.V3
 
     public class E
     {
+        [JsonPropertyName("f")]
         public F Filter { get; set; }
         public float w { get; set; }
         public int d { get; set; }
