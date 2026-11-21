@@ -71,6 +71,29 @@ namespace beatleader_parser
             return (info, audioData);
         }
 
+        // Info with the content of the V4 audio data file, which is only used by V4 maps
+        private static (Info?, AudioData?) ParseInfoWithAudioJson(string infoJson, string audioJson)
+        {
+            var info = JsonSerializer.Deserialize<Info>(infoJson, SerializeV3Context.Default.Info);
+            AudioData? audioData = null;
+
+            if (info == null || info._difficultyBeatmapSets == null)
+            {
+                var v4Info = JsonSerializer.Deserialize<InfoV4>(infoJson, SerializeV4Context.Default.InfoV4);
+                if (v4Info == null)
+                {
+                    return (null, null);
+                }
+                if (!string.IsNullOrEmpty(audioJson))
+                {
+                    audioData = JsonSerializer.Deserialize<AudioData>(audioJson, SerializeV4Context.Default.AudioData);
+                }
+                info = v4Info.ToV2();
+            }
+
+            return (info, audioData);
+        }
+
         private static (Info?, AudioData?) ParseInfo(string infoJson, string folderPath, bool audioJson = false)
         {
             var info = JsonSerializer.Deserialize<Info>(infoJson, SerializeV3Context.Default.Info);
@@ -101,10 +124,33 @@ namespace beatleader_parser
             return (info, audioData);
         }
 
+        // Major version of a difficulty file, from its version key, or its keys when it has none
+        private static int DifficultyFormat(string diffJson)
+        {
+            try
+            {
+                using var document = JsonDocument.Parse(diffJson);
+                var root = document.RootElement;
+                if (root.ValueKind == JsonValueKind.Object)
+                {
+                    if (root.TryGetProperty("version", out var version) && version.ValueKind == JsonValueKind.String && version.GetString()?.Length > 0)
+                        return version.GetString()![0] == '4' ? 4 : 3;
+                    if (root.TryGetProperty("_version", out _) || root.TryGetProperty("_notes", out _) || root.TryGetProperty("_events", out _) || root.TryGetProperty("_obstacles", out _))
+                        return 2;
+                    if (root.TryGetProperty("colorNotesData", out _)) return 4;
+                    return 3;
+                }
+            }
+            catch (JsonException) { }
+            if (diffJson.Contains("_cutDirection") && !diffJson.Contains("colorBoostBeatmapEvents")) return 2;
+            return diffJson.Contains("colorNotesData") ? 4 : 3;
+        }
+
         private static void ProcessDifficulty(BeatmapV3 v3, string diffJson, string lightJson, AudioData? audioData, 
             string difficulty, string characteristic, _Difficultybeatmaps beatmapInfo, float bpm, float njs)
         {
-            if (diffJson.Contains("_cutDirection") && !diffJson.Contains("colorBoostBeatmapEvents"))
+            var format = DifficultyFormat(diffJson);
+            if (format == 2)
             {
                 var diff = JsonSerializer.Deserialize<DifficultyV2>(diffJson, SerializeV2Context.Default.DifficultyV2);
                 if (diff != null)
@@ -112,7 +158,7 @@ namespace beatleader_parser
                     v3.Difficulties.Add(new(difficulty, characteristic, DifficultyV3.V2toV3(diff, bpm, njs), beatmapInfo));
                 }
             }
-            else if (diffJson.Contains("colorNotesData"))
+            else if (format == 4)
             {
                 var diff = JsonSerializer.Deserialize<DifficultyV4>(diffJson, SerializeV4Context.Default.DifficultyV4);
                 if (diff == null || diff.colorNotes == null) return;
@@ -244,7 +290,7 @@ namespace beatleader_parser
         {
             try
             {
-                var (info, audioData) = ParseInfo(infoJson, audioJson);
+                var (info, audioData) = ParseInfoWithAudioJson(infoJson, audioJson);
                 if (info == null) return null;
 
                 BeatmapV3 v3 = new()

@@ -16,19 +16,23 @@ namespace beatleader_parser.VNJS
             this.njsEvents = njsEvents.OrderBy(x => x.Seconds).ToList();
         }
 
+        // The start of the map acts as an event with no delta, the NJS never goes below 0.01
         public float NjsAtSeconds(float seconds)
         {
             NjsEvent lastEvent = njsEvents.LastOrDefault(x => x.Seconds <= seconds);
             NjsEvent nextEvent = njsEvents.FirstOrDefault(x => x.Seconds > seconds);
 
-            if (lastEvent is null) return baseNjs;
-            if (nextEvent is null || nextEvent.Easing == -1) return baseNjs + lastEvent.Delta;
+            float lastSeconds = lastEvent?.Seconds ?? 0, lastDelta = lastEvent?.Delta ?? 0;
+            if (nextEvent is null || nextEvent.Easing == -1 || nextEvent.Seconds <= lastSeconds) return Clamp(baseNjs + lastDelta);
 
-            var t = (seconds - lastEvent.Seconds) / (nextEvent.Seconds - lastEvent.Seconds);
+            var t = (seconds - lastSeconds) / (nextEvent.Seconds - lastSeconds);
+            t = t < 0 ? 0 : t > 1 ? 1 : t;
             t = (float)BeatSaberEasings.Ease(t, (BeatSaberEasingType)nextEvent.Easing);
-            var njsOffset = lastEvent.Delta + t * (nextEvent.Delta - lastEvent.Delta);
-            return baseNjs + njsOffset;
+            var njsOffset = lastDelta + t * (nextEvent.Delta - lastDelta);
+            return Clamp(baseNjs + njsOffset);
         }
+
+        private static float Clamp(float njs) => njs < 0.01f ? 0.01f : njs;
 
         public void CalculateAllObjectNjs(List<BeatmapGridObject> objects)
         {

@@ -251,7 +251,8 @@ namespace beatleader_parser.Timescale
         {
             foreach (var obj in walls)
             {
-                obj.DurationInSeconds = BPM.ToRealTime(obj.DurationInBeats);
+                // The duration starts at the wall, not at beat 0
+                obj.DurationInSeconds = BPM.ToRealTime(obj.Beats + obj.DurationInBeats) - BPM.ToRealTime(obj.Beats);
             }
         }
 

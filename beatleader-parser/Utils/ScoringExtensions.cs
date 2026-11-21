@@ -192,7 +192,7 @@ namespace Parser.Utils
             {
                 var matchesHead = slidersByBeat.ContainsKey(note.BpmTime) && slidersByBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.x && note.y == s.y);
                 var matchesTail = slidersByTailBeat.ContainsKey(note.BpmTime) && slidersByTailBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.tx && note.y == s.ty);
-                var matchesBurst = burstSlidersByBeat.ContainsKey(note.BpmTime) && burstSlidersByBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.x && note.y == note.y);
+                var matchesBurst = burstSlidersByBeat.ContainsKey(note.BpmTime) && burstSlidersByBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.x && note.y == s.y);
 
                 if (matchesBurst && matchesHead && matchesTail) {
                     return new MaxScoreCounterElement(ScoreDefinitions[ScoringType.ChainHeadArcHeadArcTail], note.Seconds);
@@ -277,7 +277,7 @@ namespace Parser.Utils
             {
                 var matchesHead = slidersByBeat.ContainsKey(note.BpmTime) && slidersByBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.x && note.y == s.y);
                 var matchesTail = slidersByTailBeat.ContainsKey(note.BpmTime) && slidersByTailBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.tx && note.y == s.ty);
-                var matchesBurst = burstSlidersByBeat.ContainsKey(note.BpmTime) && burstSlidersByBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.x && note.y == note.y);
+                var matchesBurst = burstSlidersByBeat.ContainsKey(note.BpmTime) && burstSlidersByBeat[note.BpmTime].Any(s => note.Color == s.Color && note.x == s.x && note.y == s.y);
 
                 return matchesBurst && matchesHead && matchesTail || matchesBurst && matchesHead || matchesBurst && matchesTail || matchesHead && matchesTail;
             });

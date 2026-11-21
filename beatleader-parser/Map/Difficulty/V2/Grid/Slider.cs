@@ -1,7 +1,10 @@
-﻿namespace Parser.Map.Difficulty.V2.Grid
+﻿using System.Text.Json.Serialization;
+
+namespace Parser.Map.Difficulty.V2.Grid
 {
     public class Slider
     {
+        [JsonPropertyName("_colorType")]
         public int colorType { get; set; }
         public float _headTime { get; set; }
         public int _headLineIndex { get; set; }

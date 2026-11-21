@@ -20,7 +20,7 @@ namespace Parser.Map.V4 {
                 _songName = song.title,
                 _songSubName = song.subTitle ?? "",
                 _songAuthorName = song.author,
-                _levelAuthorName = difficultyBeatmaps.Length > 0 && difficultyBeatmaps[0].beatmapAuthors.mappers.Length > 0 ? difficultyBeatmaps[0].beatmapAuthors.mappers[0] : "",
+                _levelAuthorName = difficultyBeatmaps?.FirstOrDefault()?.beatmapAuthors?.mappers?.FirstOrDefault() ?? "",
                 _beatsPerMinute = audio.bpm,
                 _songTimeOffset = 0,
                 _shuffle = 0,
@@ -29,9 +29,9 @@ namespace Parser.Map.V4 {
                 _previewDuration = audio.previewDuration,
                 _songFilename = audio.songFilename,
                 _coverImageFilename = coverImageFilename,
-                _environmentName = environmentNames.Length > 0 ? environmentNames[0] : "TriangleEnvironment",
-                _allDirectionsEnvironmentName = environmentNames.Length > 1 ? environmentNames[1] : "",
-                _environmentNames = environmentNames,
+                _environmentName = environmentNames?.Length > 0 ? environmentNames[0] : "TriangleEnvironment",
+                _allDirectionsEnvironmentName = environmentNames?.Length > 1 ? environmentNames[1] : "",
+                _environmentNames = environmentNames ?? new string[0],
                 _colorSchemes = colorSchemes,
                 _difficultyBeatmapSets = ConvertDifficultyBeatmaps()
             };
@@ -40,7 +40,7 @@ namespace Parser.Map.V4 {
         private List<_Difficultybeatmapsets> ConvertDifficultyBeatmaps() {
             var sets = new Dictionary<string, _Difficultybeatmapsets>();
 
-            foreach (var diff in difficultyBeatmaps) {
+            foreach (var diff in difficultyBeatmaps ?? new DifficultyBeatmap[0]) {
                 var characteristic = diff.characteristic ?? "Standard";
                 
                 if (!sets.ContainsKey(characteristic)) {
@@ -87,6 +87,12 @@ namespace Parser.Map.V4 {
         public string environmentColor1Boost { get; set; }
     }
 
+    public class DifficultyCustomData {
+        public string difficultyLabel { get; set; }
+        public List<string> requirements { get; set; }
+        public List<string> suggestions { get; set; }
+    }
+
     public class BeatmapAuthors {
         public string[] mappers { get; set; }
         public string[] lighters { get; set; }
@@ -102,6 +108,7 @@ namespace Parser.Map.V4 {
         public float noteJumpStartBeatOffset { get; set; }
         public string beatmapDataFilename { get; set; }
         public string lightshowDataFilename { get; set; }
+        public DifficultyCustomData customData { get; set; }
 
         private int GetDifficultyRank(string difficulty) {
             return difficulty switch {
@@ -123,7 +130,12 @@ namespace Parser.Map.V4 {
                 _noteJumpMovementSpeed = noteJumpMovementSpeed,
                 _noteJumpStartBeatOffset = noteJumpStartBeatOffset,
                 _beatmapColorSchemeIdx = beatmapColorSchemeIdx,
-                _environmentNameIdx = environmentNameIdx
+                _environmentNameIdx = environmentNameIdx,
+                _customData = customData == null ? null : new _Customdata1 {
+                    _difficultyLabel = customData.difficultyLabel,
+                    _requirements = customData.requirements,
+                    _suggestions = customData.suggestions
+                }
             };
         }
     }

@@ -7,7 +7,9 @@ using Parser.Map.Difficulty.V3.Event;
 using Parser.Map.Difficulty.V3.Event.V3;
 using Parser.Map.Difficulty.V3.Grid;
 using Parser.Map.Difficulty.V4.Base;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Base
@@ -54,6 +56,8 @@ namespace Parser.Map.Difficulty.V3.Base
         public object[] vfxEventBoxGroups { get; set; }
         [JsonIgnore]
         public _Fxeventscollection _fxEventsCollection { get; set; }
+
+        private static readonly int[] V2RotationDegrees = { -60, -45, -30, -15, 15, 30, 45, 60 };
 
         public static DifficultyV3 V4toV3(DifficultyV4 v4, AudioData? audioData, Lighting? lighting)
         {
@@ -233,17 +237,33 @@ namespace Parser.Map.Difficulty.V3.Base
             if (v4.njsEvents != null)
             {
                 NjsEvent? previousEvent = null;
-                foreach (var njsEvent in v4.njsEvents)
+                foreach (var njsEvent in v4.njsEvents.OrderBy(e => e.Beat))
                 {
                     var eventData = njsEvent.Index < njsEventsData.Count ? njsEventsData[njsEvent.Index] : new();
                     NjsEvent evt = new()
                     {
                         Beats = njsEvent.Beat,
-                        Delta = eventData.UsePrevious == 1 && previousEvent != null ? previousEvent.Delta : eventData.Delta,
+                        // Use previous keeps the previous delta, the start of the map has none
+                        Delta = eventData.UsePrevious == 1 ? previousEvent?.Delta ?? 0 : eventData.Delta,
                         Easing = eventData.Easing
                     };
                     difficultyV3.njsEvents.Add(evt);
                     previousEvent = evt;
+                }
+            }
+
+            // Convert basic and color boost events
+            if (lighting != null)
+            {
+                foreach (var basicEvent in lighting.basicEvents ?? new())
+                {
+                    var data = basicEvent.Index < lighting.basicEventsData.Count ? lighting.basicEventsData[basicEvent.Index] : new();
+                    difficultyV3.Lights.Add(new Light { Beats = basicEvent.Beat, Type = data.Type, Value = data.Value, f = data.FloatValue });
+                }
+                foreach (var boostEvent in lighting.colorBoostEvents ?? new())
+                {
+                    var data = boostEvent.Index < lighting.colorBoostEventsData.Count ? lighting.colorBoostEventsData[boostEvent.Index] : new();
+                    difficultyV3.colorBoostBeatmapEvents.Add(new Colorboostbeatmapevent { Beats = boostEvent.Beat, On = data.Boost == 1 });
                 }
             }
 
@@ -499,27 +519,29 @@ namespace Parser.Map.Difficulty.V3.Base
                     obs.Height = 3;
                 }
 
-                if ((obstacle._type >= 1000 && obstacle._type <= 4000) || (obstacle._type >= 4001 && obstacle._type <= 4005000)) {
-					int obsHeight = 0;
-					int startHeight = 0;
-					var value = obstacle._type;
-					if (obstacle._type >= 4001 && obstacle._type <= 4100000) {
-						value -= 4001;
-						obsHeight = value / 1000;
-						startHeight = value % 1000;
-					} else {
-						obsHeight = value - 1000;
-					}
-
-					var height = (obsHeight / 1000) * 5;
-					height = height * 1000 + 1000;
-
-					var layer = (startHeight / 750) * 5;
-					layer = layer * 1000 + 1334;
-
-					obs.y = layer / 1000 - 2;
-					obs.Height = (height - 1000) / 1000;
-				}
+                // Mapping Extensions heights, in grid rows (a full height wall is 5), kept in the V3 precision encoding (1000 + rows * 1000)
+                float? meStart = null, meHeight = null;
+                if (obstacle._type > 1 && obstacle._type < 1000)
+                {
+                    meStart = obstacle._type / 750f * 5;
+                    meHeight = 5;
+                }
+                else if (obstacle._type >= 1000 && obstacle._type <= 4000)
+                {
+                    meStart = 0;
+                    meHeight = (obstacle._type - 1000) / 1000f * 5;
+                }
+                else if (obstacle._type > 4000)
+                {
+                    float value = obstacle._type - 4001;
+                    meStart = value % 1000 / 1000f * 1.35f * 5;
+                    meHeight = value / 1000f / 1000f * 5;
+                }
+                if (meStart != null && meHeight != null)
+                {
+                    obs.y = (int)Math.Round(1000 + meStart.Value * 1000);
+                    obs.Height = (int)Math.Round(1000 + meHeight.Value * 1000);
+                }
 
                 difficultyV3.Walls.Add(obs);
             }
@@ -529,6 +551,7 @@ namespace Parser.Map.Difficulty.V3.Base
                 {
                     Color = arc.colorType,
                     CutDirection = arc._headCutDirection,
+                    TailCutDirection = arc._tailCutDirection,
                     Beats = arc._headTime,
                     TailInBeats = arc._tailTime,
                     x = arc._headLineIndex,
@@ -549,15 +572,17 @@ namespace Parser.Map.Difficulty.V3.Base
             {
                 if(ev._type == 14 || ev._type == 15)
                 {
+                    // Type 14 rotates before the objects on its beat (early), 15 after them (late). The value is an index in
+                    // the rotation table, or 1000 to 1720 for a rotation of value - 1360 degrees
                     RotationEvent rotation = new()
                     {
                         Beats = ev._time,
-                        Rotation = ev._value,
-                        Event = 1 // No idea if it's supposed to be 0 or 1
+                        Rotation = ev._value >= 1000 && ev._value <= 1720 ? ev._value - 1360 : V2RotationDegrees[ev._value < 0 ? 0 : ev._value > 7 ? 7 : ev._value],
+                        Event = ev._type == 15 ? 1 : 0
                     };
                     difficultyV3.Rotations.Add(rotation);
                 }
-                if(ev._type == 100)
+                else if(ev._type == 100)
                 {
                     BpmEvent bpmEvent = new()
                     {

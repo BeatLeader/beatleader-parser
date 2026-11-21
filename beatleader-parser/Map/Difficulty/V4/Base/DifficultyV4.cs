@@ -59,6 +59,31 @@ namespace Parser.Map.Difficulty.V4.Base
         public List<LightRotationEvent> lightRotationEvents { get; set; } = new();
         [JsonPropertyName("lightTranslationEvents")]
         public List<LightTranslationEvent> lightTranslationEvents { get; set; } = new();
+        // V4 basic and color boost events
+        [JsonPropertyName("basicEvents")]
+        public List<BaseEvent> basicEvents { get; set; } = new();
+        [JsonPropertyName("basicEventsData")]
+        public List<BasicEventData> basicEventsData { get; set; } = new();
+        [JsonPropertyName("colorBoostEvents")]
+        public List<BaseEvent> colorBoostEvents { get; set; } = new();
+        [JsonPropertyName("colorBoostEventsData")]
+        public List<ColorBoostEventData> colorBoostEventsData { get; set; } = new();
+    }
+
+    public class BasicEventData
+    {
+        [JsonPropertyName("t")]
+        public int Type { get; set; }
+        [JsonPropertyName("i")]
+        public int Value { get; set; }
+        [JsonPropertyName("f")]
+        public float FloatValue { get; set; }
+    }
+
+    public class ColorBoostEventData
+    {
+        [JsonPropertyName("b")]
+        public int Boost { get; set; }
     }
 
     public class BaseNote
