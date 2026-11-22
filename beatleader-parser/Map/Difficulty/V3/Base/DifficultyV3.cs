@@ -18,6 +18,9 @@ namespace Parser.Map.Difficulty.V3.Base
     {
         [JsonPropertyName("version")]
         public string Version { get; set; } = "3.3.0";
+        // Version of the original file, Version is 3.0.0 for converted V2 and V4 files
+        [JsonIgnore]
+        public string? SourceVersion { get; set; }
         [JsonPropertyName("bpmEvents")]
         public List<BpmEvent> bpmEvents { get; set; } = new();
         [JsonIgnore]
@@ -64,6 +67,7 @@ namespace Parser.Map.Difficulty.V3.Base
             DifficultyV3 difficultyV3 = new()
             {
                 Version = "3.0.0",
+                SourceVersion = v4.Version,
                 Notes = new(),
                 Bombs = new(),
                 Chains = new(),
@@ -457,6 +461,7 @@ namespace Parser.Map.Difficulty.V3.Base
             DifficultyV3 difficultyV3 = new()
             {
                 Version = "3.0.0",
+                SourceVersion = v2._version,
                 Notes = new(),
                 Bombs = new(),
                 Chains = new(),

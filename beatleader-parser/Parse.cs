@@ -178,6 +178,7 @@ namespace beatleader_parser
             {
                 var diff = JsonSerializer.Deserialize<DifficultyV3>(diffJson, SerializeV3Context.Default.DifficultyV3);
                 if (diff == null || diff.Notes == null) return;
+                diff.SourceVersion = diff.Version;
                 DifficultyV3.ConvertTime(diff, bpm);
                 DifficultyV3.CalculateObjectNjs(diff, njs);
                 v3.Difficulties.Add(new(difficulty, characteristic, diff, beatmapInfo));
