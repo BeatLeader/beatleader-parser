@@ -7,5 +7,6 @@
         public int _type { get; set; }
         public float _duration { get; set; }
         public int _width { get; set; }
+        public NoteCustomData? _customData { get; set; }
     }
 }

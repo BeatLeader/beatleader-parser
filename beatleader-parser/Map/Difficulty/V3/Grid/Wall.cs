@@ -13,6 +13,10 @@ namespace Parser.Map.Difficulty.V3.Grid
         public int Width { get; set; }
         [JsonPropertyName("h")]
         public int Height { get; set; }
+        [JsonIgnore]
+        public int? V2Type { get; set; }
+        [JsonIgnore]
+        public bool Fake { get; set; }
 
         public override bool Equals(object obj)
         {

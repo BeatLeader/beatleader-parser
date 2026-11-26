@@ -275,6 +275,8 @@ namespace Parser.Utils
             var newCut = horizontal_cut_transform.TryGetValue((Note.Direction)colorNoteData.CutDirection, out var mapped)
                 ? mapped
                 : (Note.Direction)colorNoteData.CutDirection;
+            if (flip_lines && colorNoteData.CutDirection >= 1000 && colorNoteData.CutDirection <= 1360) newCut = (Note.Direction)(2360 - colorNoteData.CutDirection);
+            else if (flip_lines && colorNoteData.CutDirection >= 2000 && colorNoteData.CutDirection <= 2360) newCut = (Note.Direction)(4360 - colorNoteData.CutDirection);
 
             return new Note {
                 Beats = colorNoteData.Beats,
@@ -358,8 +360,32 @@ namespace Parser.Utils
                     x = mirrorLane - obstacleWidth,
                     y = obstacleData.y,
                     DurationInBeats = obstacleData.DurationInBeats,
+                    DurationInSeconds = obstacleData.DurationInSeconds,
                     Width = obstacleData.Width,
-                    Height = obstacleData.Height
+                    Height = obstacleData.Height,
+                    V2Type = obstacleData.V2Type,
+                    Fake = obstacleData.Fake,
+                    customData = obstacleData.customData
+                };
+            }
+
+            if (lineIndex < 1000 && lineIndex > -1000 && !precisionWidth)
+            {
+                return new Wall {
+                    Beats = obstacleData.Beats,
+                    RotationLane = obstacleData.RotationLane,
+                    SourceIndex = obstacleData.SourceIndex,
+                    Seconds = obstacleData.Seconds,
+                    BpmTime = obstacleData.BpmTime,
+                    x = (lineIndex - 2) * -1 + 2 - obstacleWidth,
+                    y = obstacleData.y,
+                    DurationInBeats = obstacleData.DurationInBeats,
+                    DurationInSeconds = obstacleData.DurationInSeconds,
+                    Width = obstacleData.Width,
+                    Height = obstacleData.Height,
+                    V2Type = obstacleData.V2Type,
+                    Fake = obstacleData.Fake,
+                    customData = obstacleData.customData
                 };
             }
 
@@ -404,8 +430,12 @@ namespace Parser.Utils
                 x = idx,
                 y = obstacleData.y,
                 DurationInBeats = obstacleData.DurationInBeats,
+                DurationInSeconds = obstacleData.DurationInSeconds,
                 Width = obstacleData.Width,
-                Height = obstacleData.Height
+                Height = obstacleData.Height,
+                V2Type = obstacleData.V2Type,
+                Fake = obstacleData.Fake,
+                customData = obstacleData.customData
             };
         }
 

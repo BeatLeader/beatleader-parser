@@ -541,17 +541,22 @@ namespace Parser.Map.Difficulty.V3.Base
                     Beats = obstacle._time,
                     x = obstacle._lineIndex,
                     Width = obstacle._width,
-                    DurationInBeats = obstacle._duration
+                    DurationInBeats = obstacle._duration,
+                    V2Type = obstacle._type,
+                    customData = obstacle._customData != null ? new GridObjectCustomData {
+                        coordinates = obstacle._customData._position,
+                        Extra = obstacle._customData.Extra
+                    } : null,
                 };
-                if (obstacle._type == 0)
-                {
-                    obs.y = 0;
-                    obs.Height = 5;
-                }
-                else if (obstacle._type == 1)
+                if (obstacle._type == 1)
                 {
                     obs.y = 2;
                     obs.Height = 3;
+                }
+                else
+                {
+                    obs.y = 0;
+                    obs.Height = 5;
                 }
 
                 if ((obstacle._type >= 1000 && obstacle._type <= 4000) || (obstacle._type >= 4001 && obstacle._type <= 4005000)) {

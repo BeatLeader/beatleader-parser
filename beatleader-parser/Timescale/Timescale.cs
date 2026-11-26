@@ -291,7 +291,8 @@ namespace beatleader_parser.Timescale
         {
             foreach (var obj in walls)
             {
-                obj.DurationInSeconds = BPM.ToRealTime(obj.DurationInBeats);
+                float end = obj.Beats + obj.DurationInBeats;
+                obj.DurationInSeconds = BPM.ToRealTime(end) - BPM.ToRealTime(obj.Beats);
             }
         }
 
