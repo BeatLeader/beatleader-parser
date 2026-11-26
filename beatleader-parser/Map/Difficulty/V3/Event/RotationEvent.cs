@@ -1,4 +1,4 @@
-﻿using Parser.Map.Difficulty.V3.Base;
+using Parser.Map.Difficulty.V3.Base;
 using System.Text.Json.Serialization;
 
 namespace Parser.Map.Difficulty.V3.Event
@@ -9,6 +9,8 @@ namespace Parser.Map.Difficulty.V3.Event
         public int Event { get; set; }
         [JsonPropertyName("r")]
         public float Rotation { get; set; }
+        [JsonIgnore]
+        public float FloatValue { get; set; } = 1f;
 
         public override bool Equals(object obj)
         {

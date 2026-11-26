@@ -1,4 +1,4 @@
-﻿using Parser.Map;
+using Parser.Map;
 using Parser.Map.Difficulty.V3.Base;
 using Parser.Map.Difficulty.V3.Grid;
 using System.Collections.Generic;
@@ -57,6 +57,8 @@ namespace Parser.Utils
 
             List<Note> notes_copy = beatmapSaveData.Notes.Select(n => new Note { 
                 Beats = n.Beats,
+                RotationLane = n.RotationLane,
+                SourceIndex = n.SourceIndex,
                 Seconds = n.Seconds,
                 BpmTime = n.BpmTime,
                 x = n.x,
@@ -118,6 +120,10 @@ namespace Parser.Utils
             }
 
             return new DifficultyV3 {
+                Version = beatmapSaveData.Version,
+                njsEvents = beatmapSaveData.njsEvents,
+                customData = beatmapSaveData.customData,
+                RawCustomData = beatmapSaveData.RawCustomData,
                 bpmEvents = beatmapSaveData.bpmEvents,
                 Rotations = beatmapSaveData.Rotations,
                 Notes = h_colorNotes,
@@ -272,6 +278,8 @@ namespace Parser.Utils
 
             return new Note {
                 Beats = colorNoteData.Beats,
+                RotationLane = colorNoteData.RotationLane,
+                SourceIndex = colorNoteData.SourceIndex,
                 Seconds = colorNoteData.Seconds,
                 BpmTime = colorNoteData.BpmTime,
                 x = mirroredX,
@@ -317,6 +325,8 @@ namespace Parser.Utils
             var mirroredX = mirrorX(bombData.x);
             return new Bomb {
                 Beats = bombData.Beats,
+                RotationLane = bombData.RotationLane,
+                SourceIndex = bombData.SourceIndex,
                 Seconds = bombData.Seconds,
                 BpmTime = bombData.BpmTime,
                 x = mirroredX,
@@ -341,6 +351,8 @@ namespace Parser.Utils
                 var mirrorLane = (lineIndex - 2) * -1 + 2;
                 return new Wall {
                     Beats = obstacleData.Beats,
+                    RotationLane = obstacleData.RotationLane,
+                    SourceIndex = obstacleData.SourceIndex,
                     Seconds = obstacleData.Seconds,
                     BpmTime = obstacleData.BpmTime,
                     x = mirrorLane - obstacleWidth,
@@ -385,6 +397,8 @@ namespace Parser.Utils
 
             return new Wall {
                 Beats = obstacleData.Beats,
+                RotationLane = obstacleData.RotationLane,
+                SourceIndex = obstacleData.SourceIndex,
                 Seconds = obstacleData.Seconds,
                 BpmTime = obstacleData.BpmTime,
                 x = idx,
@@ -438,6 +452,8 @@ namespace Parser.Utils
             return new Arc {
                 Color = color,
                 Beats = sliderData.Beats,
+                RotationLane = sliderData.RotationLane,
+                SourceIndex = sliderData.SourceIndex,
                 Seconds = sliderData.Seconds,
                 BpmTime = sliderData.BpmTime,
                 x = headX,
@@ -508,6 +524,8 @@ namespace Parser.Utils
             return new Chain {
                 Color = color,
                 Beats = burstSliderData.Beats,
+                RotationLane = burstSliderData.RotationLane,
+                SourceIndex = burstSliderData.SourceIndex,
                 Seconds = burstSliderData.Seconds,
                 BpmTime = burstSliderData.BpmTime,
                 x = headX,
@@ -560,6 +578,8 @@ namespace Parser.Utils
 
             return new Note {
                 Beats = colorNoteData.Beats,
+                RotationLane = colorNoteData.RotationLane,
+                SourceIndex = colorNoteData.SourceIndex,
                 Seconds = colorNoteData.Seconds,
                 BpmTime = colorNoteData.BpmTime,
                 x = colorNoteData.x,
@@ -598,6 +618,8 @@ namespace Parser.Utils
             var mirroredY = mirrorY(bombData.y);
             return new Bomb {
                 Beats = bombData.Beats,
+                RotationLane = bombData.RotationLane,
+                SourceIndex = bombData.SourceIndex,
                 Seconds = bombData.Seconds,
                 BpmTime = bombData.BpmTime,
                 x = bombData.x,
@@ -646,6 +668,8 @@ namespace Parser.Utils
             return new Arc {
                 Color = sliderData.Color,
                 Beats = sliderData.Beats,
+                RotationLane = sliderData.RotationLane,
+                SourceIndex = sliderData.SourceIndex,
                 Seconds = sliderData.Seconds,
                 BpmTime = sliderData.BpmTime,
                 x = sliderData.x,
@@ -695,6 +719,8 @@ namespace Parser.Utils
             return new Chain {
                 Color = burstSliderData.Color,
                 Beats = burstSliderData.Beats,
+                RotationLane = burstSliderData.RotationLane,
+                SourceIndex = burstSliderData.SourceIndex,
                 Seconds = burstSliderData.Seconds,
                 BpmTime = burstSliderData.BpmTime,
                 x = burstSliderData.x,

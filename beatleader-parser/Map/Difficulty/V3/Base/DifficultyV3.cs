@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using beatleader_parser.Timescale;
 using beatleader_parser.VNJS;
 using Parser.Audio.V4;
@@ -88,6 +88,7 @@ namespace Parser.Map.Difficulty.V3.Base
                     Note colorNote = new()
                     {
                         Beats = note.Beat,
+                        RotationLane = note.RotationLane,
                         x = noteData.X,
                         y = noteData.Y,
                         Color = noteData.Color,
@@ -109,6 +110,7 @@ namespace Parser.Map.Difficulty.V3.Base
                     Bomb bombNote = new()
                     {
                         Beats = bomb.Beat,
+                        RotationLane = bomb.RotationLane,
                         x = bombData.X,
                         y = bombData.Y,
                         customData = bombData.customData
@@ -127,6 +129,7 @@ namespace Parser.Map.Difficulty.V3.Base
                     Wall obstacleNote = new()
                     {
                         Beats = wall.Beat,
+                        RotationLane = wall.RotationLane,
                         x = wallData.X,
                         y = wallData.Y,
                         DurationInBeats = wallData.Duration,
@@ -150,6 +153,7 @@ namespace Parser.Map.Difficulty.V3.Base
                     Arc slider = new()
                     {
                         Beats = arc.HeadBeat,
+                        RotationLane = arc.HeadRow,
                         x = headNoteData.X,
                         y = headNoteData.Y,
                         Color = headNoteData.Color,
@@ -182,6 +186,7 @@ namespace Parser.Map.Difficulty.V3.Base
                     Chain burstSlider = new()
                     {
                         Beats = chain.HeadBeat,
+                        RotationLane = chain.HeadRow,
                         x = headNoteData.X,
                         y = headNoteData.Y,
                         Color = headNoteData.Color,
@@ -221,9 +226,13 @@ namespace Parser.Map.Difficulty.V3.Base
             {
                 foreach (var bpmData in audioData.bpmData)
                 {
-                    float bpmChangeStartTime = (float)bpmData.startSampleIndex / audioData.songFrequency;
-                    float numSamples = bpmData.endSampleIndex - bpmData.startSampleIndex;
-                    float bpm = ((bpmData.endBeat - bpmData.startBeat) / (numSamples / audioData.songFrequency)) * 60.0f;
+                    float bpmChangeStartTime = (float)bpmData.startSampleIndex / (float)audioData.songFrequency;
+                    int numSamples = bpmData.endSampleIndex - bpmData.startSampleIndex;
+#if IL2CPP_FLOAT
+                    float bpm = (bpmData.endBeat - bpmData.startBeat) / ((float)numSamples / (float)audioData.songFrequency) * 60f;
+#else
+                    float bpm = (float)(((double)bpmData.endBeat - bpmData.startBeat) / ((double)(float)numSamples / (float)audioData.songFrequency) * 60.0);
+#endif
 
                     BpmEvent evt = new()
                     {
@@ -600,7 +609,9 @@ namespace Parser.Map.Difficulty.V3.Base
                     {
                         Beats = ev._time,
                         Rotation = ev._value,
-                        Event = 1 // No idea if it's supposed to be 0 or 1
+                        FloatValue = ev._floatValue,
+                        // Event 14 rotates objects at its own time (early), 15 only later ones (late).
+                        Event = ev._type == 14 ? 0 : 1
                     };
                     difficultyV3.Rotations.Add(rotation);
                 }

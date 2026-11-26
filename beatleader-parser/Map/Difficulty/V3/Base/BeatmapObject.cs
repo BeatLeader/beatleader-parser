@@ -15,6 +15,8 @@ namespace Parser.Map.Difficulty.V3.Base
         public float BpmChangeStartTime { get; set; } = 0f;
         [JsonIgnore]
         public int SourceIndex { get; set; } = -1;
+        [JsonIgnore]
+        public int RotationLane { get; set; } = 0;
 
         public override bool Equals(object obj) => obj is BeatmapObject other && Beats == other.Beats;
 
